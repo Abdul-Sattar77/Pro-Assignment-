@@ -1,0 +1,56 @@
+# ───────────────────────── Monorepo root .gitignore ─────────────────────────
+# App-specific ignores also live in frontend/.gitignore and backend/.gitignore
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.swp
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.shared.json
+
+# Secrets & env — NEVER commit real env files
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Node / Frontend
+node_modules/
+.next/
+out/
+dist/
+build/
+coverage/
+.turbo/
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Laravel / Backend
+/backend/vendor/
+/backend/storage/*.key
+/backend/storage/framework/cache/*
+/backend/storage/framework/sessions/*
+/backend/storage/framework/views/*
+/backend/storage/logs/*
+/backend/bootstrap/cache/*
+/backend/public/storage
+/backend/.phpunit.result.cache
+/backend/.phpstan.result.cache
+
+# Logs & temp
+*.log
+logs/
+tmp/
+temp/
+
+# Test / build artifacts
+/playwright-report/
+/test-results/
+*.local
