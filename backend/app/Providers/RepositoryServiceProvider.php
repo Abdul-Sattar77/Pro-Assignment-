@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Repositories\Contracts\AssignmentRepositoryInterface;
 use App\Repositories\Contracts\UserRepositoryInterface;
+use App\Repositories\Eloquent\AssignmentRepository;
 use App\Repositories\Eloquent\UserRepository;
 use Illuminate\Support\ServiceProvider;
 
@@ -22,5 +24,6 @@ final class RepositoryServiceProvider extends ServiceProvider
      */
     public array $bindings = [
         UserRepositoryInterface::class => UserRepository::class,
+        AssignmentRepositoryInterface::class => AssignmentRepository::class,
     ];
 }
