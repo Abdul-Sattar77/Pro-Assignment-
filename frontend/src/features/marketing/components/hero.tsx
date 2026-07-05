@@ -37,10 +37,10 @@ export function Hero() {
 
   return (
     <section className="relative flex min-h-dvh flex-col overflow-hidden">
-      {/* Nebula backdrop (also the WebGL fallback) */}
+      {/* Warm haze backdrop (also the WebGL fallback) */}
       <div
         aria-hidden
-        className="absolute inset-0 bg-[radial-gradient(ellipse_55%_45%_at_70%_20%,rgba(139,92,246,0.22),transparent),radial-gradient(ellipse_45%_40%_at_25%_70%,rgba(34,211,238,0.12),transparent),radial-gradient(ellipse_40%_35%_at_85%_80%,rgba(232,121,249,0.10),transparent)]"
+        className="absolute inset-0 bg-[radial-gradient(ellipse_55%_45%_at_70%_18%,rgba(213,179,107,0.10),transparent),radial-gradient(ellipse_45%_40%_at_22%_75%,rgba(213,179,107,0.05),transparent),radial-gradient(ellipse_60%_50%_at_50%_50%,rgba(255,255,255,0.02),transparent)]"
       />
 
       {/* Three.js particle field */}
@@ -116,14 +116,14 @@ export function Hero() {
         >
           <Link
             href={orderHref(isAuthed)}
-            className="aurora-glow group flex h-14 items-center gap-2 rounded-full bg-linear-to-r from-violet-500 via-fuchsia-500 to-cyan-400 px-8 text-base font-semibold text-white transition-transform duration-200 hover:scale-[1.04] active:scale-[0.98]"
+            className="aurora-glow group flex h-14 items-center gap-2 rounded-full bg-[#d5b36b] px-8 text-base font-semibold text-[#0a0a0c] transition-all duration-200 hover:scale-[1.03] hover:bg-[#e2c584] active:scale-[0.98]"
           >
             Start your order
             <ArrowRight className="size-5 transition-transform group-hover:translate-x-1" />
           </Link>
           <a
             href="#services"
-            className="text-foreground/80 hover:text-foreground flex h-14 items-center rounded-full border border-white/15 px-7 text-base backdrop-blur-sm transition-colors hover:border-white/30"
+            className="text-foreground/80 hover:text-foreground flex h-14 items-center rounded-full border border-white/15 px-7 text-base backdrop-blur-sm transition-colors hover:border-[#d5b36b]/50"
           >
             Explore the studio
           </a>

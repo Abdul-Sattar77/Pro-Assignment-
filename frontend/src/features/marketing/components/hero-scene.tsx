@@ -26,10 +26,10 @@ const vertexShader = /* glsl */ `
   varying float vIntensity;
   varying vec3 vColor;
 
-  // Iridescent palette: violet -> fuchsia -> cyan
-  const vec3 VIOLET = vec3(0.655, 0.545, 0.980);
-  const vec3 FUCHSIA = vec3(0.910, 0.475, 0.976);
-  const vec3 CYAN = vec3(0.133, 0.827, 0.933);
+  // Champagne palette: bronze base -> ivory sheen -> gold crests
+  const vec3 BRONZE = vec3(0.42, 0.35, 0.22);
+  const vec3 IVORY  = vec3(0.86, 0.83, 0.74);
+  const vec3 GOLD   = vec3(0.92, 0.78, 0.47);
 
   void main() {
     vec3 pos = position;
@@ -48,10 +48,10 @@ const vertexShader = /* glsl */ `
     float height = (wave + swell + 1.6) / 3.2; // 0..1-ish
     vIntensity = clamp(height, 0.0, 1.0);
 
-    // Blend color across width + height
+    // Blend color across width + height (monochrome-warm, gold on crests)
     float xMix = (position.x / ${SPREAD_X.toFixed(1)}) + 0.5;
-    vec3 base = mix(VIOLET, CYAN, clamp(xMix, 0.0, 1.0));
-    vColor = mix(base, FUCHSIA, vIntensity * 0.55);
+    vec3 base = mix(BRONZE, IVORY, clamp(xMix * 0.85 + 0.1, 0.0, 1.0));
+    vColor = mix(base, GOLD, vIntensity * 0.65);
 
     vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
     gl_Position = projectionMatrix * mvPosition;

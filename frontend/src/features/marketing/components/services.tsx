@@ -59,7 +59,7 @@ function TiltCard({ service, href }: { service: Service; href: string }) {
   const rotateY = useSpring(useMotionValue(0), { stiffness: 180, damping: 20 });
   const glowX = useMotionValue(50);
   const glowY = useMotionValue(50);
-  const glow = useMotionTemplate`radial-gradient(220px circle at ${glowX}% ${glowY}%, rgba(167,139,250,0.18), transparent 70%)`;
+  const glow = useMotionTemplate`radial-gradient(220px circle at ${glowX}% ${glowY}%, rgba(213,179,107,0.13), transparent 70%)`;
 
   const onPointerMove = (event: PointerEvent<HTMLDivElement>) => {
     const bounds = ref.current?.getBoundingClientRect();
@@ -83,7 +83,7 @@ function TiltCard({ service, href }: { service: Service; href: string }) {
       onPointerMove={onPointerMove}
       onPointerLeave={onPointerLeave}
       style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-      className="aurora-border group relative rounded-2xl p-6 transition-colors duration-300 hover:border-white/25"
+      className="aurora-border group relative rounded-2xl p-6 transition-colors duration-300 hover:border-[#d5b36b]/35"
     >
       <motion.div
         aria-hidden
@@ -105,7 +105,7 @@ function TiltCard({ service, href }: { service: Service; href: string }) {
           className="aurora-text mt-5 inline-flex items-center gap-1 text-sm font-semibold"
         >
           Order this
-          <ArrowUpRight className="size-4 text-fuchsia-400 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+          <ArrowUpRight className="size-4 text-[#d5b36b] transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
         </Link>
       </div>
     </motion.div>

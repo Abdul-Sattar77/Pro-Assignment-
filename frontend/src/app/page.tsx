@@ -13,12 +13,15 @@ import {
 
 /**
  * Public landing page — thin composition of marketing sections. The
- * `theme-aurora` wrapper scopes the landing's cosmic dark palette
+ * `theme-aurora` wrapper scopes the landing's Obsidian & Champagne palette
  * (deliberately always-dark); the application keeps the core tokens.
  */
 export default function HomePage() {
   return (
     <div className="theme-aurora bg-background text-foreground dark">
+      {/* Finishing textures */}
+      <div aria-hidden className="aurora-vignette" />
+      <div aria-hidden className="aurora-grain" />
       <Navbar />
       <main>
         <Hero />

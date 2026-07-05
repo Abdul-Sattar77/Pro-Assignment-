@@ -39,7 +39,7 @@ export function Navbar() {
         className={cn(
           "mx-auto flex h-14 max-w-5xl items-center justify-between rounded-full border px-5 transition-all duration-300",
           scrolled
-            ? "border-white/12 bg-[#0a0a18]/85 shadow-[0_8px_40px_rgba(0,0,0,0.45)] backdrop-blur-xl"
+            ? "border-white/12 bg-[#0d0d0f]/85 shadow-[0_8px_40px_rgba(0,0,0,0.45)] backdrop-blur-xl"
             : "border-transparent bg-transparent",
         )}
       >
@@ -68,7 +68,7 @@ export function Navbar() {
           {isAuthed ? (
             <Link
               href={ROUTES.dashboard}
-              className="flex h-10 items-center gap-1.5 rounded-full bg-linear-to-r from-violet-500 to-fuchsia-500 px-5 text-sm font-semibold text-white transition-transform hover:scale-[1.04]"
+              className="flex h-10 items-center gap-1.5 rounded-full bg-[#d5b36b] px-5 text-sm font-semibold text-[#0a0a0c] transition-all hover:scale-[1.04] hover:bg-[#e2c584]"
             >
               Enter studio
               <ArrowUpRight className="size-4" />
@@ -83,7 +83,7 @@ export function Navbar() {
               </Link>
               <Link
                 href={orderHref(false)}
-                className="flex h-10 items-center gap-1.5 rounded-full bg-linear-to-r from-violet-500 to-fuchsia-500 px-5 text-sm font-semibold text-white transition-transform hover:scale-[1.04]"
+                className="flex h-10 items-center gap-1.5 rounded-full bg-[#d5b36b] px-5 text-sm font-semibold text-[#0a0a0c] transition-all hover:scale-[1.04] hover:bg-[#e2c584]"
               >
                 Start order
                 <ArrowUpRight className="size-4" />
@@ -107,7 +107,7 @@ export function Navbar() {
 
       {/* Mobile panel */}
       {menuOpen && (
-        <div className="mx-auto mt-2 max-w-5xl rounded-3xl border border-white/12 bg-[#0a0a18]/95 p-4 backdrop-blur-xl md:hidden">
+        <div className="mx-auto mt-2 max-w-5xl rounded-3xl border border-white/12 bg-[#0d0d0f]/95 p-4 backdrop-blur-xl md:hidden">
           <div className="flex flex-col">
             {LANDING_SECTIONS.map((section) => (
               <a
@@ -123,7 +123,7 @@ export function Navbar() {
               {isAuthed ? (
                 <Link
                   href={ROUTES.dashboard}
-                  className="flex h-12 items-center justify-center gap-1.5 rounded-full bg-linear-to-r from-violet-500 to-fuchsia-500 text-sm font-semibold text-white"
+                  className="flex h-12 items-center justify-center gap-1.5 rounded-full bg-[#d5b36b] text-sm font-semibold text-[#0a0a0c]"
                 >
                   Enter studio
                   <ArrowUpRight className="size-4" />
@@ -132,7 +132,7 @@ export function Navbar() {
                 <>
                   <Link
                     href={orderHref(false)}
-                    className="flex h-12 items-center justify-center gap-1.5 rounded-full bg-linear-to-r from-violet-500 to-fuchsia-500 text-sm font-semibold text-white"
+                    className="flex h-12 items-center justify-center gap-1.5 rounded-full bg-[#d5b36b] text-sm font-semibold text-[#0a0a0c]"
                   >
                     Start order
                     <ArrowUpRight className="size-4" />
