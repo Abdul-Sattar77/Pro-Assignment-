@@ -3,6 +3,7 @@
  */
 export { Navbar } from "./components/navbar";
 export { Hero } from "./components/hero";
+export { Marquee } from "./components/marquee";
 export { Stats } from "./components/stats";
 export { Services } from "./components/services";
 export { HowItWorks } from "./components/how-it-works";

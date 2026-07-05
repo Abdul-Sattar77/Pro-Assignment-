@@ -1,111 +1,90 @@
 "use client";
 
 import { motion } from "framer-motion";
-import {
-  BadgeCheck,
-  CalendarClock,
-  Lock,
-  MessageCircle,
-  RefreshCcw,
-  Wallet,
-  type LucideIcon,
-} from "lucide-react";
 import { easeOut } from "@/animations/variants";
 
-interface Feature {
-  icon: LucideIcon;
+interface Principle {
   title: string;
   description: string;
 }
 
-const FEATURES: Feature[] = [
+const PRINCIPLES: Principle[] = [
   {
-    icon: BadgeCheck,
-    title: "Vetted experts only",
+    title: "Specialists, not generalists",
     description:
-      "Every writer passes subject tests and quality reviews before joining — and is rated on every single project.",
+      "Writers pass subject exams and trial projects before they see a single brief — and carry a public rating on every job since.",
   },
   {
-    icon: CalendarClock,
-    title: "Deadlines you can trust",
+    title: "A manager on every order",
     description:
-      "Milestone tracking and proactive project managers keep 98% of work delivered on or before time.",
+      "You never chase anyone. A dedicated project manager owns your deadline, your updates, and your peace of mind.",
   },
   {
-    icon: RefreshCcw,
-    title: "Free revisions",
+    title: "One thread, zero chaos",
     description:
-      "Not fully satisfied? Request changes and your expert revises until it matches your brief.",
+      "Briefs, drafts, files, and messages live in one private studio — not scattered across chats, emails, and spreadsheets.",
   },
   {
-    icon: Lock,
-    title: "Private & secure",
+    title: "Discretion by default",
     description:
-      "Your identity and files stay confidential. Encrypted sessions, secure storage, and strict access control.",
+      "Encrypted sessions, access-controlled files, and strict confidentiality. Your name stays out of it.",
   },
   {
-    icon: MessageCircle,
-    title: "Real-time communication",
+    title: "Revisions until it's right",
     description:
-      "Chat with your project manager and share files inside your workspace — everything in one place.",
-  },
-  {
-    icon: Wallet,
-    title: "Transparent payments",
-    description:
-      "Clear pricing up front, verified payment records, and invoices you can always refer back to.",
+      "Feedback is part of the craft. Request changes and your expert refines the work — included, not extra.",
   },
 ];
 
-/** "Why choose us" grid. */
+/** Manifesto: sticky serif heading beside numbered principle rows. */
 export function Features() {
   return (
-    <section id="why-us" className="scroll-mt-20 py-20 sm:py-28">
-      <div className="mx-auto max-w-6xl px-6">
-        <motion.div
-          initial={{ opacity: 0, y: 14 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.5, ease: easeOut }}
-          className="mx-auto max-w-2xl text-center"
-        >
-          <p className="text-primary text-sm font-semibold tracking-wider uppercase">
-            Why Prossignment
-          </p>
-          <h2 className="mt-3 text-3xl font-bold tracking-tight text-balance sm:text-4xl">
-            Built to make quality effortless
-          </h2>
-          <p className="text-muted-foreground mt-4 text-pretty">
-            We replaced scattered chats, spreadsheets, and guesswork with one
-            transparent workspace — so you always know where your work stands.
-          </p>
-        </motion.div>
+    <section id="why-us" className="scroll-mt-24 border-b py-20 lg:py-28">
+      <div className="mx-auto max-w-[88rem] px-6 lg:px-10">
+        <div className="grid gap-12 lg:grid-cols-[1fr_2fr]">
+          <div className="lg:sticky lg:top-28 lg:self-start">
+            <p className="text-muted-foreground font-mono text-xs tracking-[0.2em] uppercase">
+              03 — Why us
+            </p>
+            <h2 className="mt-4 font-serif text-4xl leading-tight font-medium tracking-tight sm:text-5xl">
+              Craft has
+              <br />
+              <span className="text-primary italic">principles.</span>
+            </h2>
+            <p className="text-muted-foreground mt-5 max-w-sm leading-relaxed">
+              Five commitments we make on every single order — the reason
+              clients place their second one.
+            </p>
+          </div>
 
-        <div className="mt-14 grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
-          {FEATURES.map((feature, index) => (
-            <motion.div
-              key={feature.title}
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-60px" }}
-              transition={{
-                duration: 0.45,
-                ease: easeOut,
-                delay: (index % 3) * 0.08,
-              }}
-              className="flex gap-4"
-            >
-              <div className="bg-primary/10 text-primary flex size-10 shrink-0 items-center justify-center rounded-lg">
-                <feature.icon className="size-5" />
-              </div>
-              <div>
-                <h3 className="font-semibold">{feature.title}</h3>
-                <p className="text-muted-foreground mt-1.5 text-sm leading-relaxed">
-                  {feature.description}
-                </p>
-              </div>
-            </motion.div>
-          ))}
+          <div>
+            {PRINCIPLES.map((principle, index) => (
+              <motion.div
+                key={principle.title}
+                initial={{ opacity: 0, x: 24 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{
+                  duration: 0.5,
+                  ease: easeOut,
+                  delay: index * 0.05,
+                }}
+                className="grid gap-3 border-t py-8 last:border-b sm:grid-cols-[4rem_1fr] sm:gap-8"
+              >
+                <span className="text-muted-foreground font-mono text-sm">
+                  ({index + 1})
+                </span>
+                <div>
+                  <h3 className="font-serif text-xl sm:text-2xl">
+                    {principle.title}
+                  </h3>
+                  <p className="text-muted-foreground mt-2 max-w-lg leading-relaxed">
+                    {principle.description}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </div>
     </section>

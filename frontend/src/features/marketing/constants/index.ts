@@ -3,9 +3,9 @@ import { ROUTES } from "@/constants/routes";
 /** Anchor sections on the landing page. */
 export const LANDING_SECTIONS = [
   { id: "services", label: "Services" },
-  { id: "how-it-works", label: "How it works" },
+  { id: "process", label: "Process" },
   { id: "why-us", label: "Why us" },
-  { id: "testimonials", label: "Testimonials" },
+  { id: "voices", label: "Voices" },
 ] as const;
 
 /**

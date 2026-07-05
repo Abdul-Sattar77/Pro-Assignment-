@@ -2,62 +2,66 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCurrentUser } from "@/features/auth";
 import { easeOut } from "@/animations/variants";
 import { orderHref } from "../constants";
 
 /**
- * Final conversion section. The gradient panel is the one deliberate
- * "hero moment" outside the hero itself.
+ * Finale: full-bleed ink section with an enormous serif invitation.
+ * Fixed warm-black palette in both themes — the landing's one deliberate
+ * high-contrast moment.
  */
 export function Cta() {
   const { data: user } = useCurrentUser();
   const isAuthed = Boolean(user);
 
   return (
-    <section className="py-20 sm:py-28">
-      <div className="mx-auto max-w-6xl px-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20, scale: 0.98 }}
-          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+    <section className="bg-[#131009] py-24 text-[#ece7df] lg:py-36">
+      <div className="mx-auto max-w-[88rem] px-6 lg:px-10">
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
           viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.6, ease: easeOut }}
-          className="relative overflow-hidden rounded-3xl bg-[#0B1220] px-8 py-16 text-center sm:px-16 sm:py-20"
+          transition={{ duration: 0.5, ease: easeOut }}
+          className="font-mono text-xs tracking-[0.2em] text-[#a49d92] uppercase"
         >
-          {/* Glows */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute -top-24 left-1/4 size-72 rounded-full bg-[radial-gradient(closest-side,rgba(59,130,246,0.35),transparent)] blur-2xl"
-          />
-          <div
-            aria-hidden
-            className="pointer-events-none absolute -right-16 -bottom-24 size-72 rounded-full bg-[radial-gradient(closest-side,rgba(56,189,248,0.25),transparent)] blur-2xl"
-          />
+          05 — Begin
+        </motion.p>
 
-          <h2 className="relative text-3xl font-bold tracking-tight text-balance text-white sm:text-4xl">
-            Ready to hand off your next assignment?
-          </h2>
-          <p className="relative mx-auto mt-4 max-w-xl text-pretty text-slate-300">
-            Create your free account, post your requirements, and get matched
-            with an expert today. It takes less than two minutes.
+        <motion.h2
+          initial={{ opacity: 0, y: 26 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.65, ease: easeOut, delay: 0.1 }}
+          className="mt-6 font-serif text-6xl leading-[1.02] font-medium tracking-tight text-balance sm:text-8xl"
+        >
+          Hand it off
+          <span className="text-[#fb923c] italic"> today.</span>
+        </motion.h2>
+
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.55, ease: easeOut, delay: 0.22 }}
+          className="mt-10 flex flex-wrap items-center gap-6"
+        >
+          <Button
+            asChild
+            size="lg"
+            className="h-14 rounded-full bg-[#fb923c] px-8 text-base font-medium text-[#1c1006] hover:bg-[#fdac63]"
+          >
+            <Link href={orderHref(isAuthed)}>
+              Place your order
+              <ArrowUpRight className="size-5" />
+            </Link>
+          </Button>
+          <p className="max-w-xs text-sm text-[#a49d92]">
+            Browse freely — you&apos;ll create your private studio account when
+            you order.
           </p>
-          <div className="relative mt-8 flex flex-wrap items-center justify-center gap-3">
-            <Button
-              size="lg"
-              asChild
-              className="h-12 bg-white px-7 text-base text-slate-900 hover:bg-slate-100"
-            >
-              <Link href={orderHref(isAuthed)}>
-                Order Now
-                <ArrowRight className="size-4.5" />
-              </Link>
-            </Button>
-            <p className="text-sm text-slate-400">
-              No commitment — browse first, order when ready.
-            </p>
-          </div>
         </motion.div>
       </div>
     </section>

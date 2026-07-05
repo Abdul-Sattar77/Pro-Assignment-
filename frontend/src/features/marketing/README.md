@@ -1,44 +1,47 @@
 # Feature: Marketing (Landing)
 
-**Owner:** Dev A · **Domain:** Public site · **Status:** ✅ Implemented (v1)
+**Owner:** Dev A · **Domain:** Public site · **Status:** ✅ Implemented (v2 — Editorial redesign)
 
-## Purpose
+## Design direction: "Editorial Studio"
 
-The public landing experience — the first impression for prospective clients.
-Premium design + motion (Linear/Stripe-inspired) with one conversion goal:
-**Order Now**. Guests are funneled through auth before ordering.
+Deliberately **not** the generic SaaS template. Warm **paper & ink** palette
+with a **burnt-orange** accent (no blue), oversized **Fraunces serif**
+typography, asymmetric magazine layouts, numbered sections (01–05), hairline
+rules, mono-font captions, and an order-ticket motif instead of dashboard
+mockups.
+
+Palette is scoped via the `.theme-editorial` class (globals.css) — the
+application keeps its own core token set. Light + dark both supported.
 
 ## The order-gate concept
 
 ```
-Visitor browses freely → clicks "Order Now"
-  → guest:  /login?redirect=…  (register/login)  → lands in the app
-  → authed: straight to the app
+Visitor browses freely → clicks "Place an order"
+  → guest:  /login?redirect=…  (register/login)  → lands in the studio
+  → authed: straight in
 ```
 
 `orderHref(isAuthenticated)` in `constants/` is the single source of that rule.
-When the Assignments module ships, its redirect target becomes the order form
-(`/assignments/new`) — one-line change.
+When the Assignments module ships, the target becomes the order form.
 
 ## Sections (components/)
 
-| Component      | Content                                                                                                                      |
-| -------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `navbar`       | Fixed, transparent→glass on scroll, session-aware CTAs, mobile menu                                                          |
-| `hero`         | Staggered headline, gradient text, grid+glow background, floating product preview built from real UI primitives, trust chips |
-| `stats`        | Animated in-view counters (delivered, experts, on-time %, rating)                                                            |
-| `services`     | 6 service cards with hover lift                                                                                              |
-| `how-it-works` | 4 steps with animated connector line                                                                                         |
-| `features`     | "Why us" grid (6 differentiators)                                                                                            |
-| `testimonials` | Social-proof cards (5-star, avatars)                                                                                         |
-| `cta`          | Navy gradient conversion panel                                                                                               |
-| `footer`       | Brand, section links, legal                                                                                                  |
+| Component      | Content                                                                                                                                  |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `navbar`       | Hairline rule, serif wordmark, numbered links, pill CTA, session-aware                                                                   |
+| `hero`         | Asymmetric split: giant serif statement (italic accent) + perforated **order ticket** artifact with live status dots, ghost "A+" numeral |
+| `marquee`      | Infinite serif-italic subject ticker (CSS animation, reduced-motion safe)                                                                |
+| `services`     | **Numbered expanding index rows** (accordion), sticky serif heading, tag chips, per-service order link                                   |
+| `how-it-works` | `#process` — editorial timeline: oversized italic numerals, three-column rhythm                                                          |
+| `stats`        | Numbers wall: huge serif counters over hairline grid with mono notes                                                                     |
+| `features`     | `#why-us` — manifesto: sticky heading + five numbered principles                                                                         |
+| `testimonials` | `#voices` — one oversized rotating pull-quote (6s) with progress dots                                                                    |
+| `cta`          | Full-bleed warm-ink finale, enormous serif "Hand it off today."                                                                          |
+| `footer`       | Ink footer with oversized clipped wordmark                                                                                               |
 
 ## Notes
 
-- All scroll animations use `whileInView` + `once: true`; `MotionConfig
-reducedMotion="user"` (in Providers) disables them for reduced-motion users.
-- Session awareness via `useCurrentUser()` from the auth feature's **public
-  surface** (401 → null for guests — no error states on the landing).
-- Copy/stats are launch placeholders for the business to refine — structure and
-  design are final.
+- Scroll animations: `whileInView` + `once`; `MotionConfig reducedMotion="user"`
+  covers motion; the marquee pauses via CSS media query.
+- Session awareness via `useCurrentUser()` from auth's public surface.
+- Copy/stats are launch placeholders for the business to refine.

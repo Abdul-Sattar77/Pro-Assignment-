@@ -4,6 +4,7 @@ import {
   Footer,
   Hero,
   HowItWorks,
+  Marquee,
   Navbar,
   Services,
   Stats,
@@ -11,23 +12,25 @@ import {
 } from "@/features/marketing";
 
 /**
- * Public landing page — thin composition of marketing sections
- * (frontend-standards §3: route files compose, they don't implement).
+ * Public landing page — thin composition of marketing sections. The
+ * `theme-editorial` wrapper scopes the landing's warm paper/ink/orange
+ * palette; the application keeps the core design tokens.
  */
 export default function HomePage() {
   return (
-    <>
+    <div className="theme-editorial bg-background text-foreground">
       <Navbar />
       <main>
         <Hero />
-        <Stats />
+        <Marquee />
         <Services />
         <HowItWorks />
+        <Stats />
         <Features />
         <Testimonials />
         <Cta />
       </main>
       <Footer />
-    </>
+    </div>
   );
 }

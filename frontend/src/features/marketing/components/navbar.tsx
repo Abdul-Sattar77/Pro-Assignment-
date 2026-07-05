@@ -2,7 +2,7 @@
 
 import { useState, useSyncExternalStore } from "react";
 import Link from "next/link";
-import { ArrowRight, LayoutGrid, Menu, X } from "lucide-react";
+import { ArrowUpRight, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
@@ -15,18 +15,18 @@ function subscribeToScroll(callback: () => void): () => void {
   return () => window.removeEventListener("scroll", callback);
 }
 
-/** True once the page is scrolled past the hero's top edge. SSR-safe. */
+/** True once the page is scrolled. SSR-safe. */
 function useScrolled(): boolean {
   return useSyncExternalStore(
     subscribeToScroll,
-    () => window.scrollY > 12,
+    () => window.scrollY > 8,
     () => false,
   );
 }
 
 /**
- * Landing navbar. Transparent at the top, glass once scrolled. Session-aware:
- * guests see Sign in + Order Now; authenticated visitors see Dashboard.
+ * Editorial navbar: hairline rule, serif wordmark, understated links, one
+ * strong Order action. Session-aware (guests → sign in; members → studio).
  */
 export function Navbar() {
   const scrolled = useScrolled();
@@ -37,53 +37,62 @@ export function Navbar() {
   return (
     <header
       className={cn(
-        "fixed inset-x-0 top-0 z-40 transition-all duration-300",
-        scrolled
-          ? "bg-background/75 border-b shadow-xs backdrop-blur-xl"
-          : "bg-transparent",
+        "bg-background/90 fixed inset-x-0 top-0 z-40 border-b backdrop-blur-md transition-shadow duration-300",
+        scrolled ? "shadow-[0_1px_0_var(--border)]" : "",
       )}
     >
-      <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-        <Link href={ROUTES.home} className="flex items-center gap-2">
-          <span className="bg-primary text-primary-foreground flex size-8 items-center justify-center rounded-lg">
-            <LayoutGrid className="size-4" />
-          </span>
-          <span className="text-lg font-semibold tracking-tight">
-            Prossignment
-          </span>
+      <nav className="mx-auto flex h-[4.5rem] max-w-[88rem] items-center justify-between px-6 lg:px-10">
+        <Link
+          href={ROUTES.home}
+          className="font-serif text-[1.35rem] font-semibold tracking-tight"
+        >
+          Prossignment
+          <span className="text-primary">.</span>
         </Link>
 
-        {/* Desktop links */}
-        <div className="hidden items-center gap-1 md:flex">
-          {LANDING_SECTIONS.map((section) => (
+        {/* Desktop */}
+        <div className="hidden items-center gap-8 md:flex">
+          {LANDING_SECTIONS.map((section, index) => (
             <a
               key={section.id}
               href={`#${section.id}`}
-              className="text-muted-foreground hover:text-foreground rounded-md px-3 py-2 text-sm font-medium transition-colors"
+              className="text-muted-foreground hover:text-foreground group text-sm transition-colors"
             >
+              <span className="text-primary/70 mr-1.5 font-mono text-[11px]">
+                0{index + 1}
+              </span>
               {section.label}
             </a>
           ))}
         </div>
 
-        <div className="hidden items-center gap-2 md:flex">
+        <div className="hidden items-center gap-3 md:flex">
           <ThemeToggle />
           {isAuthed ? (
-            <Button asChild>
+            <Button
+              asChild
+              className="h-10 rounded-full px-5 text-sm font-medium"
+            >
               <Link href={ROUTES.dashboard}>
-                Dashboard
-                <ArrowRight className="size-4" />
+                Open studio
+                <ArrowUpRight className="size-4" />
               </Link>
             </Button>
           ) : (
             <>
-              <Button variant="ghost" asChild>
-                <Link href={ROUTES.login}>Sign in</Link>
-              </Button>
-              <Button asChild>
+              <Link
+                href={ROUTES.login}
+                className="text-muted-foreground hover:text-foreground text-sm underline-offset-4 transition-colors hover:underline"
+              >
+                Sign in
+              </Link>
+              <Button
+                asChild
+                className="h-10 rounded-full px-5 text-sm font-medium"
+              >
                 <Link href={orderHref(false)}>
-                  Order Now
-                  <ArrowRight className="size-4" />
+                  Place an order
+                  <ArrowUpRight className="size-4" />
                 </Link>
               </Button>
             </>
@@ -105,38 +114,44 @@ export function Navbar() {
         </div>
       </nav>
 
-      {/* Mobile panel */}
       {menuOpen && (
-        <div className="bg-background/95 border-b px-6 pt-2 pb-4 backdrop-blur-xl md:hidden">
-          <div className="flex flex-col gap-1">
-            {LANDING_SECTIONS.map((section) => (
+        <div className="bg-background border-b px-6 pt-1 pb-5 md:hidden">
+          <div className="flex flex-col">
+            {LANDING_SECTIONS.map((section, index) => (
               <a
                 key={section.id}
                 href={`#${section.id}`}
                 onClick={() => setMenuOpen(false)}
-                className="text-muted-foreground hover:text-foreground hover:bg-accent rounded-md px-3 py-2.5 text-sm font-medium transition-colors"
+                className="text-foreground border-b py-3.5 font-serif text-lg"
               >
+                <span className="text-primary/70 mr-2 font-mono text-xs">
+                  0{index + 1}
+                </span>
                 {section.label}
               </a>
             ))}
-            <div className="mt-2 flex flex-col gap-2">
+            <div className="mt-4 flex flex-col gap-2.5">
               {isAuthed ? (
-                <Button asChild className="w-full">
+                <Button asChild className="h-11 w-full rounded-full">
                   <Link href={ROUTES.dashboard}>
-                    Dashboard
-                    <ArrowRight className="size-4" />
+                    Open studio
+                    <ArrowUpRight className="size-4" />
                   </Link>
                 </Button>
               ) : (
                 <>
-                  <Button variant="outline" asChild className="w-full">
-                    <Link href={ROUTES.login}>Sign in</Link>
-                  </Button>
-                  <Button asChild className="w-full">
+                  <Button asChild className="h-11 w-full rounded-full">
                     <Link href={orderHref(false)}>
-                      Order Now
-                      <ArrowRight className="size-4" />
+                      Place an order
+                      <ArrowUpRight className="size-4" />
                     </Link>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    asChild
+                    className="h-11 w-full rounded-full"
+                  >
+                    <Link href={ROUTES.login}>Sign in</Link>
                   </Button>
                 </>
               )}

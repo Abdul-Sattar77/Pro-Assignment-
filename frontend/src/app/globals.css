@@ -167,11 +167,77 @@
 
   --font-sans: var(--font-inter);
   --font-mono: var(--font-jetbrains-mono);
+  --font-serif: var(--font-fraunces);
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+}
+
+/*
+  ─────────────────────────────────────────────────────────────────────────
+  Editorial theme — scoped palette for the public landing experience.
+  Warm paper & ink with a burnt-orange accent; serif display voice.
+  The application (dashboard) keeps the core token set above.
+  ─────────────────────────────────────────────────────────────────────────
+*/
+.theme-editorial {
+  --background: #faf7f2; /* warm paper */
+  --foreground: #1c1917; /* ink */
+  --card: #fffdf9;
+  --card-foreground: #1c1917;
+  --popover: #fffdf9;
+  --popover-foreground: #1c1917;
+  --primary: #ea580c; /* burnt orange */
+  --primary-foreground: #fff7ed;
+  --secondary: #f1ece3;
+  --secondary-foreground: #1c1917;
+  --muted: #f1ece3;
+  --muted-foreground: #7c766d;
+  --accent: #f5efe6;
+  --accent-foreground: #1c1917;
+  --border: #e4dccd;
+  --input: #e4dccd;
+  --ring: #ea580c;
+}
+
+.dark .theme-editorial {
+  --background: #131009; /* warm near-black */
+  --foreground: #ece7df;
+  --card: #1b1710;
+  --card-foreground: #ece7df;
+  --popover: #1b1710;
+  --popover-foreground: #ece7df;
+  --primary: #fb923c;
+  --primary-foreground: #1c1006;
+  --secondary: #241f16;
+  --secondary-foreground: #ece7df;
+  --muted: #241f16;
+  --muted-foreground: #a49d92;
+  --accent: #2a241a;
+  --accent-foreground: #ece7df;
+  --border: #2f2920;
+  --input: #2f2920;
+  --ring: #fb923c;
+}
+
+/* Infinite marquee (landing ticker). Track holds two copies of the row. */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.animate-marquee {
+  animation: marquee 28s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee {
+    animation: none;
+  }
 }
 
 @layer base {

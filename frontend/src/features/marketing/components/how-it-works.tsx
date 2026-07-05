@@ -1,104 +1,91 @@
 "use client";
 
 import { motion } from "framer-motion";
-import {
-  ClipboardList,
-  MessagesSquare,
-  PackageCheck,
-  UserCheck,
-  type LucideIcon,
-} from "lucide-react";
 import { easeOut } from "@/animations/variants";
 
 interface Step {
-  icon: LucideIcon;
   title: string;
   description: string;
+  aside: string;
 }
 
 const STEPS: Step[] = [
   {
-    icon: ClipboardList,
-    title: "Tell us what you need",
+    title: "Brief us",
     description:
-      "Create your order in minutes — topic, requirements, deadline, and any files. Sign in first so everything stays private to you.",
+      "Tell us the topic, requirements, and deadline — attach anything useful. You'll sign in first, so your brief stays private to you from the very first word.",
+    aside: "~2 minutes",
   },
   {
-    icon: UserCheck,
-    title: "Get matched with an expert",
+    title: "We match your expert",
     description:
-      "A project manager reviews your brief and assigns the best-fit specialist from our vetted team.",
+      "A project manager reads your brief and hand-picks the specialist with the right subject depth. No lotteries, no queues.",
+    aside: "same day",
   },
   {
-    icon: MessagesSquare,
-    title: "Track progress & chat",
+    title: "Watch it take shape",
     description:
-      "Follow every milestone in your workspace, message the team, and share files — no more scattered chats.",
+      "Milestones, drafts, and messages live in your studio. Ask questions, drop files, request tweaks — everything stays in one thread.",
+    aside: "live tracking",
   },
   {
-    icon: PackageCheck,
-    title: "Review, revise, approve",
+    title: "Approve & done",
     description:
-      "Receive your completed work, request free revisions if needed, and approve when you're 100% happy.",
+      "Review the finished work. Want changes? Revisions are included. Approve when it's exactly right — the file is yours.",
+    aside: "revisions free",
   },
 ];
 
-/** Four-step process with an animated connector line. */
+/**
+ * The process as an editorial timeline: oversized serif numerals, generous
+ * whitespace, alternating rhythm — not a four-column icon grid.
+ */
 export function HowItWorks() {
   return (
     <section
-      id="how-it-works"
-      className="bg-secondary/40 dark:bg-secondary/20 scroll-mt-20 border-y py-20 sm:py-28"
+      id="process"
+      className="bg-secondary/50 scroll-mt-24 border-b py-20 lg:py-28"
     >
-      <div className="mx-auto max-w-6xl px-6">
+      <div className="mx-auto max-w-[88rem] px-6 lg:px-10">
         <motion.div
           initial={{ opacity: 0, y: 14 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.5, ease: easeOut }}
-          className="mx-auto max-w-2xl text-center"
         >
-          <p className="text-primary text-sm font-semibold tracking-wider uppercase">
-            How it works
+          <p className="text-muted-foreground font-mono text-xs tracking-[0.2em] uppercase">
+            02 — Process
           </p>
-          <h2 className="mt-3 text-3xl font-bold tracking-tight text-balance sm:text-4xl">
-            From brief to brilliant in four steps
+          <h2 className="mt-4 max-w-xl font-serif text-4xl leading-tight font-medium tracking-tight sm:text-5xl">
+            Hand it off in four
+            <span className="text-primary italic"> unhurried</span> steps.
           </h2>
         </motion.div>
 
-        <div className="relative mt-16 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
-          {/* Connector line (desktop) */}
-          <motion.div
-            aria-hidden
-            initial={{ scaleX: 0 }}
-            whileInView={{ scaleX: 1 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 1, ease: easeOut, delay: 0.3 }}
-            className="bg-border absolute top-7 right-[12.5%] left-[12.5%] hidden h-px origin-left lg:block"
-          />
-
+        <div className="mt-16">
           {STEPS.map((step, index) => (
             <motion.div
               key={step.title}
-              initial={{ opacity: 0, y: 18 }}
+              initial={{ opacity: 0, y: 22 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
-              transition={{
-                duration: 0.45,
-                ease: easeOut,
-                delay: index * 0.12,
-              }}
-              className="relative text-center"
+              transition={{ duration: 0.5, ease: easeOut }}
+              className="group grid gap-4 border-t py-10 last:border-b sm:grid-cols-[8rem_1fr_10rem] sm:gap-10 lg:py-12"
             >
-              <div className="bg-background relative z-10 mx-auto flex size-14 items-center justify-center rounded-2xl border shadow-xs">
-                <step.icon className="text-primary size-6" />
-                <span className="bg-primary text-primary-foreground absolute -top-2 -right-2 flex size-6 items-center justify-center rounded-full text-xs font-bold">
-                  {index + 1}
-                </span>
+              <span className="text-primary/90 font-serif text-6xl leading-none font-medium italic lg:text-7xl">
+                {index + 1}
+                <span className="text-foreground/20">.</span>
+              </span>
+              <div>
+                <h3 className="font-serif text-2xl sm:text-3xl">
+                  {step.title}
+                </h3>
+                <p className="text-muted-foreground mt-3 max-w-xl leading-relaxed">
+                  {step.description}
+                </p>
               </div>
-              <h3 className="mt-5 font-semibold">{step.title}</h3>
-              <p className="text-muted-foreground mx-auto mt-2 max-w-xs text-sm leading-relaxed">
-                {step.description}
+              <p className="text-muted-foreground self-start font-mono text-xs tracking-[0.15em] uppercase sm:justify-self-end sm:text-right">
+                {step.aside}
               </p>
             </motion.div>
           ))}
