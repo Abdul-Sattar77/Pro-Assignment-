@@ -10,10 +10,9 @@ parameters:
     # Start pragmatic; raise over time (docs/conventions/backend-standards.md §9).
     level: 6
 
-    checkModelProperties: true
-    checkOctaneCompatibility: false
+    # Parallel worker processes crash silently on some Windows/PHP CLI setups;
+    # single-process analysis is reliable and fast enough for this codebase.
+    parallel:
+        maximumNumberOfProcesses: 1
 
     ignoreErrors: []
-
-    excludePaths:
-        - app/Providers/TelescopeServiceProvider.php

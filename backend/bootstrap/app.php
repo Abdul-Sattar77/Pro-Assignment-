@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Middleware\AssignRequestId;
+use App\Support\ApiExceptionRenderer;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -19,6 +21,9 @@ return Application::configure(basePath: dirname(__DIR__))
         // Sanctum cookie-based SPA authentication for the Next.js frontend.
         $middleware->statefulApi();
 
+        // Tag every API request with a traceable id (response + logs).
+        $middleware->appendToGroup('api', AssignRequestId::class);
+
         // Spatie RBAC middleware aliases (data-driven authorization).
         $middleware->alias([
             'role' => RoleMiddleware::class,
@@ -30,4 +35,13 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*'),
         );
+
+        // Standardized error envelope for all API responses.
+        $exceptions->render(function (Throwable $e, Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return ApiExceptionRenderer::render($e);
+            }
+
+            return null;
+        });
     })->create();
