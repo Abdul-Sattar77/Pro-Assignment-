@@ -27,7 +27,12 @@ final class UserResource extends JsonResource
             'email' => $this->email,
             'isActive' => $this->is_active,
             'roles' => $this->getRoleNames()->values(),
-            'permissions' => $this->getAllPermissions()->pluck('name')->values(),
+            // Included only when eager-loaded (detail/auth responses) to avoid
+            // N+1 permission lookups on list endpoints.
+            'permissions' => $this->when(
+                $this->relationLoaded('permissions'),
+                fn () => $this->getAllPermissions()->pluck('name')->values(),
+            ),
             'createdAt' => $this->created_at?->toIso8601String(),
         ];
     }
