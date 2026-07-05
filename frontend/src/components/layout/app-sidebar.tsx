@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronsLeft, LayoutGrid } from "lucide-react";
+import { ChevronsLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -40,12 +40,13 @@ export function AppSidebar() {
         )}
       >
         <Link href={ROUTES.dashboard} className="flex items-center gap-2">
-          <span className="bg-primary text-primary-foreground flex size-8 shrink-0 items-center justify-center rounded-lg">
-            <LayoutGrid className="size-4" />
+          <span className="bg-primary text-primary-foreground font-display flex size-8 shrink-0 items-center justify-center rounded-lg text-base font-bold">
+            p
           </span>
           {!collapsed && (
-            <span className="truncate font-semibold tracking-tight">
-              Prossignment
+            <span className="font-display truncate text-lg font-bold tracking-tight">
+              prossignment
+              <span className="text-primary">*</span>
             </span>
           )}
         </Link>
@@ -62,7 +63,7 @@ export function AppSidebar() {
           return (
             <div key={section.title}>
               {!collapsed && (
-                <p className="text-muted-foreground mb-2 px-2 text-[11px] font-semibold tracking-wider uppercase">
+                <p className="text-muted-foreground/70 mb-2 px-2 font-mono text-[10px] font-medium tracking-[0.2em] uppercase">
                   {section.title}
                 </p>
               )}
@@ -76,13 +77,20 @@ export function AppSidebar() {
                       href={item.href}
                       aria-current={active ? "page" : undefined}
                       className={cn(
-                        "flex items-center gap-3 rounded-md px-2 py-2 text-sm font-medium transition-colors",
+                        "relative flex items-center gap-3 rounded-md px-2 py-2 text-sm font-medium transition-colors",
                         collapsed && "justify-center px-0",
                         active
                           ? "bg-sidebar-accent text-sidebar-accent-foreground"
                           : "text-muted-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground",
                       )}
                     >
+                      {/* Gold rail on the active item */}
+                      {active && !collapsed && (
+                        <span
+                          aria-hidden
+                          className="bg-primary absolute inset-y-1.5 left-0 w-0.5 rounded-full"
+                        />
+                      )}
                       <item.icon
                         className={cn(
                           "size-4.5 shrink-0",

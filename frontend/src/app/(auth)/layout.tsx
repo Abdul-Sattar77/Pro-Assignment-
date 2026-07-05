@@ -1,44 +1,93 @@
 import type { ReactNode } from "react";
+import Image from "next/image";
 import Link from "next/link";
-import { LayoutGrid } from "lucide-react";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { ROUTES } from "@/constants/routes";
 
 /**
- * Auth route group shell: brand panel (desktop) + centered form column.
- * Route pages render inside the right column.
+ * Auth route group shell: cinematic brand panel (desktop) + centered form
+ * column. The panel is fixed-dark (obsidian & champagne, matching the
+ * landing identity) regardless of app theme; the form column follows theme.
  */
 export default function AuthLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="grid min-h-dvh lg:grid-cols-2">
+    <div className="grid min-h-dvh lg:grid-cols-[1.1fr_1fr]">
       {/* Brand panel — hidden on small screens */}
-      <aside className="bg-sidebar text-sidebar-foreground relative hidden flex-col justify-between overflow-hidden border-r p-10 lg:flex dark:bg-[#0e1626]">
+      <aside className="relative hidden overflow-hidden lg:block">
+        {/* Photography */}
+        <Image
+          src="https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=1400&q=80"
+          alt="Fountain pen writing on paper"
+          fill
+          priority
+          sizes="(min-width: 1024px) 55vw, 0vw"
+          className="object-cover"
+        />
+        {/* Obsidian wash + gold breath */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_color-mix(in_oklab,var(--primary)_14%,transparent),transparent_55%)]"
+          className="absolute inset-0 bg-linear-to-t from-[#0a0a0c] via-[#0a0a0c]/72 to-[#0a0a0c]/38"
         />
-        <Link href={ROUTES.home} className="relative flex items-center gap-2">
-          <span className="bg-primary text-primary-foreground flex size-9 items-center justify-center rounded-lg">
-            <LayoutGrid className="size-5" />
-          </span>
-          <span className="text-xl font-semibold tracking-tight">
-            Prossignment
-          </span>
-        </Link>
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-[radial-gradient(ellipse_60%_45%_at_30%_85%,rgba(213,179,107,0.16),transparent_70%)]"
+        />
+        {/* Film grain */}
+        <div
+          aria-hidden
+          className="absolute inset-0 opacity-[0.05]"
+          style={{
+            backgroundImage:
+              "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
+          }}
+        />
 
-        <div className="relative max-w-md space-y-4">
-          <h2 className="text-3xl font-bold tracking-tight text-balance">
-            Every assignment, one workspace.
-          </h2>
-          <p className="text-muted-foreground text-base">
-            Leads, assignments, files, messaging, and finance — centralized for
-            your whole team, from first enquiry to final payment.
+        {/* Panel content */}
+        <div className="relative flex h-full flex-col justify-between p-12">
+          <Link
+            href={ROUTES.home}
+            className="font-display text-2xl font-bold tracking-tight text-[#f2f0ea]"
+          >
+            prossignment
+            <span className="text-[#d5b36b]">*</span>
+          </Link>
+
+          <div className="max-w-md">
+            <p className="font-mono text-[11px] tracking-[0.3em] text-[#d5b36b] uppercase">
+              The assignment studio
+            </p>
+            <blockquote className="font-display mt-5 text-4xl leading-tight font-bold text-balance text-[#f2f0ea]">
+              Every great grade begins with a single, well-placed brief.
+            </blockquote>
+            <p className="mt-5 max-w-sm text-sm leading-relaxed text-[#f2f0ea]/60">
+              Vetted experts, live progress, revisions included — from first
+              enquiry to final approval, in one private workspace.
+            </p>
+
+            {/* Trust row */}
+            <div className="mt-9 flex items-center gap-8 border-t border-white/12 pt-6">
+              {[
+                ["2,500+", "delivered"],
+                ["98%", "on time"],
+                ["4.9/5", "rating"],
+              ].map(([value, label]) => (
+                <div key={label}>
+                  <p className="font-display text-xl font-bold text-[#d5b36b]">
+                    {value}
+                  </p>
+                  <p className="mt-0.5 font-mono text-[10px] tracking-[0.18em] text-[#f2f0ea]/50 uppercase">
+                    {label}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <p className="font-mono text-[11px] text-[#f2f0ea]/40">
+            © {new Date().getFullYear()} Prossignment Portal — Confidential &
+            secure
           </p>
         </div>
-
-        <p className="text-muted-foreground relative text-xs">
-          © {new Date().getFullYear()} Prossignment Portal
-        </p>
       </aside>
 
       {/* Form column */}
@@ -46,12 +95,10 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
         <div className="flex items-center justify-between p-6 lg:justify-end">
           <Link
             href={ROUTES.home}
-            className="flex items-center gap-2 lg:hidden"
+            className="font-display flex items-center text-lg font-bold tracking-tight lg:hidden"
           >
-            <span className="bg-primary text-primary-foreground flex size-8 items-center justify-center rounded-lg">
-              <LayoutGrid className="size-4" />
-            </span>
-            <span className="font-semibold tracking-tight">Prossignment</span>
+            prossignment
+            <span className="text-primary">*</span>
           </Link>
           <ThemeToggle />
         </div>
