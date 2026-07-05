@@ -1,47 +1,51 @@
 # Feature: Marketing (Landing)
 
-**Owner:** Dev A · **Domain:** Public site · **Status:** ✅ Implemented (v2 — Editorial redesign)
+**Owner:** Dev A · **Domain:** Public site · **Status:** ✅ Implemented (v3 — "Aurora" WebGL redesign)
 
-## Design direction: "Editorial Studio"
+## Design direction: "Aurora"
 
-Deliberately **not** the generic SaaS template. Warm **paper & ink** palette
-with a **burnt-orange** accent (no blue), oversized **Fraunces serif**
-typography, asymmetric magazine layouts, numbered sections (01–05), hairline
-rules, mono-font captions, and an order-ticket motif instead of dashboard
-mockups.
+Research-driven redesign following 2026 award-site patterns (dark cinematic
+canvases, Three.js hero scenes, scroll-driven storytelling, glow + glass):
 
-Palette is scoped via the `.theme-editorial` class (globals.css) — the
-application keeps its own core token set. Light + dark both supported.
+- **Always-dark deep-space palette** with iridescent **violet → fuchsia →
+  cyan** accents, scoped via `.theme-aurora` (the app keeps core tokens).
+- **Space Grotesk** display type (`font-display`), mono captions, kinetic
+  word reveals.
+- **Real WebGL hero**: `hero-scene.tsx` renders ~12k GPU particles
+  (THREE.Points + custom shader, one draw call) as a flowing aurora field whose
+  crests follow the cursor. Dynamic-imported (`ssr: false`) with a nebula
+  gradient fallback; Canvas uses high-performance GL flags per Three.js
+  best practice.
 
 ## The order-gate concept
 
 ```
-Visitor browses freely → clicks "Place an order"
-  → guest:  /login?redirect=…  (register/login)  → lands in the studio
-  → authed: straight in
+Visitor browses freely → "Start your order"
+  → guest:  /login?redirect=…  → lands in the studio
+  → authed: straight in ("Enter studio")
 ```
 
-`orderHref(isAuthenticated)` in `constants/` is the single source of that rule.
-When the Assignments module ships, the target becomes the order form.
+`orderHref(isAuthenticated)` in `constants/` is the single source; retargets to
+the order form when Assignments ships.
 
 ## Sections (components/)
 
-| Component      | Content                                                                                                                                  |
-| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `navbar`       | Hairline rule, serif wordmark, numbered links, pill CTA, session-aware                                                                   |
-| `hero`         | Asymmetric split: giant serif statement (italic accent) + perforated **order ticket** artifact with live status dots, ghost "A+" numeral |
-| `marquee`      | Infinite serif-italic subject ticker (CSS animation, reduced-motion safe)                                                                |
-| `services`     | **Numbered expanding index rows** (accordion), sticky serif heading, tag chips, per-service order link                                   |
-| `how-it-works` | `#process` — editorial timeline: oversized italic numerals, three-column rhythm                                                          |
-| `stats`        | Numbers wall: huge serif counters over hairline grid with mono notes                                                                     |
-| `features`     | `#why-us` — manifesto: sticky heading + five numbered principles                                                                         |
-| `testimonials` | `#voices` — one oversized rotating pull-quote (6s) with progress dots                                                                    |
-| `cta`          | Full-bleed warm-ink finale, enormous serif "Hand it off today."                                                                          |
-| `footer`       | Ink footer with oversized clipped wordmark                                                                                               |
+| Component             | Content                                                                    |
+| --------------------- | -------------------------------------------------------------------------- |
+| `navbar`              | Floating pill, condenses to glass on scroll, gradient CTA, session-aware   |
+| `hero` + `hero-scene` | Full-viewport particle field + kinetic type + gradient CTA + cursor hint   |
+| `marquee`             | Outlined ghost-type subject ticker (CSS, reduced-motion safe)              |
+| `services`            | 3D-tilt glass cards with cursor-tracking glow (springs + motion templates) |
+| `how-it-works`        | `#process` — scroll-drawn gradient rail with pulsing nodes                 |
+| `stats`               | Glass numbers band, gradient count-up counters                             |
+| `features`            | `#why-us` — glass bento grid with drifting glow orbs                       |
+| `testimonials`        | `#voices` — rotating spotlight quote with blur transitions                 |
+| `cta`                 | Supernova finale: converging glows + gradient headline                     |
+| `footer`              | Minimal hairline footer                                                    |
 
-## Notes
+## Performance & a11y notes
 
-- Scroll animations: `whileInView` + `once`; `MotionConfig reducedMotion="user"`
-  covers motion; the marquee pauses via CSS media query.
-- Session awareness via `useCurrentUser()` from auth's public surface.
+- Particles: single draw call; uniforms mutated in `useFrame` (no React state).
+- `MotionConfig reducedMotion="user"`; marquee pauses via media query; WebGL
+  scene is decorative (`aria-hidden`).
 - Copy/stats are launch placeholders for the business to refine.

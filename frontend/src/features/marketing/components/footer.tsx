@@ -2,43 +2,40 @@ import Link from "next/link";
 import { ROUTES } from "@/constants/routes";
 import { LANDING_SECTIONS } from "../constants";
 
-/** Editorial footer: link row, then an oversized clipped wordmark. */
+/** Aurora footer: hairline top rule, minimal links, gradient star sign-off. */
 export function Footer() {
   return (
-    <footer className="bg-[#131009] text-[#ece7df]">
-      <div className="mx-auto max-w-[88rem] px-6 lg:px-10">
-        <div className="flex flex-col items-start justify-between gap-8 border-t border-[#2f2920] py-12 sm:flex-row sm:items-center">
-          <nav className="flex flex-wrap items-center gap-x-7 gap-y-2">
-            {LANDING_SECTIONS.map((section) => (
-              <a
-                key={section.id}
-                href={`#${section.id}`}
-                className="text-sm text-[#a49d92] transition-colors hover:text-[#ece7df]"
-              >
-                {section.label}
-              </a>
-            ))}
-            <Link
-              href={ROUTES.login}
-              className="text-sm text-[#a49d92] transition-colors hover:text-[#ece7df]"
-            >
-              Sign in
-            </Link>
-          </nav>
-          <p className="font-mono text-xs text-[#7c766d]">
-            © {new Date().getFullYear()} Prossignment Portal
-          </p>
-        </div>
-
-        {/* Oversized wordmark, clipped at the baseline */}
-        <div
-          aria-hidden
-          className="h-[11vw] overflow-hidden select-none sm:h-[9vw]"
+    <footer className="border-t border-white/8">
+      <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 px-6 py-10 sm:flex-row">
+        <Link
+          href={ROUTES.home}
+          className="font-display text-lg font-bold tracking-tight"
         >
-          <p className="font-serif text-[13.5vw] leading-none font-semibold tracking-tight text-[#ece7df]/10 sm:text-[11vw]">
-            Prossignment
-          </p>
-        </div>
+          prossignment
+          <span className="aurora-text">*</span>
+        </Link>
+
+        <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+          {LANDING_SECTIONS.map((section) => (
+            <a
+              key={section.id}
+              href={`#${section.id}`}
+              className="text-muted-foreground hover:text-foreground text-sm transition-colors"
+            >
+              {section.label}
+            </a>
+          ))}
+          <Link
+            href={ROUTES.login}
+            className="text-muted-foreground hover:text-foreground text-sm transition-colors"
+          >
+            Sign in
+          </Link>
+        </nav>
+
+        <p className="text-muted-foreground font-mono text-xs">
+          © {new Date().getFullYear()} Prossignment
+        </p>
       </div>
     </footer>
   );

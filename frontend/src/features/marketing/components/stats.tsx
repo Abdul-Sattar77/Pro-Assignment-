@@ -9,43 +9,17 @@ interface Stat {
   suffix: string;
   decimals?: number;
   label: string;
-  note: string;
 }
 
 const STATS: Stat[] = [
-  {
-    value: 2500,
-    suffix: "+",
-    label: "Projects delivered",
-    note: "across 40+ subjects",
-  },
-  {
-    value: 98,
-    suffix: "%",
-    label: "On time or early",
-    note: "deadline guarantee",
-  },
-  {
-    value: 150,
-    suffix: "+",
-    label: "Vetted specialists",
-    note: "tested before joining",
-  },
-  {
-    value: 4.9,
-    suffix: "/5",
-    decimals: 1,
-    label: "Average rating",
-    note: "from real clients",
-  },
+  { value: 2500, suffix: "+", label: "Projects delivered" },
+  { value: 98, suffix: "%", label: "On time or early" },
+  { value: 150, suffix: "+", label: "Vetted specialists" },
+  { value: 4.9, suffix: "/5", decimals: 1, label: "Average rating" },
 ];
 
 /** Counts up when scrolled into view. */
-function Counter({
-  value,
-  suffix,
-  decimals = 0,
-}: Omit<Stat, "label" | "note">) {
+function Counter({ value, suffix, decimals = 0 }: Omit<Stat, "label">) {
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, margin: "-60px" });
   const [display, setDisplay] = useState("0");
@@ -63,38 +37,36 @@ function Counter({
   return (
     <span ref={ref} className="tabular-nums">
       {display}
-      <span className="text-primary">{suffix}</span>
+      {suffix}
     </span>
   );
 }
 
-/** Editorial numbers wall — oversized serif numerals over hairline grid. */
+/** Numbers band: gradient counters inside a glass strip. */
 export function Stats() {
   return (
-    <section className="border-b">
-      <div className="mx-auto grid max-w-[88rem] grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-        {STATS.map((stat, index) => (
-          <motion.div
-            key={stat.label}
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-60px" }}
-            transition={{ duration: 0.5, ease: easeOut, delay: index * 0.08 }}
-            className="border-b px-8 py-12 sm:border-b-0 sm:not-last:border-r lg:px-10 lg:py-16"
-          >
-            <p className="font-serif text-5xl font-medium tracking-tight lg:text-6xl">
-              <Counter
-                value={stat.value}
-                suffix={stat.suffix}
-                decimals={stat.decimals}
-              />
-            </p>
-            <p className="mt-3 text-sm font-medium">{stat.label}</p>
-            <p className="text-muted-foreground mt-0.5 font-mono text-xs">
-              {stat.note}
-            </p>
-          </motion.div>
-        ))}
+    <section className="py-8">
+      <div className="mx-auto max-w-6xl px-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.55, ease: easeOut }}
+          className="aurora-border grid grid-cols-2 divide-white/8 rounded-3xl sm:grid-cols-4 sm:divide-x"
+        >
+          {STATS.map((stat) => (
+            <div key={stat.label} className="px-6 py-8 text-center">
+              <p className="aurora-text font-display text-4xl font-bold sm:text-5xl">
+                <Counter
+                  value={stat.value}
+                  suffix={stat.suffix}
+                  decimals={stat.decimals}
+                />
+              </p>
+              <p className="text-muted-foreground mt-2 text-sm">{stat.label}</p>
+            </div>
+          ))}
+        </motion.div>
       </div>
     </section>
   );

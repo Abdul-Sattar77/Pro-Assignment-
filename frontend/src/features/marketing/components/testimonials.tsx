@@ -12,17 +12,17 @@ interface Quote {
 
 const QUOTES: Quote[] = [
   {
-    text: "I could see exactly where my dissertation stood at every milestone — no chasing, no guessing. It arrived three days early.",
+    text: "I watched my dissertation move milestone by milestone — no chasing, no guessing. It arrived three days early.",
     name: "Sarah M.",
     role: "Postgraduate student",
   },
   {
-    text: "Other services were chaos over email. Here I message my manager directly and every file lives in one place. Night and day.",
+    text: "Other services were chaos over email. Here everything lives in one glowing thread. Night and day.",
     name: "Daniel K.",
     role: "MBA candidate",
   },
   {
-    text: "Two revisions on my market report, both back within a day, both free. The quality bar is genuinely high.",
+    text: "Two revisions on my market report, both back within a day, both free. The bar is genuinely high.",
     name: "Amina R.",
     role: "Business consultant",
   },
@@ -30,7 +30,7 @@ const QUOTES: Quote[] = [
 
 const ROTATE_MS = 6000;
 
-/** One oversized rotating pull-quote — editorial, not a card wall. */
+/** One rotating spotlight quote inside a glow frame. */
 export function Testimonials() {
   const [index, setIndex] = useState(0);
 
@@ -45,61 +45,67 @@ export function Testimonials() {
   const quote = QUOTES[index]!;
 
   return (
-    <section
-      id="voices"
-      className="bg-secondary/50 scroll-mt-24 border-b py-20 lg:py-28"
-    >
-      <div className="mx-auto max-w-[88rem] px-6 lg:px-10">
-        <p className="text-muted-foreground font-mono text-xs tracking-[0.2em] uppercase">
-          04 — Client voices
-        </p>
-
-        <div className="relative mt-10 min-h-64 sm:min-h-56">
-          <span
+    <section id="voices" className="scroll-mt-24 py-20 lg:py-28">
+      <div className="mx-auto max-w-4xl px-6">
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.55, ease: easeOut }}
+          className="relative"
+        >
+          {/* Glow frame */}
+          <div
             aria-hidden
-            className="text-primary/15 absolute -top-10 -left-2 font-serif text-[10rem] leading-none italic select-none"
-          >
-            “
-          </span>
-          <AnimatePresence mode="wait">
-            <motion.figure
-              key={quote.name}
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -14 }}
-              transition={{ duration: 0.45, ease: easeOut }}
-              className="relative"
-            >
-              <blockquote className="max-w-4xl font-serif text-3xl leading-snug font-medium text-balance sm:text-4xl lg:text-5xl">
-                {quote.text}
-              </blockquote>
-              <figcaption className="mt-8 flex items-center gap-3">
-                <span className="bg-primary inline-block h-px w-10" />
-                <span className="text-sm font-medium">{quote.name}</span>
-                <span className="text-muted-foreground font-mono text-xs">
-                  {quote.role}
-                </span>
-              </figcaption>
-            </motion.figure>
-          </AnimatePresence>
-        </div>
+            className="absolute -inset-6 rounded-[2rem] bg-[radial-gradient(ellipse_at_top,rgba(139,92,246,0.14),transparent_70%)] blur-xl"
+          />
 
-        {/* Progress dots */}
-        <div className="mt-10 flex gap-2">
-          {QUOTES.map((q, dotIndex) => (
-            <button
-              key={q.name}
-              type="button"
-              aria-label={`Show quote ${dotIndex + 1}`}
-              onClick={() => setIndex(dotIndex)}
-              className={
-                dotIndex === index
-                  ? "bg-primary h-1.5 w-8 rounded-full transition-all"
-                  : "bg-border hover:bg-muted-foreground/40 h-1.5 w-4 rounded-full transition-all"
-              }
-            />
-          ))}
-        </div>
+          <div className="aurora-border relative rounded-3xl px-8 py-12 text-center sm:px-14">
+            <p className="text-muted-foreground font-mono text-xs tracking-[0.3em] uppercase">
+              04 / Voices
+            </p>
+
+            <div className="relative mt-8 min-h-44 sm:min-h-36">
+              <AnimatePresence mode="wait">
+                <motion.figure
+                  key={quote.name}
+                  initial={{ opacity: 0, y: 16, filter: "blur(6px)" }}
+                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                  exit={{ opacity: 0, y: -12, filter: "blur(6px)" }}
+                  transition={{ duration: 0.5, ease: easeOut }}
+                >
+                  <blockquote className="font-display text-2xl leading-snug font-bold text-balance sm:text-3xl">
+                    “{quote.text}”
+                  </blockquote>
+                  <figcaption className="mt-6">
+                    <span className="aurora-text text-sm font-semibold">
+                      {quote.name}
+                    </span>
+                    <span className="text-muted-foreground ml-2 font-mono text-xs">
+                      {quote.role}
+                    </span>
+                  </figcaption>
+                </motion.figure>
+              </AnimatePresence>
+            </div>
+
+            <div className="mt-8 flex justify-center gap-2">
+              {QUOTES.map((q, dotIndex) => (
+                <button
+                  key={q.name}
+                  type="button"
+                  aria-label={`Show quote ${dotIndex + 1}`}
+                  onClick={() => setIndex(dotIndex)}
+                  className={
+                    dotIndex === index
+                      ? "h-1.5 w-8 rounded-full bg-linear-to-r from-violet-400 to-fuchsia-400 transition-all"
+                      : "h-1.5 w-4 rounded-full bg-white/15 transition-all hover:bg-white/30"
+                  }
+                />
+              ))}
+            </div>
+          </div>
+        </motion.div>
       </div>
     </section>
   );

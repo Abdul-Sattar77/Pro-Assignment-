@@ -14,19 +14,21 @@ const ITEMS = [
 ];
 
 /**
- * Infinite editorial ticker separating the hero from the body. Two copies of
- * the row scroll seamlessly; animation pauses for reduced-motion users (CSS).
+ * Ghost ticker between hero and body — oversized outlined display type
+ * drifting horizontally. Pauses for reduced-motion users (CSS).
  */
 export function Marquee() {
   const row = (ariaHidden: boolean) => (
     <div
       aria-hidden={ariaHidden}
-      className="flex shrink-0 items-center gap-8 pr-8"
+      className="flex shrink-0 items-center gap-10 pr-10"
     >
       {ITEMS.map((item) => (
-        <span key={item} className="flex items-center gap-8 whitespace-nowrap">
-          <span className="font-serif text-2xl italic sm:text-3xl">{item}</span>
-          <span className="text-primary text-xl" aria-hidden>
+        <span key={item} className="flex items-center gap-10 whitespace-nowrap">
+          <span className="font-display text-4xl font-bold tracking-tight text-transparent [-webkit-text-stroke:1px_rgba(148,148,220,0.35)] sm:text-5xl">
+            {item}
+          </span>
+          <span className="aurora-text text-2xl" aria-hidden>
             ✦
           </span>
         </span>
@@ -35,7 +37,7 @@ export function Marquee() {
   );
 
   return (
-    <section className="overflow-hidden border-y py-6">
+    <section className="overflow-hidden py-10">
       <div className="animate-marquee flex w-max">
         {row(false)}
         {row(true)}

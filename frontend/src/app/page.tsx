@@ -13,12 +13,12 @@ import {
 
 /**
  * Public landing page — thin composition of marketing sections. The
- * `theme-editorial` wrapper scopes the landing's warm paper/ink/orange
- * palette; the application keeps the core design tokens.
+ * `theme-aurora` wrapper scopes the landing's cosmic dark palette
+ * (deliberately always-dark); the application keeps the core tokens.
  */
 export default function HomePage() {
   return (
-    <div className="theme-editorial bg-background text-foreground">
+    <div className="theme-aurora bg-background text-foreground dark">
       <Navbar />
       <main>
         <Hero />

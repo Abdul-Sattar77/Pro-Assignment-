@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Fraunces, Inter, JetBrains_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 
@@ -15,11 +15,10 @@ const jetbrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
-/** Editorial display serif — the landing page's voice. */
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
+/** Display face for the landing experience — geometric, futuristic. */
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-grotesk",
   subsets: ["latin"],
-  style: ["normal", "italic"],
   display: "swap",
 });
 
@@ -39,7 +38,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${inter.variable} ${jetbrainsMono.variable} ${fraunces.variable} h-full`}
+      className={`${inter.variable} ${jetbrainsMono.variable} ${spaceGrotesk.variable} h-full`}
     >
       <body className="bg-background text-foreground min-h-full font-sans antialiased">
         <Providers>{children}</Providers>

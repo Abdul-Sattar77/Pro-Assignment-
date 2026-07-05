@@ -5,7 +5,6 @@ import Link from "next/link";
 import { ArrowUpRight, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { ROUTES } from "@/constants/routes";
 import { useCurrentUser } from "@/features/auth";
 import { LANDING_SECTIONS, orderHref } from "../constants";
@@ -19,14 +18,14 @@ function subscribeToScroll(callback: () => void): () => void {
 function useScrolled(): boolean {
   return useSyncExternalStore(
     subscribeToScroll,
-    () => window.scrollY > 8,
+    () => window.scrollY > 24,
     () => false,
   );
 }
 
 /**
- * Editorial navbar: hairline rule, serif wordmark, understated links, one
- * strong Order action. Session-aware (guests → sign in; members → studio).
+ * Aurora navbar: floating pill that condenses on scroll. Session-aware —
+ * guests get Sign in + gradient Order CTA; members get "Enter studio".
  */
 export function Navbar() {
   const scrolled = useScrolled();
@@ -35,124 +34,115 @@ export function Navbar() {
   const isAuthed = Boolean(user);
 
   return (
-    <header
-      className={cn(
-        "bg-background/90 fixed inset-x-0 top-0 z-40 border-b backdrop-blur-md transition-shadow duration-300",
-        scrolled ? "shadow-[0_1px_0_var(--border)]" : "",
-      )}
-    >
-      <nav className="mx-auto flex h-[4.5rem] max-w-[88rem] items-center justify-between px-6 lg:px-10">
+    <header className="fixed inset-x-0 top-4 z-40 px-4">
+      <nav
+        className={cn(
+          "mx-auto flex h-14 max-w-5xl items-center justify-between rounded-full border px-5 transition-all duration-300",
+          scrolled
+            ? "border-white/12 bg-[#0a0a18]/85 shadow-[0_8px_40px_rgba(0,0,0,0.45)] backdrop-blur-xl"
+            : "border-transparent bg-transparent",
+        )}
+      >
         <Link
           href={ROUTES.home}
-          className="font-serif text-[1.35rem] font-semibold tracking-tight"
+          className="font-display text-lg font-bold tracking-tight"
         >
-          Prossignment
-          <span className="text-primary">.</span>
+          prossignment
+          <span className="aurora-text">*</span>
         </Link>
 
         {/* Desktop */}
-        <div className="hidden items-center gap-8 md:flex">
-          {LANDING_SECTIONS.map((section, index) => (
+        <div className="hidden items-center gap-1 md:flex">
+          {LANDING_SECTIONS.map((section) => (
             <a
               key={section.id}
               href={`#${section.id}`}
-              className="text-muted-foreground hover:text-foreground group text-sm transition-colors"
+              className="text-muted-foreground hover:text-foreground rounded-full px-4 py-2 text-sm transition-colors hover:bg-white/5"
             >
-              <span className="text-primary/70 mr-1.5 font-mono text-[11px]">
-                0{index + 1}
-              </span>
               {section.label}
             </a>
           ))}
         </div>
 
-        <div className="hidden items-center gap-3 md:flex">
-          <ThemeToggle />
+        <div className="hidden items-center gap-2 md:flex">
           {isAuthed ? (
-            <Button
-              asChild
-              className="h-10 rounded-full px-5 text-sm font-medium"
+            <Link
+              href={ROUTES.dashboard}
+              className="flex h-10 items-center gap-1.5 rounded-full bg-linear-to-r from-violet-500 to-fuchsia-500 px-5 text-sm font-semibold text-white transition-transform hover:scale-[1.04]"
             >
-              <Link href={ROUTES.dashboard}>
-                Open studio
-                <ArrowUpRight className="size-4" />
-              </Link>
-            </Button>
+              Enter studio
+              <ArrowUpRight className="size-4" />
+            </Link>
           ) : (
             <>
               <Link
                 href={ROUTES.login}
-                className="text-muted-foreground hover:text-foreground text-sm underline-offset-4 transition-colors hover:underline"
+                className="text-muted-foreground hover:text-foreground px-3 text-sm transition-colors"
               >
                 Sign in
               </Link>
-              <Button
-                asChild
-                className="h-10 rounded-full px-5 text-sm font-medium"
+              <Link
+                href={orderHref(false)}
+                className="flex h-10 items-center gap-1.5 rounded-full bg-linear-to-r from-violet-500 to-fuchsia-500 px-5 text-sm font-semibold text-white transition-transform hover:scale-[1.04]"
               >
-                <Link href={orderHref(false)}>
-                  Place an order
-                  <ArrowUpRight className="size-4" />
-                </Link>
-              </Button>
+                Start order
+                <ArrowUpRight className="size-4" />
+              </Link>
             </>
           )}
         </div>
 
-        {/* Mobile */}
-        <div className="flex items-center gap-1 md:hidden">
-          <ThemeToggle />
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label={menuOpen ? "Close menu" : "Open menu"}
-            aria-expanded={menuOpen}
-            onClick={() => setMenuOpen((open) => !open)}
-          >
-            {menuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
-          </Button>
-        </div>
+        {/* Mobile toggle */}
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label={menuOpen ? "Close menu" : "Open menu"}
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen((open) => !open)}
+          className="rounded-full md:hidden"
+        >
+          {menuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
+        </Button>
       </nav>
 
+      {/* Mobile panel */}
       {menuOpen && (
-        <div className="bg-background border-b px-6 pt-1 pb-5 md:hidden">
+        <div className="mx-auto mt-2 max-w-5xl rounded-3xl border border-white/12 bg-[#0a0a18]/95 p-4 backdrop-blur-xl md:hidden">
           <div className="flex flex-col">
-            {LANDING_SECTIONS.map((section, index) => (
+            {LANDING_SECTIONS.map((section) => (
               <a
                 key={section.id}
                 href={`#${section.id}`}
                 onClick={() => setMenuOpen(false)}
-                className="text-foreground border-b py-3.5 font-serif text-lg"
+                className="text-foreground/90 rounded-xl px-3 py-3 text-base transition-colors hover:bg-white/5"
               >
-                <span className="text-primary/70 mr-2 font-mono text-xs">
-                  0{index + 1}
-                </span>
                 {section.label}
               </a>
             ))}
-            <div className="mt-4 flex flex-col gap-2.5">
+            <div className="mt-3 flex flex-col gap-2">
               {isAuthed ? (
-                <Button asChild className="h-11 w-full rounded-full">
-                  <Link href={ROUTES.dashboard}>
-                    Open studio
-                    <ArrowUpRight className="size-4" />
-                  </Link>
-                </Button>
+                <Link
+                  href={ROUTES.dashboard}
+                  className="flex h-12 items-center justify-center gap-1.5 rounded-full bg-linear-to-r from-violet-500 to-fuchsia-500 text-sm font-semibold text-white"
+                >
+                  Enter studio
+                  <ArrowUpRight className="size-4" />
+                </Link>
               ) : (
                 <>
-                  <Button asChild className="h-11 w-full rounded-full">
-                    <Link href={orderHref(false)}>
-                      Place an order
-                      <ArrowUpRight className="size-4" />
-                    </Link>
-                  </Button>
-                  <Button
-                    variant="outline"
-                    asChild
-                    className="h-11 w-full rounded-full"
+                  <Link
+                    href={orderHref(false)}
+                    className="flex h-12 items-center justify-center gap-1.5 rounded-full bg-linear-to-r from-violet-500 to-fuchsia-500 text-sm font-semibold text-white"
                   >
-                    <Link href={ROUTES.login}>Sign in</Link>
-                  </Button>
+                    Start order
+                    <ArrowUpRight className="size-4" />
+                  </Link>
+                  <Link
+                    href={ROUTES.login}
+                    className="text-foreground/90 flex h-12 items-center justify-center rounded-full border border-white/15 text-sm"
+                  >
+                    Sign in
+                  </Link>
                 </>
               )}
             </div>
