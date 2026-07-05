@@ -1,39 +1,48 @@
-﻿# Feature: Assignments
+# Feature: Assignments (PM panel v1)
 
-**Owner:** Dev B · **Domain:** Assignment Core
+**Owner:** Dev B (PM screens live; Writer buttons pending — see the guide) · **Status:** ✅ PM panel implemented
 
 ## Purpose
 
-Assignment lifecycle and workflow state machine.
+The order workflow UI on top of `/api/v1/assignments`. One queue + one detail
+page serve **every role** — the backend sends each viewer its allowed
+`actions`, and the UI renders only those buttons.
 
-## Responsibility
+## Structure
 
-Owns everything for **assignments**: feature UI, view-logic, API communication, and input
-validation. Contains **no business rules** that belong to the backend — it reflects
-server state and collects user input. The backend is the source of truth.
+| Path                                                      | Responsibility                                                                                                        |
+| --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `components/assignments-table.tsx`                        | Orders queue: search, status filter, overdue highlighting, pagination, row → detail                                   |
+| `components/assignment-detail.tsx`                        | Full order view: header, action bar, brief, meta grid, activity timeline                                              |
+| `components/assignment-actions.tsx`                       | **ACTION_CONFIG registry** — maps backend action keys to buttons/dialogs. Add Writer actions HERE.                    |
+| `components/assign-writer-dialog.tsx`                     | PM: writer picker (active writers from Users API)                                                                     |
+| `components/action-note-dialog.tsx`                       | ONE generic dialog for all note-style actions (deliver/return/cancel/complete/revision + future accept/reject/submit) |
+| `components/status-badge.tsx` · `assignment-timeline.tsx` | Shared display pieces                                                                                                 |
+| `hooks/use-assignments.ts`                                | `useAssignments`, `useAssignment`, `useAssignWriter`, `useAssignmentAction`, `useCreateAssignment`                    |
+| `services/assignments-service.ts`                         | Typed API calls incl. generic `act(id, action, note)`                                                                 |
+| `types/` · `constants/`                                   | Status/action types, STATUS_META (badge colors), query keys                                                           |
 
-## Standard structure (created as the feature is built)
+## How a button works (the whole pattern)
 
-| Folder        | Responsibility                                       |
-| ------------- | ---------------------------------------------------- |
-| `components/` | UI specific to this feature                          |
-| `hooks/`      | React Query hooks & view logic (`useAssignments...`) |
-| `services/`   | typed API calls via `@/lib/api-client`               |
-| `types/`      | feature types (extend generated API types)           |
-| `validation/` | Zod schemas                                          |
-| `constants/`  | statuses, options, enums-as-const                    |
-| `utils/`      | feature-only helpers                                 |
-| `index.ts`    | public surface of this feature                       |
+```
+backend AssignmentResource.actions = ["deliver","return","cancel"]  (per viewer)
+   → AssignmentActions maps each key through ACTION_CONFIG
+   → click opens ActionNoteDialog (or AssignWriterDialog for "assign")
+   → useAssignmentAction POSTs /assignments/{id}/{action}
+   → cache updates, toast shows new status, timeline refreshes
+```
 
-## Data flow
+Unknown/unconfigured actions are simply not rendered — no broken buttons.
 
-`Component → hook (React Query) → service → @/lib/api-client → Laravel API`
+## Adding the Writer panel actions (tomorrow)
 
-## API
+Edit **one file**: `components/assignment-actions.tsx` → add `accept`,
+`reject`, `submit` entries to `ACTION_CONFIG` (template comment is right
+above the map). Everything else (dialog, mutation, invalidation, toasts,
+timeline) already works. Full walkthrough: `docs/team/pm-panel-guide.md`.
 
-Endpoints: `/api/v1/{ assignments }` — documented in `docs/api` once implemented.
+## Routes
 
-## Isolation rule
-
-Never import another feature's internals. Reuse via `@/components` or `@/lib`.
-Cross-feature communication happens through the API only.
+- `/assignments` — queue (`app/(dashboard)/assignments/page.tsx`)
+- `/assignments/[id]` — detail (`.../[id]/page.tsx`)
+  Sidebar entry already exists (`assignments.view` permission).
