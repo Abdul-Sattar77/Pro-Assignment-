@@ -1,0 +1,19 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - app
+        - database
+        - routes
+
+    # Start pragmatic; raise over time (docs/conventions/backend-standards.md §9).
+    level: 6
+
+    checkModelProperties: true
+    checkOctaneCompatibility: false
+
+    ignoreErrors: []
+
+    excludePaths:
+        - app/Providers/TelescopeServiceProvider.php
