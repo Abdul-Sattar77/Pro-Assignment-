@@ -1,6 +1,6 @@
-# Feature: Assignments (PM panel v1)
+# Feature: Assignments (PM + Writer panels)
 
-**Owner:** Dev B (PM screens live; Writer buttons pending — see the guide) · **Status:** ✅ PM panel implemented
+**Owner:** Dev B · **Status:** ✅ PM panel + Writer actions implemented
 
 ## Purpose
 
@@ -34,12 +34,17 @@ backend AssignmentResource.actions = ["deliver","return","cancel"]  (per viewer)
 
 Unknown/unconfigured actions are simply not rendered — no broken buttons.
 
-## Adding the Writer panel actions (tomorrow)
+## Role coverage (all implemented)
 
-Edit **one file**: `components/assignment-actions.tsx` → add `accept`,
-`reject`, `submit` entries to `ACTION_CONFIG` (template comment is right
-above the map). Everything else (dialog, mutation, invalidation, toasts,
-timeline) already works. Full walkthrough: `docs/team/pm-panel-guide.md`.
+| Role     | Buttons (granted by backend per state)                        |
+| -------- | ------------------------------------------------------------- |
+| PM/Admin | Assign writer · Deliver to client · Return to writer · Cancel |
+| Writer   | Accept assignment · Decline · Submit work                     |
+| Client   | Approve & complete · Request revision · Cancel (pre-work)     |
+
+Adding any future action = one `ACTION_CONFIG` entry in
+`components/assignment-actions.tsx` — dialog, mutation, toasts, and timeline
+are generic. Walkthrough: `docs/team/pm-panel-guide.md`.
 
 ## Routes
 

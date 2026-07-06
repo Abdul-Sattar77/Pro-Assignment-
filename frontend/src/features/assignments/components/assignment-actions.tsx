@@ -3,10 +3,13 @@
 import { useState } from "react";
 import {
   Ban,
+  Check,
   CheckCircle2,
   PackageCheck,
   RotateCcw,
+  Upload,
   UserCheck,
+  X,
   type LucideIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -26,24 +29,59 @@ interface ActionButton {
  * ═══════════════════ ACTION REGISTRY (extension point) ═══════════════════
  * One entry per workflow action. The backend decides WHO sees WHAT via the
  * `actions` array on each assignment — this map only defines how a button
- * looks and which dialog it opens.
- *
- * ➜ WRITER PANEL (tomorrow): add entries for "accept", "reject", "submit"
- *   below — the bar, dialog, and mutation hook already handle everything.
- *   Example:
- *   accept: { label: "Accept assignment", icon: Check, variant: "default",
- *     dialog: { action: "accept", title: "Accept this assignment?",
- *       description: "You commit to the deadline shown.", confirmLabel:
- *       "Accept", note: "none" } },
+ * looks and which dialog it opens. To add a future action: one entry here,
+ * nothing else (bar, dialog, mutation, toasts, timeline all generic).
  * ══════════════════════════════════════════════════════════════════════════
  */
 const ACTION_CONFIG: Partial<Record<AssignmentAction, ActionButton>> = {
+  // ── PM ────────────────────────────────────────────────────────────────
   assign: {
     label: "Assign writer",
     icon: UserCheck,
     variant: "default",
     dialog: null, // opens AssignWriterDialog
   },
+  // ── Writer ────────────────────────────────────────────────────────────
+  accept: {
+    label: "Accept assignment",
+    icon: Check,
+    variant: "default",
+    dialog: {
+      action: "accept",
+      title: "Accept this assignment?",
+      description:
+        "You commit to delivering by the deadline shown on this order.",
+      confirmLabel: "Accept assignment",
+      note: "none",
+    },
+  },
+  reject: {
+    label: "Decline",
+    icon: X,
+    variant: "outline",
+    dialog: {
+      action: "reject",
+      title: "Decline this assignment?",
+      description:
+        "The order returns to the manager's queue. A short reason helps them re-assign faster.",
+      confirmLabel: "Decline assignment",
+      note: "optional",
+    },
+  },
+  submit: {
+    label: "Submit work",
+    icon: Upload,
+    variant: "default",
+    dialog: {
+      action: "submit",
+      title: "Submit for review",
+      description:
+        "Your manager reviews the work before it is delivered to the client.",
+      confirmLabel: "Submit work",
+      note: "optional",
+    },
+  },
+  // ── PM review ─────────────────────────────────────────────────────────
   deliver: {
     label: "Deliver to client",
     icon: PackageCheck,
@@ -69,6 +107,7 @@ const ACTION_CONFIG: Partial<Record<AssignmentAction, ActionButton>> = {
       note: "optional",
     },
   },
+  // ── Client ────────────────────────────────────────────────────────────
   complete: {
     label: "Approve & complete",
     icon: CheckCircle2,
@@ -93,6 +132,7 @@ const ACTION_CONFIG: Partial<Record<AssignmentAction, ActionButton>> = {
       note: "required",
     },
   },
+  // ── Shared (client pre-work window; staff any non-terminal) ──────────
   cancel: {
     label: "Cancel order",
     icon: Ban,

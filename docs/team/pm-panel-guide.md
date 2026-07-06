@@ -50,10 +50,14 @@ sends accept/reject/submit — buttons appear as soon as their config exists.**
 
 ---
 
-## 3. HOW-TO: add the Writer buttons (the expected task)
+## 3. HOW-TO: add a workflow button (worked example)
 
-Open `components/assignment-actions.tsx`, find `ACTION_CONFIG`, add three
-entries (a template comment sits right above the map):
+> ✅ **Update:** the writer buttons (accept/reject/submit) are now ALREADY
+> implemented in `ACTION_CONFIG` — treat this section as the reference for how
+> it was done, and reuse the exact same recipe for any future action.
+
+Open `components/assignment-actions.tsx`, find `ACTION_CONFIG`, add entries
+like these:
 
 ```ts
 accept: {
