@@ -28,6 +28,9 @@ export function RegisterForm() {
       email: "",
       password: "",
       passwordConfirmation: "",
+      university: "",
+      department: "",
+      studyYear: "",
     },
   });
 
@@ -36,6 +39,7 @@ export function RegisterForm() {
       onError: (error) => {
         applyFieldErrors(error, form.setError, {
           password_confirmation: "passwordConfirmation",
+          study_year: "studyYear",
         });
         if (!error.isValidationError) {
           form.setError("root", { message: error.message });
@@ -70,7 +74,7 @@ export function RegisterForm() {
           id="email"
           type="email"
           autoComplete="email"
-          placeholder="you@company.com"
+          placeholder="you@university.edu"
           aria-invalid={Boolean(errors.email)}
           {...form.register("email")}
         />
@@ -79,6 +83,54 @@ export function RegisterForm() {
             {errors.email.message}
           </p>
         )}
+      </div>
+
+      {/* Academic profile */}
+      <div className="space-y-2">
+        <Label htmlFor="university">University</Label>
+        <Input
+          id="university"
+          autoComplete="organization"
+          placeholder="e.g. University of Manchester"
+          aria-invalid={Boolean(errors.university)}
+          {...form.register("university")}
+        />
+        {errors.university && (
+          <p className="text-destructive text-sm" role="alert">
+            {errors.university.message}
+          </p>
+        )}
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-2">
+          <Label htmlFor="department">Department</Label>
+          <Input
+            id="department"
+            placeholder="e.g. Business"
+            aria-invalid={Boolean(errors.department)}
+            {...form.register("department")}
+          />
+          {errors.department && (
+            <p className="text-destructive text-sm" role="alert">
+              {errors.department.message}
+            </p>
+          )}
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="studyYear">Year of study</Label>
+          <Input
+            id="studyYear"
+            placeholder="e.g. 3rd year"
+            aria-invalid={Boolean(errors.studyYear)}
+            {...form.register("studyYear")}
+          />
+          {errors.studyYear && (
+            <p className="text-destructive text-sm" role="alert">
+              {errors.studyYear.message}
+            </p>
+          )}
+        </div>
       </div>
 
       <div className="space-y-2">

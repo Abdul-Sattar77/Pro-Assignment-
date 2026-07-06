@@ -31,6 +31,9 @@ export const authService = {
         password: payload.password,
         // Laravel's `confirmed` rule expects snake_case pairing.
         password_confirmation: payload.passwordConfirmation,
+        university: payload.university,
+        department: payload.department,
+        study_year: payload.studyYear,
       },
     );
     return data.data;

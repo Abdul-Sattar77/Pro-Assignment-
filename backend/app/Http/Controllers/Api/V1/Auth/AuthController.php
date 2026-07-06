@@ -26,8 +26,10 @@ final class AuthController extends Controller
 
     public function register(RegisterRequest $request): JsonResponse
     {
-        /** @var array{name: string, email: string, password: string} $data */
-        $data = $request->safe()->only(['name', 'email', 'password']);
+        /** @var array{name: string, email: string, password: string, university: string, department: string, study_year: string} $data */
+        $data = $request->safe()->only([
+            'name', 'email', 'password', 'university', 'department', 'study_year',
+        ]);
 
         $user = $this->auth->register($data);
 

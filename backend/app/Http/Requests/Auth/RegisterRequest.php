@@ -27,6 +27,10 @@ final class RegisterRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'confirmed', Password::defaults()],
+            // Academic profile — clients tell us where they study.
+            'university' => ['required', 'string', 'max:160'],
+            'department' => ['required', 'string', 'max:120'],
+            'study_year' => ['required', 'string', 'max:40'],
         ];
     }
 }

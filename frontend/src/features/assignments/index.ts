@@ -4,6 +4,7 @@
  */
 export { AssignmentsTable } from "./components/assignments-table";
 export { AssignmentDetail } from "./components/assignment-detail";
+export { OrderForm } from "./components/order-form";
 export { AssignmentActions } from "./components/assignment-actions";
 export { StatusBadge } from "./components/status-badge";
 export { AssignmentTimeline } from "./components/assignment-timeline";

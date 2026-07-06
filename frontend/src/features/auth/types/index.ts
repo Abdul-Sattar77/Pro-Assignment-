@@ -7,6 +7,9 @@ export interface AuthUser {
   name: string;
   email: string;
   isActive: boolean;
+  university: string | null;
+  department: string | null;
+  studyYear: string | null;
   roles: string[];
   permissions: string[];
   createdAt: string | null;
@@ -23,4 +26,7 @@ export interface RegisterPayload {
   email: string;
   password: string;
   passwordConfirmation: string;
+  university: string;
+  department: string;
+  studyYear: string;
 }

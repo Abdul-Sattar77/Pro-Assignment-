@@ -19,6 +19,18 @@ export const registerSchema = z
     email: z.email("Enter a valid email address."),
     password: z.string().min(8, "Password must be at least 8 characters."),
     passwordConfirmation: z.string().min(1, "Confirm your password."),
+    university: z
+      .string()
+      .min(2, "Enter your university name.")
+      .max(160, "University name is too long."),
+    department: z
+      .string()
+      .min(2, "Enter your department.")
+      .max(120, "Department is too long."),
+    studyYear: z
+      .string()
+      .min(1, "Enter your year of study.")
+      .max(40, "Year is too long."),
   })
   .refine((data) => data.password === data.passwordConfirmation, {
     message: "Passwords do not match.",

@@ -9,12 +9,12 @@ export const LANDING_SECTIONS = [
 ] as const;
 
 /**
- * Where "Order Now" sends people. Guests must authenticate first (the concept:
- * browse freely, log in to order). Once the Assignments module ships, the
- * redirect target becomes the order form (/assignments/new).
+ * Where "Order Now" sends people. Guests must authenticate first (the
+ * concept: browse freely, log in to order), then land straight on the order
+ * form.
  */
 export function orderHref(isAuthenticated: boolean): string {
   return isAuthenticated
-    ? ROUTES.dashboard
-    : `${ROUTES.login}?redirect=${encodeURIComponent(ROUTES.dashboard)}`;
+    ? ROUTES.newOrder
+    : `${ROUTES.login}?redirect=${encodeURIComponent(ROUTES.newOrder)}`;
 }

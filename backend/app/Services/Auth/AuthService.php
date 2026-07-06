@@ -20,9 +20,10 @@ final class AuthService
 
     /**
      * Register a new self-service account. New sign-ups default to the Client
-     * role; PM/Writer/Admin accounts are provisioned by an admin.
+     * role; PM/Writer/Admin accounts are provisioned by an admin. Clients
+     * provide their academic profile (university, department, study year).
      *
-     * @param  array{name: string, email: string, password: string}  $data
+     * @param  array{name: string, email: string, password: string, university: string, department: string, study_year: string}  $data
      */
     public function register(array $data): User
     {
@@ -31,11 +32,15 @@ final class AuthService
                 'name' => $data['name'],
                 'email' => $data['email'],
                 'password' => $data['password'], // hashed via the model cast
+                'university' => $data['university'],
+                'department' => $data['department'],
+                'study_year' => $data['study_year'],
             ]);
 
             $user->assignRole(Role::Client->value);
 
-            return $user;
+            // Refresh so DB defaults (is_active) appear in the 201 response.
+            return $user->refresh();
         });
     }
 }
