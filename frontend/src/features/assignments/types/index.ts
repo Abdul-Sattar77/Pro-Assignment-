@@ -98,3 +98,11 @@ export interface AssignmentFile {
   canDelete: boolean;
   createdAt: string | null;
 }
+
+export interface Message {
+  id: string;
+  body: string;
+  sender?: string;
+  mine: boolean;
+  createdAt: string | null;
+}

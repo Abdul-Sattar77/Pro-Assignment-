@@ -10,6 +10,7 @@ import { ROUTES } from "@/constants/routes";
 import { useAssignment } from "../hooks/use-assignments";
 import { AssignmentActions } from "./assignment-actions";
 import { AssignmentTimeline } from "./assignment-timeline";
+import { ChatPanel } from "./chat-panel";
 import { FilesPanel } from "./files-panel";
 import { StatusBadge } from "./status-badge";
 
@@ -119,15 +120,18 @@ export function AssignmentDetail({ id }: { id: string }) {
           <FilesPanel assignmentId={assignment.id} />
         </div>
 
-        {/* Timeline */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Activity</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <AssignmentTimeline events={assignment.events ?? []} />
-          </CardContent>
-        </Card>
+        {/* Right column: chat + activity */}
+        <div className="space-y-6">
+          <ChatPanel assignmentId={assignment.id} />
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Activity</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <AssignmentTimeline events={assignment.events ?? []} />
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );

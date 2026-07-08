@@ -63,4 +63,10 @@ class Assignment extends Model
     {
         return $this->hasMany(File::class)->latest('id');
     }
+
+    /** @return HasMany<Message, $this> */
+    public function messages(): HasMany
+    {
+        return $this->hasMany(Message::class)->oldest('id');
+    }
 }

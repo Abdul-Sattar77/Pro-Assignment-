@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Http\Controllers\Api\V1\Assignments\AssignmentController;
 use App\Http\Controllers\Api\V1\Auth\AuthController;
 use App\Http\Controllers\Api\V1\Files\FileController;
+use App\Http\Controllers\Api\V1\Messages\MessageController;
 use App\Http\Controllers\Api\V1\Users\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -55,6 +56,10 @@ Route::prefix('v1')->group(function (): void {
         // Files attached to an order
         Route::get('{assignment}/files', [FileController::class, 'index'])->name('files.index');
         Route::post('{assignment}/files', [FileController::class, 'store'])->name('files.store');
+
+        // Per-order chat
+        Route::get('{assignment}/messages', [MessageController::class, 'index'])->name('messages.index');
+        Route::post('{assignment}/messages', [MessageController::class, 'store'])->name('messages.store');
     });
 
     // ---- Files (authorized binary access) ----
