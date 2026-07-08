@@ -75,7 +75,7 @@ final class RolePermissionSeeder extends Seeder
                 'assignments.assign', 'assignments.review', 'assignments.request_revision',
                 'files.view', 'files.upload', 'files.delete',
                 'messages.view', 'messages.send',
-                'finance.view',
+                'finance.view', 'invoices.manage', 'payments.verify',
                 'reports.view', 'analytics.view',
                 'tasks.view', 'tasks.manage',
             ],

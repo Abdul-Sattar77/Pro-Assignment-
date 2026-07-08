@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { Loader2, LogOut } from "lucide-react";
+import { FileText, Loader2, LogOut, Wallet } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -80,6 +80,19 @@ export function ClientShell({ children }: { children: ReactNode }) {
                     {user.email}
                   </p>
                 </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link href={ROUTES.assignments}>
+                    <FileText className="size-4" />
+                    My orders
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href={ROUTES.finance}>
+                    <Wallet className="size-4" />
+                    Billing
+                  </Link>
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   variant="destructive"

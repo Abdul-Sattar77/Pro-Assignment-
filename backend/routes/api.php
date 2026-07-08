@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Http\Controllers\Api\V1\Assignments\AssignmentController;
 use App\Http\Controllers\Api\V1\Auth\AuthController;
 use App\Http\Controllers\Api\V1\Files\FileController;
+use App\Http\Controllers\Api\V1\Finance\InvoiceController;
 use App\Http\Controllers\Api\V1\Messages\MessageController;
 use App\Http\Controllers\Api\V1\Notifications\NotificationController;
 use App\Http\Controllers\Api\V1\Users\UserController;
@@ -67,6 +68,17 @@ Route::prefix('v1')->group(function (): void {
     Route::middleware('auth:sanctum')->prefix('files')->name('files.')->group(function (): void {
         Route::get('{file}/download', [FileController::class, 'download'])->name('download');
         Route::delete('{file}', [FileController::class, 'destroy'])->name('destroy');
+    });
+
+    // ---- Finance (invoices & payments) ----
+    Route::middleware('auth:sanctum')->group(function (): void {
+        Route::get('finance/summary', [InvoiceController::class, 'summary'])->name('finance.summary');
+        Route::get('invoices', [InvoiceController::class, 'index'])->name('invoices.index');
+        Route::post('invoices', [InvoiceController::class, 'store'])->name('invoices.store');
+        Route::get('invoices/{invoice}', [InvoiceController::class, 'show'])->name('invoices.show');
+        Route::post('invoices/{invoice}/submit-payment', [InvoiceController::class, 'submitPayment'])->name('invoices.submit-payment');
+        Route::post('invoices/{invoice}/verify', [InvoiceController::class, 'verify'])->name('invoices.verify');
+        Route::post('invoices/{invoice}/cancel', [InvoiceController::class, 'cancel'])->name('invoices.cancel');
     });
 
     // ---- Notifications (in-app) ----
