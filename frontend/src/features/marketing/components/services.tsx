@@ -1,13 +1,8 @@
 "use client";
 
-import { useRef, type PointerEvent } from "react";
+import Image from "next/image";
 import Link from "next/link";
-import {
-  motion,
-  useMotionTemplate,
-  useMotionValue,
-  useSpring,
-} from "framer-motion";
+import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import { useCurrentUser } from "@/features/auth";
 import { easeOut } from "@/animations/variants";
@@ -16,103 +11,70 @@ import { orderHref } from "../constants";
 interface Service {
   title: string;
   blurb: string;
-  meta: string;
+  tags: string[];
+  image: string;
+  alt: string;
 }
 
+/** Real assignment-work photography (Unsplash CDN — whitelisted in next.config). */
 const SERVICES: Service[] = [
   {
-    title: "Essays & papers",
-    blurb: "Structured, sourced, written to your exact brief.",
-    meta: "Any subject · any format",
+    title: "Essays & academic writing",
+    blurb:
+      "Essays, term papers, reports and literature reviews — argued clearly, sourced properly, referenced to your style.",
+    tags: ["Essays", "Reports", "Reviews", "APA · MLA · Harvard"],
+    image:
+      "https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=900&q=80",
+    alt: "Fountain pen writing on paper",
   },
   {
-    title: "Research & analysis",
-    blurb: "Literature reviews, case studies, defensible method.",
-    meta: "Qual · Quant · Citations",
+    title: "Programming & development",
+    blurb:
+      "Coding assignments and projects — Python, Java, C++, web, SQL and machine learning, delivered with clean, commented code.",
+    tags: ["Python", "Java · C++", "Web · SQL", "ML / AI"],
+    image:
+      "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=900&q=80",
+    alt: "Source code on a screen",
   },
   {
-    title: "Dissertations",
-    blurb: "Proposal to defense, chapter by approved chapter.",
-    meta: "Milestone-tracked",
+    title: "Typing & transcription",
+    blurb:
+      "Handwritten notes, audio, or scanned PDFs typed up fast and formatted exactly to your brief — accurate and on time.",
+    tags: ["Audio → text", "Handwriting", "PDF → Word", "Formatting"],
+    image:
+      "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=900&q=80",
+    alt: "Student typing on a laptop",
   },
   {
-    title: "Presentations",
-    blurb: "Decks that land — narrative, visuals, speaker notes.",
-    meta: "Slides · Reports",
+    title: "Research & data analysis",
+    blurb:
+      "Literature reviews, case studies and statistics (SPSS, R, Excel) with a defensible method and clear findings.",
+    tags: ["SPSS · R", "Statistics", "Case studies", "Surveys"],
+    image:
+      "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=900&q=80",
+    alt: "Data charts and analysis on paper",
   },
   {
-    title: "Editing & proofing",
-    blurb: "Your draft, elevated to any academic standard.",
-    meta: "APA · MLA · Harvard",
+    title: "Dissertations & theses",
+    blurb:
+      "Full support from proposal to defense — chapter by chapter, milestone-tracked, with the depth your degree demands.",
+    tags: ["Proposal", "Chapters", "Methodology", "Defense"],
+    image:
+      "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&w=900&q=80",
+    alt: "Rows of books in a library",
   },
   {
-    title: "Technical & business",
-    blurb: "Statistics, models, code, and business plans.",
-    meta: "SPSS · R · Excel · Code",
+    title: "Presentations & slides",
+    blurb:
+      "Decks and posters that read clean and land well — tight narrative, sharp visuals, and speaker notes included.",
+    tags: ["Slides", "Posters", "Speaker notes", "Design"],
+    image:
+      "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=900&q=80",
+    alt: "Team reviewing a presentation",
   },
 ];
 
-/** Glass card that tilts in 3D toward the cursor with a tracking glow. */
-function TiltCard({ service, href }: { service: Service; href: string }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const rotateX = useSpring(useMotionValue(0), { stiffness: 180, damping: 20 });
-  const rotateY = useSpring(useMotionValue(0), { stiffness: 180, damping: 20 });
-  const glowX = useMotionValue(50);
-  const glowY = useMotionValue(50);
-  const glow = useMotionTemplate`radial-gradient(220px circle at ${glowX}% ${glowY}%, rgba(213,179,107,0.13), transparent 70%)`;
-
-  const onPointerMove = (event: PointerEvent<HTMLDivElement>) => {
-    const bounds = ref.current?.getBoundingClientRect();
-    if (!bounds) return;
-    const px = (event.clientX - bounds.left) / bounds.width;
-    const py = (event.clientY - bounds.top) / bounds.height;
-    rotateY.set((px - 0.5) * 14);
-    rotateX.set((0.5 - py) * 14);
-    glowX.set(px * 100);
-    glowY.set(py * 100);
-  };
-
-  const onPointerLeave = () => {
-    rotateX.set(0);
-    rotateY.set(0);
-  };
-
-  return (
-    <motion.div
-      ref={ref}
-      onPointerMove={onPointerMove}
-      onPointerLeave={onPointerLeave}
-      style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-      className="aurora-border group relative rounded-2xl p-6 transition-colors duration-300 hover:border-[#d5b36b]/35"
-    >
-      <motion.div
-        aria-hidden
-        style={{ background: glow }}
-        className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-      />
-      <div style={{ transform: "translateZ(28px)" }}>
-        <p className="text-muted-foreground font-mono text-[11px] tracking-[0.2em] uppercase">
-          {service.meta}
-        </p>
-        <h3 className="font-display mt-3 text-2xl font-bold tracking-tight">
-          {service.title}
-        </h3>
-        <p className="text-muted-foreground mt-2 text-sm leading-relaxed">
-          {service.blurb}
-        </p>
-        <Link
-          href={href}
-          className="aurora-text mt-5 inline-flex items-center gap-1 text-sm font-semibold"
-        >
-          Order this
-          <ArrowUpRight className="size-4 text-[#d5b36b] transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-        </Link>
-      </div>
-    </motion.div>
-  );
-}
-
-/** Services as a 3D-tilt glass grid. */
+/** Image-forward services grid covering every type of assignment work. */
 export function Services() {
   const { data: user } = useCurrentUser();
   const href = orderHref(Boolean(user));
@@ -131,16 +93,18 @@ export function Services() {
             01 / Services
           </p>
           <h2 className="font-display mt-4 text-4xl font-bold tracking-tight text-balance sm:text-5xl">
-            Every kind of work. <span className="aurora-text">One studio.</span>
+            Written, typed, or coded —{" "}
+            <span className="aurora-text">we handle it all.</span>
           </h2>
+          <p className="text-muted-foreground mt-4 text-pretty">
+            Whatever the format and whatever the subject, your work is matched
+            to a specialist and delivered to spec.
+          </p>
         </motion.div>
 
-        <div
-          className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
-          style={{ perspective: 1200 }}
-        >
+        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {SERVICES.map((service, index) => (
-            <motion.div
+            <motion.article
               key={service.title}
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -150,9 +114,50 @@ export function Services() {
                 ease: easeOut,
                 delay: (index % 3) * 0.08,
               }}
+              className="aurora-border group flex flex-col overflow-hidden rounded-2xl transition-colors duration-300 hover:border-white/25"
             >
-              <TiltCard service={service} href={href} />
-            </motion.div>
+              {/* Photo */}
+              <div className="relative h-44 overflow-hidden">
+                <Image
+                  src={service.image}
+                  alt={service.alt}
+                  fill
+                  sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw"
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <div
+                  aria-hidden
+                  className="absolute inset-0 bg-linear-to-t from-[#0c0c1b] via-[#0c0c1b]/30 to-transparent"
+                />
+              </div>
+
+              {/* Content */}
+              <div className="flex flex-1 flex-col p-5">
+                <h3 className="font-display text-xl font-bold tracking-tight">
+                  {service.title}
+                </h3>
+                <p className="text-muted-foreground mt-2 text-sm leading-relaxed">
+                  {service.blurb}
+                </p>
+                <div className="mt-4 flex flex-wrap gap-1.5">
+                  {service.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="rounded-full border border-white/10 bg-white/3 px-2.5 py-0.5 font-mono text-[10px] tracking-wide"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+                <Link
+                  href={href}
+                  className="aurora-text mt-5 inline-flex items-center gap-1 text-sm font-semibold"
+                >
+                  Order this
+                  <ArrowUpRight className="size-4 text-fuchsia-400 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                </Link>
+              </div>
+            </motion.article>
           ))}
         </div>
       </div>

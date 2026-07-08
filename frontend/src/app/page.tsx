@@ -1,5 +1,6 @@
 import {
   Cta,
+  Disciplines,
   Features,
   Footer,
   Hero,
@@ -27,6 +28,7 @@ export default function HomePage() {
         <Hero />
         <Marquee />
         <Services />
+        <Disciplines />
         <HowItWorks />
         <Stats />
         <Features />
