@@ -84,3 +84,17 @@ export interface CreateAssignmentPayload {
   description: string;
   deadline: string;
 }
+
+export type FileCategory = "brief" | "submission" | "general";
+
+export interface AssignmentFile {
+  id: string;
+  name: string;
+  category: FileCategory;
+  categoryLabel: string;
+  mime: string;
+  size: number;
+  uploadedBy?: string;
+  canDelete: boolean;
+  createdAt: string | null;
+}

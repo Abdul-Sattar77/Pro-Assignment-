@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Api\V1\Assignments\AssignmentController;
 use App\Http\Controllers\Api\V1\Auth\AuthController;
+use App\Http\Controllers\Api\V1\Files\FileController;
 use App\Http\Controllers\Api\V1\Users\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -50,5 +51,15 @@ Route::prefix('v1')->group(function (): void {
         Route::post('{assignment}/request-revision', [AssignmentController::class, 'requestRevision'])->name('request-revision');
         Route::post('{assignment}/complete', [AssignmentController::class, 'complete'])->name('complete');
         Route::post('{assignment}/cancel', [AssignmentController::class, 'cancel'])->name('cancel');
+
+        // Files attached to an order
+        Route::get('{assignment}/files', [FileController::class, 'index'])->name('files.index');
+        Route::post('{assignment}/files', [FileController::class, 'store'])->name('files.store');
+    });
+
+    // ---- Files (authorized binary access) ----
+    Route::middleware('auth:sanctum')->prefix('files')->name('files.')->group(function (): void {
+        Route::get('{file}/download', [FileController::class, 'download'])->name('download');
+        Route::delete('{file}', [FileController::class, 'destroy'])->name('destroy');
     });
 });

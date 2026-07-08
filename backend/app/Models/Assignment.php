@@ -57,4 +57,10 @@ class Assignment extends Model
     {
         return $this->hasMany(AssignmentEvent::class)->latest('id');
     }
+
+    /** @return HasMany<File, $this> */
+    public function files(): HasMany
+    {
+        return $this->hasMany(File::class)->latest('id');
+    }
 }

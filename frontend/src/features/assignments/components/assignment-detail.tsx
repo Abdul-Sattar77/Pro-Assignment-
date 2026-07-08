@@ -10,6 +10,7 @@ import { ROUTES } from "@/constants/routes";
 import { useAssignment } from "../hooks/use-assignments";
 import { AssignmentActions } from "./assignment-actions";
 import { AssignmentTimeline } from "./assignment-timeline";
+import { FilesPanel } from "./files-panel";
 import { StatusBadge } from "./status-badge";
 
 /** Label/value pair in the meta grid. */
@@ -83,36 +84,40 @@ export function AssignmentDetail({ id }: { id: string }) {
       <AssignmentActions assignment={assignment} />
 
       <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
-        {/* Brief */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Brief</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm leading-relaxed whitespace-pre-wrap">
-              {assignment.description}
-            </p>
-            <Separator className="my-5" />
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-              <Meta
-                label="Deadline"
-                value={format(
-                  new Date(assignment.deadline),
-                  "MMM d, yyyy HH:mm",
-                )}
-              />
-              <Meta label="Client" value={assignment.client?.name ?? "—"} />
-              <Meta
-                label="Writer"
-                value={assignment.writer?.name ?? "Unassigned"}
-              />
-              <Meta
-                label="Manager"
-                value={assignment.projectManager?.name ?? "—"}
-              />
-            </div>
-          </CardContent>
-        </Card>
+        {/* Left column: brief + files */}
+        <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Brief</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                {assignment.description}
+              </p>
+              <Separator className="my-5" />
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+                <Meta
+                  label="Deadline"
+                  value={format(
+                    new Date(assignment.deadline),
+                    "MMM d, yyyy HH:mm",
+                  )}
+                />
+                <Meta label="Client" value={assignment.client?.name ?? "—"} />
+                <Meta
+                  label="Writer"
+                  value={assignment.writer?.name ?? "Unassigned"}
+                />
+                <Meta
+                  label="Manager"
+                  value={assignment.projectManager?.name ?? "—"}
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          <FilesPanel assignmentId={assignment.id} />
+        </div>
 
         {/* Timeline */}
         <Card>
