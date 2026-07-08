@@ -74,8 +74,8 @@ export function AssignmentsTable() {
   return (
     <div className="space-y-4">
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-3">
-        <div className="relative min-w-56 flex-1">
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+        <div className="relative w-full sm:min-w-56 sm:flex-1">
           <Search className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
           <Input
             value={search}
@@ -95,7 +95,10 @@ export function AssignmentsTable() {
             setPage(1);
           }}
         >
-          <SelectTrigger className="w-56" aria-label="Filter by status">
+          <SelectTrigger
+            className="w-full sm:w-56"
+            aria-label="Filter by status"
+          >
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -193,7 +196,7 @@ export function AssignmentsTable() {
 
       {/* Pagination */}
       {pagination && pagination.totalPages > 1 && (
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-muted-foreground text-sm tabular-nums">
             Page {pagination.page} of {pagination.totalPages} ·{" "}
             {pagination.total} orders

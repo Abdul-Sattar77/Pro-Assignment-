@@ -45,10 +45,10 @@ export function ClientShell({ children }: { children: ReactNode }) {
 
       {/* Floating pill nav */}
       <header className="fixed inset-x-0 top-4 z-40 px-4">
-        <nav className="mx-auto flex h-14 max-w-5xl items-center justify-between rounded-full border border-white/10 bg-[#0d0d0f]/85 px-5 backdrop-blur-xl">
+        <nav className="mx-auto flex h-14 max-w-5xl items-center justify-between gap-3 rounded-full border border-white/10 bg-[#0d0d0f]/85 px-4 backdrop-blur-xl sm:px-5">
           <Link
             href={ROUTES.dashboard}
-            className="font-display text-lg font-bold tracking-tight"
+            className="font-display truncate text-lg font-bold tracking-tight"
           >
             prossignment
             <span className="aurora-text">*</span>
@@ -115,7 +115,7 @@ export function ClientShell({ children }: { children: ReactNode }) {
         </nav>
       </header>
 
-      <main className="relative mx-auto max-w-5xl px-6 pt-32 pb-20">
+      <main className="relative mx-auto max-w-5xl px-4 pt-28 pb-16 sm:px-6 sm:pt-32 sm:pb-20">
         {children}
       </main>
 

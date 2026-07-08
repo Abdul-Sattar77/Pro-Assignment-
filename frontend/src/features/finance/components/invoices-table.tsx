@@ -63,7 +63,10 @@ export function InvoicesTable() {
             setPage(1);
           }}
         >
-          <SelectTrigger className="w-52" aria-label="Filter by status">
+          <SelectTrigger
+            className="w-full sm:w-52"
+            aria-label="Filter by status"
+          >
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -207,7 +210,7 @@ export function InvoicesTable() {
       </div>
 
       {pagination && pagination.totalPages > 1 && (
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-muted-foreground text-sm tabular-nums">
             Page {pagination.page} of {pagination.totalPages}
           </p>
