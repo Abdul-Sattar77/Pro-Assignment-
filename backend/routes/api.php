@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\V1\Assignments\AssignmentController;
 use App\Http\Controllers\Api\V1\Auth\AuthController;
 use App\Http\Controllers\Api\V1\Files\FileController;
 use App\Http\Controllers\Api\V1\Messages\MessageController;
+use App\Http\Controllers\Api\V1\Notifications\NotificationController;
 use App\Http\Controllers\Api\V1\Users\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -66,5 +67,13 @@ Route::prefix('v1')->group(function (): void {
     Route::middleware('auth:sanctum')->prefix('files')->name('files.')->group(function (): void {
         Route::get('{file}/download', [FileController::class, 'download'])->name('download');
         Route::delete('{file}', [FileController::class, 'destroy'])->name('destroy');
+    });
+
+    // ---- Notifications (in-app) ----
+    Route::middleware('auth:sanctum')->prefix('notifications')->name('notifications.')->group(function (): void {
+        Route::get('/', [NotificationController::class, 'index'])->name('index');
+        Route::get('unread-count', [NotificationController::class, 'unreadCount'])->name('unread-count');
+        Route::post('read-all', [NotificationController::class, 'markAllRead'])->name('read-all');
+        Route::post('{id}/read', [NotificationController::class, 'markRead'])->name('read');
     });
 });

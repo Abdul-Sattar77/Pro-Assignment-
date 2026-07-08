@@ -11,6 +11,7 @@ use App\Exceptions\DomainRuleException;
 use App\Exceptions\InvalidAssignmentStateException;
 use App\Models\Assignment;
 use App\Models\User;
+use App\Notifications\AssignmentActivityNotification;
 use App\Repositories\Contracts\AssignmentRepositoryInterface;
 use App\Repositories\Contracts\UserRepositoryInterface;
 use Illuminate\Support\Facades\DB;
@@ -225,6 +226,7 @@ final class AssignmentService
             $assignment->save();
 
             $this->record($assignment, $actor, $event, $note);
+            $this->notify($assignment->refresh(), $event, $actor);
 
             return $assignment->refresh();
         });
@@ -237,6 +239,34 @@ final class AssignmentService
             'type' => $type,
             'note' => $note,
         ]);
+    }
+
+    /**
+     * Notify the party who needs to act next on this event (never the actor).
+     * Recipient rules mirror the workflow hand-offs.
+     */
+    private function notify(Assignment $assignment, AssignmentEventType $event, User $actor): void
+    {
+        $recipients = match ($event) {
+            AssignmentEventType::WriterAssigned,
+            AssignmentEventType::ReturnedToWriter,
+            AssignmentEventType::RevisionRequested => [$assignment->writer],
+            AssignmentEventType::WriterAccepted,
+            AssignmentEventType::WriterRejected,
+            AssignmentEventType::WorkSubmitted => [$assignment->projectManager],
+            AssignmentEventType::Delivered => [$assignment->client],
+            AssignmentEventType::Completed => [$assignment->writer, $assignment->projectManager],
+            AssignmentEventType::Cancelled => [$assignment->writer, $assignment->client, $assignment->projectManager],
+            AssignmentEventType::Created => [],
+        };
+
+        $message = "{$actor->name}: {$event->label()} — {$assignment->title}";
+
+        foreach ($recipients as $recipient) {
+            if ($recipient !== null && !$recipient->is($actor)) {
+                $recipient->notify(new AssignmentActivityNotification($assignment, $event, $message));
+            }
+        }
     }
 
     private function assertAssignedWriter(User $actor, Assignment $assignment): void

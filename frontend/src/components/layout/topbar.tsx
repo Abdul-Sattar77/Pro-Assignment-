@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { useAuth, useLogout } from "@/features/auth";
+import { NotificationBell } from "@/features/notifications";
 
 /** Initials for the avatar fallback, e.g. "System Admin" → "SA". */
 function initials(name: string): string {
@@ -39,6 +40,7 @@ export function Topbar() {
       <div className="min-w-0" />
 
       <div className="flex items-center gap-1.5">
+        <NotificationBell />
         <ThemeToggle />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

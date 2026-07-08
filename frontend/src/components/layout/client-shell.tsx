@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ROUTES } from "@/constants/routes";
 import { useAuth, useLogout } from "@/features/auth";
+import { NotificationBell } from "@/features/notifications";
 
 function initials(name: string): string {
   return name
@@ -53,10 +54,8 @@ export function ClientShell({ children }: { children: ReactNode }) {
             <span className="aurora-text">*</span>
           </Link>
 
-          <div className="flex items-center gap-3">
-            <span className="text-muted-foreground hidden font-mono text-[10px] tracking-[0.25em] uppercase sm:inline">
-              Your studio
-            </span>
+          <div className="flex items-center gap-2">
+            <NotificationBell />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button
