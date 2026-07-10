@@ -23,7 +23,7 @@ export const ROUTES = {
   tasks: "/tasks",
   users: "/users",
   roles: "/roles",
-  settings: "/settings",
+  settings: "/dashboard/settings",
 } as const;
 
 export type RouteKey = keyof typeof ROUTES;
