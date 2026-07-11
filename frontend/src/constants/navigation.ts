@@ -1,17 +1,14 @@
 import {
-  BarChart3,
   Calendar,
   CheckSquare,
   FileText,
   FolderOpen,
   LayoutDashboard,
   MessageSquare,
-  PieChart,
   Settings,
   ShieldCheck,
   UserRound,
   Users,
-  Wallet,
   type LucideIcon,
 } from "lucide-react";
 import { ROUTES } from "./routes";
@@ -20,7 +17,6 @@ export interface NavItem {
   label: string;
   href: string;
   icon: LucideIcon;
-  /** Shown only when the user has this permission (omit = always shown). */
   permission?: string;
 }
 
@@ -29,11 +25,6 @@ export interface NavSection {
   items: NavItem[];
 }
 
-/**
- * Sidebar navigation registry — single source of truth. Items are filtered
- * per-user by permission (UX only; the backend enforces authorization).
- * Modules appear here as they come online.
- */
 export const NAV_SECTIONS: NavSection[] = [
   {
     title: "Overview",
@@ -83,29 +74,6 @@ export const NAV_SECTIONS: NavSection[] = [
     ],
   },
   {
-    title: "Business",
-    items: [
-      {
-        label: "Finance",
-        href: ROUTES.finance,
-        icon: Wallet,
-        permission: "finance.manage",
-      },
-      {
-        label: "Reports",
-        href: ROUTES.reports,
-        icon: BarChart3,
-        permission: "reports.manage",
-      },
-      {
-        label: "Analytics",
-        href: ROUTES.analytics,
-        icon: PieChart,
-        permission: "analytics.manage",
-      },
-    ],
-  },
-  {
     title: "Administration",
     items: [
       {
@@ -120,11 +88,7 @@ export const NAV_SECTIONS: NavSection[] = [
         icon: ShieldCheck,
         permission: "roles.view",
       },
-      {
-        label: "Settings",
-        href: ROUTES.settings,
-        icon: Settings,
-      },
+      { label: "Settings", href: ROUTES.settings, icon: Settings },
     ],
   },
 ];
