@@ -13,4 +13,22 @@ export {
   useLogout,
   useRegister,
 } from "./hooks/use-auth-queries";
+export { useUpdateProfile, useChangePassword } from "./hooks/use-profile";
+export {
+  useForgotPassword,
+  useResetPassword,
+} from "./hooks/use-password-reset";
+export { ForgotPasswordForm } from "./components/forgot-password-form";
+export { ResetPasswordForm } from "./components/reset-password-form";
+export {
+  updateProfileSchema,
+  changePasswordSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema,
+  type UpdateProfileFormValues,
+  type ChangePasswordFormValues,
+  type ForgotPasswordFormValues,
+  type ResetPasswordFormValues,
+} from "./validation";
+export { applyFieldErrors } from "./utils/apply-field-errors";
 export type { AuthUser, LoginPayload, RegisterPayload } from "./types";

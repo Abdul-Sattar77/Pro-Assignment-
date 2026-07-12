@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Api\V1\Assignments\AssignmentController;
 use App\Http\Controllers\Api\V1\Auth\AuthController;
+use App\Http\Controllers\Api\V1\Auth\PasswordResetController;
 use App\Http\Controllers\Api\V1\Files\FileController;
 use App\Http\Controllers\Api\V1\Finance\InvoiceController;
 use App\Http\Controllers\Api\V1\Messages\MessageController;
 use App\Http\Controllers\Api\V1\Notifications\NotificationController;
+use App\Http\Controllers\Api\V1\Profile\ProfileController;
 use App\Http\Controllers\Api\V1\Users\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -24,11 +26,19 @@ Route::prefix('v1')->group(function (): void {
     Route::prefix('auth')->group(function (): void {
         Route::post('register', [AuthController::class, 'register'])->name('auth.register');
         Route::post('login', [AuthController::class, 'login'])->name('auth.login');
+        Route::post('forgot-password', [PasswordResetController::class, 'forgot'])->name('auth.forgot-password');
+        Route::post('reset-password', [PasswordResetController::class, 'reset'])->name('auth.reset-password');
 
         Route::middleware('auth:sanctum')->group(function (): void {
             Route::post('logout', [AuthController::class, 'logout'])->name('auth.logout');
             Route::get('me', [AuthController::class, 'me'])->name('auth.me');
         });
+    });
+
+    // ---- Profile (own account) ----
+    Route::middleware('auth:sanctum')->prefix('profile')->name('profile.')->group(function (): void {
+        Route::patch('/', [ProfileController::class, 'update'])->name('update');
+        Route::post('password', [ProfileController::class, 'changePassword'])->name('password');
     });
 
     // ---- User Management (admin provisioning) ----

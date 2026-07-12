@@ -37,5 +37,46 @@ export const registerSchema = z
     path: ["passwordConfirmation"],
   });
 
+/** Edit own profile (mirrors backend UpdateProfileRequest). */
+export const updateProfileSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters.").max(255),
+  email: z.email("Enter a valid email address."),
+  university: z.string().max(160).optional().or(z.literal("")),
+  department: z.string().max(120).optional().or(z.literal("")),
+  studyYear: z.string().max(40).optional().or(z.literal("")),
+});
+
+/** Change own password (mirrors backend ChangePasswordRequest). */
+export const changePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(1, "Enter your current password."),
+    password: z.string().min(8, "Password must be at least 8 characters."),
+    passwordConfirmation: z.string().min(1, "Confirm your new password."),
+  })
+  .refine((data) => data.password === data.passwordConfirmation, {
+    message: "Passwords do not match.",
+    path: ["passwordConfirmation"],
+  });
+
+/** Request a password-reset link. */
+export const forgotPasswordSchema = z.object({
+  email: z.email("Enter a valid email address."),
+});
+
+/** Set a new password from an emailed reset link. */
+export const resetPasswordSchema = z
+  .object({
+    password: z.string().min(8, "Password must be at least 8 characters."),
+    passwordConfirmation: z.string().min(1, "Confirm your new password."),
+  })
+  .refine((data) => data.password === data.passwordConfirmation, {
+    message: "Passwords do not match.",
+    path: ["passwordConfirmation"],
+  });
+
 export type LoginFormValues = z.infer<typeof loginSchema>;
 export type RegisterFormValues = z.infer<typeof registerSchema>;
+export type UpdateProfileFormValues = z.infer<typeof updateProfileSchema>;
+export type ChangePasswordFormValues = z.infer<typeof changePasswordSchema>;
+export type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;
+export type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
