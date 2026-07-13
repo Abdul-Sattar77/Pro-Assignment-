@@ -11,6 +11,7 @@ import {
   Search,
   Trash2,
   UserPlus,
+  Award,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -44,6 +45,7 @@ import { useUpdateUser, useUsers } from "../hooks/use-users";
 import type { UserListItem } from "../types";
 import { DeleteUserDialog } from "./delete-user-dialog";
 import { UserFormDialog } from "./user-form-dialog";
+import { WriterRatingsDialog } from "./writer-ratings-dialog";
 
 const ALL = "all";
 
@@ -76,6 +78,7 @@ export function UsersTable() {
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<UserListItem | null>(null);
   const [deleting, setDeleting] = useState<UserListItem | null>(null);
+  const [ratingWriter, setRatingWriter] = useState<UserListItem | null>(null);
 
   const pagination = data?.pagination;
 
@@ -204,26 +207,70 @@ export function UsersTable() {
 
             {data?.users.map((user) => {
               const isSelf = user.id === currentUser?.id;
+              const isWriter = user.roles.includes("writer");
+              const isClient = user.roles.includes("client");
+
               return (
                 <TableRow key={user.id}>
-                  <TableCell className="font-medium">
-                    {user.name}
-                    {isSelf && (
-                      <span className="text-muted-foreground ml-1.5 text-xs">
-                        (you)
-                      </span>
-                    )}
+                  <TableCell className="font-medium py-3">
+                    <div className="space-y-0.5">
+                      <div className="flex items-center gap-1.5">
+                        <span>{user.name}</span>
+                        {isSelf && (
+                          <span className="text-muted-foreground text-xs font-normal">
+                            (you)
+                          </span>
+                        )}
+                        {isWriter && (
+                          <span className="inline-flex items-center gap-0.5 text-xs text-amber-500 font-semibold ml-1">
+                            ⭐ {user.averageRating?.toFixed(1) || "0.0"}
+                          </span>
+                        )}
+                      </div>
+                      
+                      {isWriter && (
+                        <div className="flex flex-wrap gap-x-2 gap-y-0.5 text-[11px] font-normal text-muted-foreground">
+                          <span>Earnings: PKR {user.totalEarnings?.toLocaleString() || "0"}</span>
+                          {user.expertise && (
+                            <>
+                              <span>·</span>
+                              <span className="max-w-[200px] truncate">Niches: {user.expertise}</span>
+                            </>
+                          )}
+                        </div>
+                      )}
+
+                      {isClient && user.notes && (
+                        <p className="text-[11px] font-normal text-muted-foreground italic max-w-xs truncate">
+                          Notes: {user.notes}
+                        </p>
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell className="text-muted-foreground">
                     {user.email}
                   </TableCell>
                   <TableCell>
-                    <div className="flex flex-wrap gap-1">
+                    <div className="flex flex-wrap gap-1.5 items-center">
                       {user.roles.map((r) => (
                         <Badge key={r} variant="secondary">
                           {roleLabel(r)}
                         </Badge>
                       ))}
+                      {isWriter && user.availability && (
+                        <Badge
+                          variant="outline"
+                          className={
+                            user.availability === "available"
+                              ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 capitalize"
+                              : user.availability === "busy"
+                              ? "border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400 capitalize"
+                              : "border-slate-500/30 bg-slate-500/10 text-slate-600 dark:text-slate-400 capitalize"
+                          }
+                        >
+                          {user.availability}
+                        </Badge>
+                      )}
                     </div>
                   </TableCell>
                   <TableCell>
@@ -283,6 +330,12 @@ export function UsersTable() {
                             Delete
                           </DropdownMenuItem>
                         </Can>
+                        {isWriter && (
+                          <DropdownMenuItem onSelect={() => setRatingWriter(user)}>
+                            <Award className="size-4" />
+                            Ratings & Performance
+                          </DropdownMenuItem>
+                        )}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
@@ -329,6 +382,12 @@ export function UsersTable() {
         user={editing}
       />
       <DeleteUserDialog user={deleting} onClose={() => setDeleting(null)} />
+      {ratingWriter && (
+        <WriterRatingsDialog
+          writer={ratingWriter}
+          onClose={() => setRatingWriter(null)}
+        />
+      )}
     </div>
   );
 }

@@ -9,49 +9,88 @@ import {
   Download,
   Star,
   TrendingUp,
+  Loader2,
 } from "lucide-react";
+import { useDashboardStats } from "@/features/dashboard";
+import { apiClient } from "@/lib/api-client";
+import { toast } from "sonner";
 
-// Mock data for Writer Performance
-const TOP_WRITERS = [
-  { name: "David K.", assignments: 45, rating: 4.9, status: "active" },
-  { name: "Sarah M.", assignments: 38, rating: 4.8, status: "active" },
-  { name: "James L.", assignments: 29, rating: 4.7, status: "on_leave" },
-  { name: "Emma W.", assignments: 24, rating: 5.0, status: "active" },
-];
-
-// Mock data for Client Activity
-const CLIENT_ACTIVITY = [
-  { name: "Acme Corp", active: 12, spend: "$14,200", lastActive: "2h ago" },
-  { name: "University of Tech", active: 8, spend: "$9,500", lastActive: "5h ago" },
-  { name: "Nova Brands", active: 6, spend: "$7,800", lastActive: "1d ago" },
-  { name: "DevFlow Inc.", active: 5, spend: "$5,400", lastActive: "3d ago" },
-];
-
-// Mock data for Performance Reports
 const PERFORMANCE_REPORTS = [
   {
-    title: "June 2026 Monthly Performance Report",
+    title: "Assignments Activity Consolidated Audit",
+    type: "assignments",
     size: "2.4 MB",
-    generated: "Jul 1, 2026",
   },
   {
-    title: "May 2026 Monthly Performance Report",
+    title: "Clients Transaction Performance Audit",
+    type: "clients",
     size: "2.1 MB",
-    generated: "Jun 1, 2026",
   },
   {
-    title: "April 2026 Monthly Performance Report",
+    title: "Writers Delivery Performance Audit",
+    type: "writers",
     size: "1.9 MB",
-    generated: "May 1, 2026",
   },
   {
-    title: "Q1 2026 Consolidated System Audit",
+    title: "Financial Revenue Audits Registry",
+    type: "revenue",
     size: "4.2 MB",
-    generated: "Apr 1, 2026",
   },
 ];
 
 export function AnalyticsPreview() {
+  const { data, isLoading } = useDashboardStats();
+
+  const handleDownloadReport = async (type: string) => {
+    try {
+      const response = await apiClient.get(`/reports/export?type=${type}`, {
+        responseType: "blob",
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `${type}-report-${new Date().toISOString().split("T")[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      toast.success("Report downloaded successfully.");
+    } catch (err) {
+      toast.error("Failed to generate and download report.");
+    }
+  };
+
+  if (isLoading || !data) {
+    return (
+      <Card className="w-full">
+        <CardContent className="h-64 flex items-center justify-center">
+          <Loader2 className="h-6 w-6 animate-spin text-primary" />
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const { trends, top_writers, client_activity } = data;
+
+  // 1. Programmatically plot Assignment Volume trend line
+  const maxVolume = Math.max(...trends.volumes, 1);
+  const linePoints = trends.volumes.map((v, i) => {
+    const x = 10 + i * 55;
+    const y = 110 - (v / maxVolume) * 95;
+    return { x, y };
+  });
+
+  const linePath = linePoints.reduce((acc, p, i) => {
+    if (i === 0) return `M ${p.x} ${p.y}`;
+    return `${acc} L ${p.x} ${p.y}`;
+  }, "");
+
+  const gradPath = linePoints.length > 0
+    ? `${linePath} L ${linePoints[linePoints.length - 1].x} 110 L ${linePoints[0].x} 110 Z`
+    : "";
+
+  // 2. Programmatically plot Inflow bars heights
+  const maxInflow = Math.max(...trends.inflows, 1);
+
   return (
     <Card className="w-full">
       <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -95,7 +134,7 @@ export function AnalyticsPreview() {
                   </div>
                   <div className="flex items-center gap-1.5 text-xs text-success">
                     <TrendingUp className="size-4" />
-                    <span>+18.4% volume</span>
+                    <span>Real-time briefs count</span>
                   </div>
                 </div>
 
@@ -120,34 +159,27 @@ export function AnalyticsPreview() {
                     <line x1="0" y1="100" x2="300" y2="100" stroke="var(--border)" strokeDasharray="3 3" />
 
                     {/* Gradient area */}
-                    <path
-                      d="M 10 100 Q 60 75 110 50 T 210 30 T 290 15 L 290 100 Z"
-                      fill="url(#lineGrad)"
-                    />
+                    {gradPath && <path d={gradPath} fill="url(#lineGrad)" />}
                     {/* Chart Line */}
-                    <path
-                      d="M 10 100 Q 60 75 110 50 T 210 30 T 290 15"
-                      fill="none"
-                      stroke="var(--primary)"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                    />
+                    {linePath && (
+                      <path
+                        d={linePath}
+                        fill="none"
+                        stroke="var(--primary)"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                      />
+                    )}
                     {/* Points */}
-                    <circle cx="10" cy="100" r="3.5" fill="var(--background)" stroke="var(--primary)" strokeWidth="2" />
-                    <circle cx="60" cy="75" r="3.5" fill="var(--background)" stroke="var(--primary)" strokeWidth="2" />
-                    <circle cx="110" cy="50" r="3.5" fill="var(--background)" stroke="var(--primary)" strokeWidth="2" />
-                    <circle cx="160" cy="40" r="3.5" fill="var(--background)" stroke="var(--primary)" strokeWidth="2" />
-                    <circle cx="210" cy="30" r="3.5" fill="var(--background)" stroke="var(--primary)" strokeWidth="2" />
-                    <circle cx="290" cy="15" r="3.5" fill="var(--background)" stroke="var(--primary)" strokeWidth="2" />
+                    {linePoints.map((p, idx) => (
+                      <circle key={idx} cx={p.x} cy={p.y} r="3.5" fill="var(--background)" stroke="var(--primary)" strokeWidth="2" />
+                    ))}
                   </svg>
                 </div>
                 <div className="flex justify-between font-mono text-[10px] text-muted-foreground uppercase px-2">
-                  <span>Jan</span>
-                  <span>Feb</span>
-                  <span>Mar</span>
-                  <span>Apr</span>
-                  <span>May</span>
-                  <span>Jun</span>
+                  {trends.months.map((m) => (
+                    <span key={m}>{m}</span>
+                  ))}
                 </div>
               </div>
 
@@ -164,7 +196,7 @@ export function AnalyticsPreview() {
                   </div>
                   <div className="flex items-center gap-1.5 text-xs text-success">
                     <TrendingUp className="size-4" />
-                    <span>+8.2% earnings</span>
+                    <span>Real-time earnings inflow</span>
                   </div>
                 </div>
 
@@ -177,21 +209,29 @@ export function AnalyticsPreview() {
                     <line x1="0" y1="100" x2="300" y2="100" stroke="var(--border)" strokeDasharray="3 3" />
 
                     {/* Bars */}
-                    <rect x="15" y="60" width="22" height="40" rx="3" fill="var(--primary)" fillOpacity="0.4" />
-                    <rect x="65" y="50" width="22" height="50" rx="3" fill="var(--primary)" fillOpacity="0.5" />
-                    <rect x="115" y="35" width="22" height="65" rx="3" fill="var(--primary)" fillOpacity="0.6" />
-                    <rect x="165" y="45" width="22" height="55" rx="3" fill="var(--primary)" fillOpacity="0.7" />
-                    <rect x="215" y="25" width="22" height="75" rx="3" fill="var(--primary)" fillOpacity="0.85" />
-                    <rect x="265" y="15" width="22" height="85" rx="3" fill="var(--primary)" />
+                    {trends.inflows.map((inf, i) => {
+                      const x = 15 + i * 48;
+                      const height = (inf / maxInflow) * 95;
+                      const y = 110 - height;
+                      return (
+                        <rect
+                          key={i}
+                          x={x}
+                          y={y}
+                          width="22"
+                          height={height}
+                          rx="3"
+                          fill="var(--primary)"
+                          fillOpacity={0.4 + i * 0.1}
+                        />
+                      );
+                    })}
                   </svg>
                 </div>
                 <div className="flex justify-between font-mono text-[10px] text-muted-foreground uppercase px-4">
-                  <span>Jan</span>
-                  <span>Feb</span>
-                  <span>Mar</span>
-                  <span>Apr</span>
-                  <span>May</span>
-                  <span>Jun</span>
+                  {trends.months.map((m) => (
+                    <span key={m}>{m}</span>
+                  ))}
                 </div>
               </div>
             </div>
@@ -218,7 +258,7 @@ export function AnalyticsPreview() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
-                  {TOP_WRITERS.map((writer) => (
+                  {top_writers.map((writer) => (
                     <tr key={writer.name} className="hover:bg-muted/20 transition-colors">
                       <td className="px-4 py-3 font-medium flex items-center gap-2">
                         <div className="size-7 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-bold">
@@ -246,11 +286,18 @@ export function AnalyticsPreview() {
                               : "border-muted-foreground/30 bg-muted/10 text-muted-foreground capitalize"
                           }
                         >
-                          {writer.status.replace("_", " ")}
+                          {writer.status}
                         </Badge>
                       </td>
                     </tr>
                   ))}
+                  {top_writers.length === 0 && (
+                    <tr>
+                      <td colSpan={4} className="px-4 py-8 text-center text-muted-foreground">
+                        No active writers tracked.
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -277,7 +324,7 @@ export function AnalyticsPreview() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
-                  {CLIENT_ACTIVITY.map((client) => (
+                  {client_activity.map((client) => (
                     <tr key={client.name} className="hover:bg-muted/20 transition-colors">
                       <td className="px-4 py-3 font-medium flex items-center gap-2">
                         <div className="size-7 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-bold">
@@ -296,6 +343,13 @@ export function AnalyticsPreview() {
                       </td>
                     </tr>
                   ))}
+                  {client_activity.length === 0 && (
+                    <tr>
+                      <td colSpan={4} className="px-4 py-8 text-center text-muted-foreground">
+                        No client records found.
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -318,11 +372,16 @@ export function AnalyticsPreview() {
                         {report.title}
                       </h4>
                       <p className="text-muted-foreground text-xs">
-                        {report.size} • Generated {report.generated}
+                        {report.size} • Dynamic CSV Export
                       </p>
                     </div>
                   </div>
-                  <Button variant="ghost" size="icon" className="text-primary hover:bg-primary/10">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-primary hover:bg-primary/10"
+                    onClick={() => handleDownloadReport(report.type)}
+                  >
                     <Download className="size-4" />
                   </Button>
                 </div>

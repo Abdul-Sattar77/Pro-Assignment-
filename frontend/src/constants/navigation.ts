@@ -12,6 +12,8 @@ import {
   UserRound,
   Users,
   Wallet,
+  AlertCircle,
+  History,
   type LucideIcon,
 } from "lucide-react";
 import { ROUTES } from "./routes";
@@ -103,6 +105,18 @@ export const NAV_SECTIONS: NavSection[] = [
         icon: PieChart,
         permission: "analytics.view",
       },
+      {
+        label: "Complaints",
+        href: ROUTES.complaints,
+        icon: AlertCircle,
+        permission: "complaints.view",
+      },
+      {
+        label: "Templates",
+        href: ROUTES.documentTemplates,
+        icon: FileText,
+        permission: "document_templates.view",
+      },
     ],
   },
   {
@@ -119,6 +133,12 @@ export const NAV_SECTIONS: NavSection[] = [
         href: ROUTES.roles,
         icon: ShieldCheck,
         permission: "roles.view",
+      },
+      {
+        label: "Audit Logs",
+        href: ROUTES.auditLogs,
+        icon: History,
+        permission: "audit_logs.view",
       },
       {
         label: "Settings",

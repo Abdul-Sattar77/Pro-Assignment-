@@ -26,6 +26,11 @@ final class UserResource extends JsonResource
             'name' => $this->name,
             'email' => $this->email,
             'isActive' => $this->is_active,
+            'availability' => $this->availability,
+            'expertise' => $this->expertise,
+            'notes' => $this->notes,
+            'averageRating' => $this->average_rating,
+            'totalEarnings' => $this->total_earnings,
             'roles' => $this->getRoleNames()->values(),
             // Included only when eager-loaded (detail/auth responses) to avoid
             // N+1 permission lookups on list endpoints.

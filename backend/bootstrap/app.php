@@ -18,8 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // Sanctum cookie-based SPA authentication for the Next.js frontend.
-        $middleware->statefulApi();
+
 
         // Tag every API request with a traceable id (response + logs).
         $middleware->appendToGroup('api', AssignRequestId::class);
@@ -30,6 +29,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => PermissionMiddleware::class,
             'role_or_permission' => RoleOrPermissionMiddleware::class,
         ]);
+
+        // Prevent unauthenticated API requests from redirecting to a non-existent login route.
+        $middleware->redirectGuestsTo(fn (Request $request) => $request->is('api/*') ? null : '/');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

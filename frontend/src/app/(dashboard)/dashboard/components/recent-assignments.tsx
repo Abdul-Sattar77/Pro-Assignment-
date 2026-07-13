@@ -10,68 +10,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Clock, CheckCircle2, AlertTriangle, HelpCircle } from "lucide-react";
+import { useDashboardStats } from "@/features/dashboard";
+import { Clock, CheckCircle2, AlertTriangle, HelpCircle, Loader2 } from "lucide-react";
 
 type AssignmentStatus = "in_progress" | "completed" | "pending" | "overdue";
 type AssignmentPriority = "high" | "medium" | "low";
-
-interface MockAssignment {
-  id: string;
-  name: string;
-  client: string;
-  subject: string;
-  priority: AssignmentPriority;
-  status: AssignmentStatus;
-  deadline: string;
-}
-
-const MOCK_ASSIGNMENTS: MockAssignment[] = [
-  {
-    id: "ASG-8921",
-    name: "Q3 Financial Audit Report",
-    client: "Acme Corp",
-    subject: "Finance",
-    priority: "high",
-    status: "in_progress",
-    deadline: "2026-07-12",
-  },
-  {
-    id: "ASG-8922",
-    name: "Machine Learning Course Syllabus",
-    client: "University of Tech",
-    subject: "Computer Science",
-    priority: "medium",
-    status: "completed",
-    deadline: "2026-07-08",
-  },
-  {
-    id: "ASG-8923",
-    name: "Brand Marketing Strategy Proposal",
-    client: "Nova Brands",
-    subject: "Marketing",
-    priority: "high",
-    status: "pending",
-    deadline: "2026-07-15",
-  },
-  {
-    id: "ASG-8924",
-    name: "REST API Developer Documentation",
-    client: "DevFlow Inc.",
-    subject: "Software Engineering",
-    priority: "low",
-    status: "in_progress",
-    deadline: "2026-07-20",
-  },
-  {
-    id: "ASG-8925",
-    name: "Clinical Research Paper Review",
-    client: "Dr. Jane Smith",
-    subject: "Medicine",
-    priority: "medium",
-    status: "overdue",
-    deadline: "2026-07-05",
-  },
-];
 
 const statusStyles: Record<
   AssignmentStatus,
@@ -118,6 +61,26 @@ const priorityStyles: Record<
 };
 
 export function RecentAssignments() {
+  const { data, isLoading } = useDashboardStats();
+
+  if (isLoading || !data) {
+    return (
+      <Card className="h-full">
+        <CardHeader>
+          <CardTitle className="text-lg">Recent Assignments</CardTitle>
+          <CardDescription>
+            Overview of the latest client assignment submissions and tasks.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="h-64 flex items-center justify-center">
+          <Loader2 className="h-6 w-6 animate-spin text-primary" />
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const assignments = data.recent_assignments;
+
   return (
     <Card className="h-full">
       <CardHeader>
@@ -139,10 +102,10 @@ export function RecentAssignments() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {MOCK_ASSIGNMENTS.map((asg) => {
-              const statusCfg = statusStyles[asg.status];
+            {assignments.map((asg) => {
+              const statusCfg = statusStyles[asg.status as AssignmentStatus] || statusStyles.pending;
               const StatusIcon = statusCfg.icon;
-              const priorityCfg = priorityStyles[asg.priority];
+              const priorityCfg = priorityStyles[asg.priority as AssignmentPriority] || priorityStyles.medium;
 
               return (
                 <TableRow key={asg.id}>
@@ -177,6 +140,13 @@ export function RecentAssignments() {
                 </TableRow>
               );
             })}
+            {assignments.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={6} className="h-24 text-center text-muted-foreground text-sm">
+                  No assignments registered yet.
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </CardContent>

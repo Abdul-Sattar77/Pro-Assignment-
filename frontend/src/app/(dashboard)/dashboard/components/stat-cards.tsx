@@ -77,79 +77,93 @@ export function StatCard({
   );
 }
 
+import { useDashboardStats } from "@/features/dashboard";
+
 export function StatCards() {
+  const { data, isLoading } = useDashboardStats();
+
+  if (isLoading || !data) {
+    return (
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 animate-pulse">
+        {[...Array(10)].map((_, i) => (
+          <div key={i} className="h-28 rounded-xl border bg-card/50" />
+        ))}
+      </div>
+    );
+  }
+
   const stats = [
     {
       title: "Revenue Overview",
-      value: "$48,250",
+      value: "PKR " + data.stats.revenue.toLocaleString(),
       icon: DollarSign,
       trend: { value: "+8.2%", positive: true },
-      description: "from last month",
+      description: "all-time verified",
       className: "border-primary/20 bg-primary/5",
     },
     {
-      title: "Monthly Growth",
-      value: "+14.2%",
+      title: "Net Profit Balance",
+      value: "PKR " + data.stats.profit.toLocaleString(),
       icon: TrendingUp,
-      trend: { value: "+2.1%", positive: true },
-      description: "onboarded users",
+      trend: { value: "Net Earnings", positive: true },
+      description: "revenue minus payout",
     },
     {
       title: "Active Assignments",
-      value: "37",
+      value: data.stats.active_assignments,
       icon: FileText,
-      trend: { value: "+14.5%", positive: true },
-      description: "active briefs",
+      trend: { value: "Active", positive: true },
+      description: "current workload",
     },
     {
       title: "Completed Assignments",
-      value: "892",
+      value: data.stats.completed_assignments,
       icon: CheckCircle2,
-      trend: { value: "+28%", positive: true },
+      trend: { value: "Done", positive: true },
       description: "all-time complete",
     },
     {
       title: "Pending Assignments",
-      value: "12",
+      value: data.stats.pending_assignments,
       icon: Clock,
-      trend: { value: "-5.3%", positive: true },
-      description: "awaiting review",
+      trend: { value: "Awaiting Action", positive: true },
+      description: "needs review",
     },
     {
-      title: "Due Assignments",
-      value: "8",
+      title: "Due This Week",
+      value: data.stats.due_assignments,
       icon: Calendar,
-      trend: { value: "5 today", positive: true },
-      description: "due this week",
+      trend: { value: "Timeline Alerts", positive: true },
+      description: "due in 7 days",
     },
     {
       title: "Overdue Assignments",
-      value: "3",
+      value: data.stats.overdue_assignments,
       icon: AlertTriangle,
-      trend: { value: "High Priority", positive: false },
-      description: "action required",
+      trend: { value: "Action Required", positive: false },
+      description: "past deadline",
       className: "border-destructive/20 bg-destructive/5 text-destructive",
     },
     {
       title: "Total Clients",
-      value: "142",
+      value: data.stats.total_clients,
       icon: Users,
-      trend: { value: "+12.1%", positive: true },
-      description: "onboarded clients",
+      trend: { value: "Onboarded", positive: true },
+      description: "registered clients",
     },
     {
       title: "Total Writers",
-      value: "84",
+      value: data.stats.total_writers,
       icon: UserRound,
-      trend: { value: "+4.3%", positive: true },
-      description: "vetted experts",
+      trend: { value: "Vetted", positive: true },
+      description: "vetted writers",
     },
     {
-      title: "Total Project Managers",
-      value: "18",
+      title: "Project Managers",
+      value: data.stats.total_pms,
       icon: ShieldCheck,
-      trend: { value: "Stable", positive: true },
-      description: "active managers",
+      trend: { value: "Active", positive: true },
+      description: "operational staff",
     },
   ];
 

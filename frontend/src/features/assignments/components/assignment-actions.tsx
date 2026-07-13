@@ -7,19 +7,21 @@ import {
   PackageCheck,
   RotateCcw,
   UserCheck,
+  UserCog,
   type LucideIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Assignment, AssignmentAction } from "../types";
 import { ActionNoteDialog, type NoteActionConfig } from "./action-note-dialog";
+import { AssignManagerDialog } from "./assign-manager-dialog";
 import { AssignWriterDialog } from "./assign-writer-dialog";
 
 interface ActionButton {
   label: string;
   icon: LucideIcon;
   variant: "default" | "outline" | "destructive";
-  /** null → opens the AssignWriterDialog instead of the note dialog. */
-  dialog: NoteActionConfig | null;
+  /** null → opens the AssignWriterDialog, 'manager' → AssignManagerDialog. */
+  dialog: NoteActionConfig | null | "manager";
 }
 
 /**
@@ -44,6 +46,12 @@ const ACTION_CONFIG: Partial<Record<AssignmentAction, ActionButton>> = {
     variant: "default",
     dialog: null, // opens AssignWriterDialog
   },
+  assign_manager: {
+    label: "Assign manager",
+    icon: UserCog,
+    variant: "outline",
+    dialog: "manager", // opens AssignManagerDialog
+  },
   deliver: {
     label: "Deliver to client",
     icon: PackageCheck,
@@ -54,6 +62,42 @@ const ACTION_CONFIG: Partial<Record<AssignmentAction, ActionButton>> = {
       description:
         "The client will be able to review, approve, or request a revision.",
       confirmLabel: "Deliver",
+      note: "optional",
+    },
+  },
+  accept: {
+    label: "Accept assignment",
+    icon: CheckCircle2,
+    variant: "default",
+    dialog: {
+      action: "accept",
+      title: "Accept this assignment?",
+      description: "You commit to delivering by the deadline shown.",
+      confirmLabel: "Accept",
+      note: "none",
+    },
+  },
+  reject: {
+    label: "Decline assignment",
+    icon: Ban,
+    variant: "outline",
+    dialog: {
+      action: "reject",
+      title: "Decline this assignment?",
+      description: "The order will return to the queue for reassignment.",
+      confirmLabel: "Decline",
+      note: "optional",
+    },
+  },
+  submit: {
+    label: "Submit work",
+    icon: PackageCheck,
+    variant: "default",
+    dialog: {
+      action: "submit",
+      title: "Submit work for review?",
+      description: "The project manager will review your submission.",
+      confirmLabel: "Submit",
       note: "optional",
     },
   },
@@ -116,6 +160,7 @@ const ACTION_CONFIG: Partial<Record<AssignmentAction, ActionButton>> = {
  */
 export function AssignmentActions({ assignment }: { assignment: Assignment }) {
   const [assignOpen, setAssignOpen] = useState(false);
+  const [assignManagerOpen, setAssignManagerOpen] = useState(false);
   const [noteConfig, setNoteConfig] = useState<NoteActionConfig | null>(null);
 
   const buttons = assignment.actions
@@ -134,11 +179,11 @@ export function AssignmentActions({ assignment }: { assignment: Assignment }) {
           <Button
             key={action}
             variant={config.variant}
-            onClick={() =>
-              config.dialog === null
-                ? setAssignOpen(true)
-                : setNoteConfig(config.dialog)
-            }
+            onClick={() => {
+              if (config.dialog === null) return setAssignOpen(true);
+              if (config.dialog === "manager") return setAssignManagerOpen(true);
+              setNoteConfig(config.dialog);
+            }}
           >
             <config.icon className="size-4" />
             {config.label}
@@ -150,6 +195,11 @@ export function AssignmentActions({ assignment }: { assignment: Assignment }) {
         assignmentId={assignment.id}
         open={assignOpen}
         onOpenChange={setAssignOpen}
+      />
+      <AssignManagerDialog
+        assignmentId={assignment.id}
+        open={assignManagerOpen}
+        onOpenChange={setAssignManagerOpen}
       />
       <ActionNoteDialog
         assignmentId={assignment.id}

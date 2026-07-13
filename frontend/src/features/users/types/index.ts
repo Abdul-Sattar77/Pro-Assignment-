@@ -7,6 +7,11 @@ export interface UserListItem {
   name: string;
   email: string;
   isActive: boolean;
+  availability?: string;
+  expertise?: string | null;
+  notes?: string | null;
+  averageRating?: number;
+  totalEarnings?: number;
   roles: string[];
   createdAt: string | null;
 }
@@ -37,6 +42,9 @@ export interface CreateUserPayload {
   email: string;
   password: string;
   roles: string[];
+  availability?: string;
+  expertise?: string;
+  notes?: string;
 }
 
 export interface UpdateUserPayload {
@@ -45,4 +53,7 @@ export interface UpdateUserPayload {
   password?: string;
   roles?: string[];
   isActive?: boolean;
+  availability?: string;
+  expertise?: string;
+  notes?: string;
 }

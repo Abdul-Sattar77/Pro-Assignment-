@@ -23,7 +23,15 @@ interface AssignmentRepositoryInterface extends RepositoryInterface
     public function create(array $data): Assignment;
 
     /**
-     * @param  array{status?: string|null, search?: string|null}  $filters
+     * @param  array{
+     *   status?: string|null,
+     *   search?: string|null,
+     *   priority?: string|null,
+     *   writer_id?: int|null,
+     *   project_manager_id?: int|null,
+     *   deadline_from?: string|null,
+     *   deadline_to?: string|null,
+     * }  $filters
      * @return LengthAwarePaginator<int, Assignment>
      */
     public function paginateFor(User $actor, array $filters, string $sort, int $perPage): LengthAwarePaginator;

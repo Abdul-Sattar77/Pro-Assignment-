@@ -20,6 +20,7 @@ export type AssignmentStatus =
 /** Workflow action keys as sent by the backend. */
 export type AssignmentAction =
   | "assign"
+  | "assign_manager"
   | "accept"
   | "reject"
   | "submit"
@@ -28,6 +29,16 @@ export type AssignmentAction =
   | "request_revision"
   | "complete"
   | "cancel";
+
+export const ASSIGNMENT_PRIORITY = {
+  LOW: "low",
+  NORMAL: "normal",
+  HIGH: "high",
+  URGENT: "urgent",
+} as const;
+
+export type AssignmentPriority =
+  (typeof ASSIGNMENT_PRIORITY)[keyof typeof ASSIGNMENT_PRIORITY];
 
 export interface PersonRef {
   id: string;
@@ -43,6 +54,18 @@ export interface AssignmentEvent {
   createdAt: string | null;
 }
 
+export interface AssignmentAttachment {
+  id: string;
+  type: "file" | "voice_note";
+  originalName: string | null;
+  mimeType: string | null;
+  size: number | null;
+  humanSize: string;
+  url: string;
+  uploadedBy?: PersonRef;
+  createdAt: string | null;
+}
+
 export interface Assignment {
   id: string;
   title: string;
@@ -51,10 +74,19 @@ export interface Assignment {
   status: AssignmentStatus;
   statusLabel: string;
   deadline: string;
+  priority?: AssignmentPriority;
+  priorityLabel?: string;
+  wordCount?: number | null;
+  notes?: string | null;
+  clientPrice?: number;
+  writerCost?: number;
+  discount?: number;
+  netProfit?: number;
   client?: PersonRef;
   writer?: PersonRef | null;
   projectManager?: PersonRef | null;
   events?: AssignmentEvent[];
+  attachments?: AssignmentAttachment[];
   actions: AssignmentAction[];
   createdAt: string | null;
 }
@@ -64,6 +96,15 @@ export interface AssignmentFilters {
   search?: string;
   page?: number;
   perPage?: number;
+}
+
+export interface AdminAssignmentFilters extends AssignmentFilters {
+  priority?: AssignmentPriority;
+  writerId?: string;
+  projectManagerId?: string;
+  deadlineFrom?: string;
+  deadlineTo?: string;
+  sort?: string;
 }
 
 export interface PaginationMeta {
@@ -83,4 +124,18 @@ export interface CreateAssignmentPayload {
   subject: string;
   description: string;
   deadline: string;
+}
+
+export interface UpdateAssignmentPayload {
+  title?: string;
+  subject?: string;
+  description?: string;
+  deadline?: string;
+  priority?: AssignmentPriority;
+  word_count?: number | null;
+  notes?: string | null;
+  client_price?: number;
+  writer_cost?: number;
+  discount?: number;
+  net_profit?: number;
 }

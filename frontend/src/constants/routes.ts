@@ -14,7 +14,7 @@ export const ROUTES = {
   dashboard: "/dashboard",
   assignments: "/assignments",
   leads: "/leads",
-  messaging: "/messaging",
+  messaging: "/messages",
   files: "/files",
   finance: "/finance",
   reports: "/reports",
@@ -24,6 +24,9 @@ export const ROUTES = {
   users: "/users",
   roles: "/roles",
   settings: "/settings",
+  complaints: "/complaints",
+  documentTemplates: "/document-templates",
+  auditLogs: "/audit-logs",
 } as const;
 
 export type RouteKey = keyof typeof ROUTES;

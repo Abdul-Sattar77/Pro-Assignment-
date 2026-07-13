@@ -22,82 +22,41 @@ interface ActivityItem {
   iconColor: string;
 }
 
-const ACTIVITIES: ActivityItem[] = [
-  {
-    id: "act-1",
-    type: "completed",
-    message: "Assignment ASG-8922 marked 'Completed' and archived",
-    timestamp: "2 hours ago",
-    icon: CheckCircle2,
-    iconBg: "bg-success/10",
-    iconColor: "text-success",
-  },
-  {
-    id: "act-2",
-    type: "delivered",
-    message: "Assignment ASG-8921 'Delivered to Client' for final sign-off",
-    timestamp: "4 hours ago",
-    icon: Send,
-    iconBg: "bg-success/10",
-    iconColor: "text-success",
-  },
-  {
-    id: "act-3",
-    type: "reviewed",
-    message: "PM Alex marked draft 1 as 'Reviewed' for ASG-8921",
-    timestamp: "6 hours ago",
-    icon: ShieldCheck,
-    iconBg: "bg-primary/5",
-    iconColor: "text-primary",
-  },
-  {
-    id: "act-4",
-    type: "submitted",
-    message: "Writer David 'Submitted Work' (Draft 1) for ASG-8921",
-    timestamp: "9 hours ago",
-    icon: FileUp,
-    iconBg: "bg-primary/10",
-    iconColor: "text-primary",
-  },
-  {
-    id: "act-5",
-    type: "revision_requested",
-    message: "Client Acme Corp 'Revision Requested' on ASG-8923",
-    timestamp: "1 day ago",
-    icon: RefreshCw,
-    iconBg: "bg-destructive/10",
-    iconColor: "text-destructive",
-  },
-  {
-    id: "act-6",
-    type: "writer_assigned",
-    message: "Writer Sarah 'Assigned' to assignment ASG-8923",
-    timestamp: "1 day ago",
-    icon: UserCheck,
-    iconBg: "bg-primary/5",
-    iconColor: "text-primary",
-  },
-  {
-    id: "act-7",
-    type: "pm_assigned",
-    message: "Project Manager Alex 'Assigned' to monitor ASG-8924",
-    timestamp: "2 days ago",
-    icon: UserPlus,
-    iconBg: "bg-primary/5",
-    iconColor: "text-primary",
-  },
-  {
-    id: "act-8",
-    type: "created",
-    message: "Client Nova Brands 'Created' new assignment request ASG-8925",
-    timestamp: "2 days ago",
-    icon: PlusCircle,
-    iconBg: "bg-primary/10",
-    iconColor: "text-primary",
-  },
-];
+import { useDashboardStats } from "@/features/dashboard";
+import { Loader2 } from "lucide-react";
+
+const iconMap: Record<string, any> = {
+  PlusCircle,
+  UserPlus,
+  UserCheck,
+  FileUp,
+  ShieldCheck,
+  Send,
+  RefreshCw,
+  CheckCircle2,
+};
 
 export function RecentActivity() {
+  const { data, isLoading } = useDashboardStats();
+
+  if (isLoading || !data) {
+    return (
+      <Card className="h-full">
+        <CardHeader>
+          <CardTitle className="text-lg">Recent Activity Feed</CardTitle>
+          <CardDescription>
+            Operational log of assignment lifecycle stages.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="h-64 flex items-center justify-center">
+          <Loader2 className="h-6 w-6 animate-spin text-primary" />
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const activities = data.recent_activities;
+
   return (
     <Card className="h-full">
       <CardHeader>
@@ -108,8 +67,8 @@ export function RecentActivity() {
       </CardHeader>
       <CardContent>
         <div className="relative border-l border-border pl-6 space-y-6">
-          {ACTIVITIES.map((act) => {
-            const Icon = act.icon;
+          {activities.map((act) => {
+            const Icon = iconMap[act.iconName] || CheckCircle2;
             return (
               <div key={act.id} className="relative">
                 {/* Dot / icon on the line */}
@@ -129,6 +88,11 @@ export function RecentActivity() {
               </div>
             );
           })}
+          {activities.length === 0 && (
+            <p className="text-muted-foreground text-sm text-center py-6">
+              No recent activity recorded.
+            </p>
+          )}
         </div>
       </CardContent>
     </Card>

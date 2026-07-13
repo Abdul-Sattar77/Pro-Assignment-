@@ -51,7 +51,15 @@ export function UserFormDialog({
 
   const form = useForm<UserFormValues>({
     resolver: zodResolver(userFormSchema(isEdit)),
-    defaultValues: { name: "", email: "", password: "", role: "" },
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+      role: "",
+      availability: "available",
+      expertise: "",
+      notes: "",
+    },
   });
 
   // Sync form contents whenever the dialog opens for a different target.
@@ -62,6 +70,9 @@ export function UserFormDialog({
         email: user?.email ?? "",
         password: "",
         role: user?.roles[0] ?? "",
+        availability: user?.availability ?? "available",
+        expertise: user?.expertise ?? "",
+        notes: user?.notes ?? "",
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -84,6 +95,9 @@ export function UserFormDialog({
             email: values.email,
             password: values.password || undefined,
             roles: [values.role],
+            availability: values.role === "writer" ? values.availability : undefined,
+            expertise: values.role === "writer" ? values.expertise : undefined,
+            notes: values.role === "client" ? values.notes : undefined,
           },
         },
         { onSuccess: () => onOpenChange(false), onError: handleError },
@@ -95,6 +109,9 @@ export function UserFormDialog({
           email: values.email,
           password: values.password,
           roles: [values.role],
+          availability: values.role === "writer" ? values.availability : undefined,
+          expertise: values.role === "writer" ? values.expertise : undefined,
+          notes: values.role === "client" ? values.notes : undefined,
         },
         { onSuccess: () => onOpenChange(false), onError: handleError },
       );
@@ -102,6 +119,7 @@ export function UserFormDialog({
   });
 
   const { errors } = form.formState;
+  const selectedRole = form.watch("role");
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -198,6 +216,54 @@ export function UserFormDialog({
               </p>
             )}
           </div>
+
+          {selectedRole === "writer" && (
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="writer-availability">Availability Status</Label>
+                <Controller
+                  control={form.control}
+                  name="availability"
+                  render={({ field }) => (
+                    <Select value={field.value || "available"} onValueChange={field.onChange}>
+                      <SelectTrigger id="writer-availability">
+                        <SelectValue placeholder="Select availability" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="available">Available</SelectItem>
+                        <SelectItem value="busy">Busy</SelectItem>
+                        <SelectItem value="away">Away</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="writer-expertise">Writer Expertise / Niches</Label>
+                <textarea
+                  id="writer-expertise"
+                  rows={2}
+                  placeholder="e.g. Accounting, Finance, Python, Essays..."
+                  className="border-input focus-visible:ring-ring/50 w-full rounded-md border bg-transparent px-3 py-2 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-2"
+                  {...form.register("expertise")}
+                />
+              </div>
+            </>
+          )}
+
+          {selectedRole === "client" && (
+            <div className="space-y-2">
+              <Label htmlFor="client-notes">Client Specific Notes</Label>
+              <textarea
+                id="client-notes"
+                rows={3}
+                placeholder="e.g. Preferred writing style, discounts, or special instructions..."
+                className="border-input focus-visible:ring-ring/50 w-full rounded-md border bg-transparent px-3 py-2 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-2"
+                {...form.register("notes")}
+              />
+            </div>
+          )}
 
           {errors.root && (
             <div

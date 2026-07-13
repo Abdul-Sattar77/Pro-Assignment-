@@ -37,17 +37,50 @@ final class AssignmentService
     {
         return DB::transaction(function () use ($client, $data): Assignment {
             $assignment = $this->assignments->create([
-                'title' => $data['title'],
-                'subject' => $data['subject'],
+                'title'       => $data['title'],
+                'subject'     => $data['subject'],
                 'description' => $data['description'],
-                'deadline' => $data['deadline'],
-                'status' => AssignmentStatus::PendingAssignment,
-                'client_id' => $client->getKey(),
+                'deadline'    => $data['deadline'],
+                'status'      => AssignmentStatus::PendingAssignment,
+                'client_id'   => $client->getKey(),
             ]);
 
             $this->record($assignment, $client, AssignmentEventType::Created);
 
             return $assignment;
+        });
+    }
+
+    /**
+     * Admin/PM edits assignment meta fields (priority, notes, word count, etc.).
+     *
+     * @param  array<string, mixed>  $data
+     */
+    public function update(User $actor, Assignment $assignment, array $data): Assignment
+    {
+        return DB::transaction(function () use ($actor, $assignment, $data): Assignment {
+            $updated = $this->assignments->update($assignment, $data);
+            $this->record($updated, $actor, AssignmentEventType::Updated);
+            return $updated;
+        });
+    }
+
+    /**
+     * Admin/PM sets the project manager on an assignment.
+     * The manager must have the project_manager role.
+     */
+    public function assignManager(User $actor, Assignment $assignment, string $managerUuid): Assignment
+    {
+        $manager = $this->users->findByUuid($managerUuid);
+
+        if ($manager === null || !$manager->hasRole(Role::ProjectManager->value)) {
+            throw new DomainRuleException('The selected user is not an active project manager.', 'MANAGER_INVALID', 422);
+        }
+
+        return DB::transaction(function () use ($actor, $assignment, $manager): Assignment {
+            $updated = $this->assignments->update($assignment, ['project_manager_id' => $manager->getKey()]);
+            $this->record($updated, $actor, AssignmentEventType::Updated, "Project manager set to {$manager->name}");
+            return $updated;
         });
     }
 
@@ -175,7 +208,12 @@ final class AssignmentService
 
         $actions = [];
 
-        if ($isPm && $status === AssignmentStatus::PendingAssignment) {
+        $isStrictPm = $actor->hasRole(Role::ProjectManager->value) && !$isAdmin;
+
+        if ($isAdmin && !$status->isTerminal()) {
+            $actions[] = 'assign_manager';
+        }
+        if ($isStrictPm && $status === AssignmentStatus::PendingAssignment) {
             $actions[] = 'assign';
         }
         if ($isAssignedWriter && $status === AssignmentStatus::Assigned) {

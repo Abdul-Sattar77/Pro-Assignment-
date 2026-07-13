@@ -1,53 +1,64 @@
-import { apiClient, ensureCsrfCookie } from "@/lib/api-client";
+import { apiClient } from "@/lib/api-client";
 import { ApiError } from "@/lib/http-error";
 import type { AuthUser, LoginPayload, RegisterPayload } from "../types";
 
-interface Envelope<T> {
-  data: T;
+interface AuthResponse {
+  success: boolean;
+  token: string;
+  user: AuthUser;
 }
 
-/**
- * Typed API calls for the auth feature. State-changing requests prime the
- * Sanctum CSRF cookie first (idempotent). Components never call this directly —
- * they go through the hooks in `../hooks`.
- */
+interface MeResponse {
+  data: AuthUser;
+}
+
 export const authService = {
   async login(payload: LoginPayload): Promise<AuthUser> {
-    await ensureCsrfCookie();
-    const { data } = await apiClient.post<Envelope<AuthUser>>(
+    const { data } = await apiClient.post<AuthResponse>(
       "/auth/login",
       payload,
     );
-    return data.data;
+
+    if (data.token) {
+      localStorage.setItem("token", data.token);
+    }
+
+    return data.user;
   },
 
   async register(payload: RegisterPayload): Promise<AuthUser> {
-    await ensureCsrfCookie();
-    const { data } = await apiClient.post<Envelope<AuthUser>>(
+    const { data } = await apiClient.post<AuthResponse>(
       "/auth/register",
       {
         name: payload.name,
         email: payload.email,
         password: payload.password,
-        // Laravel's `confirmed` rule expects snake_case pairing.
         password_confirmation: payload.passwordConfirmation,
       },
     );
-    return data.data;
+
+    if (data.token) {
+      localStorage.setItem("token", data.token);
+    }
+
+    return data.user;
   },
 
   async logout(): Promise<void> {
-    await ensureCsrfCookie();
     await apiClient.post("/auth/logout");
+    localStorage.removeItem("token");
   },
 
-  /** Current session user, or null when unauthenticated (401). */
   async me(): Promise<AuthUser | null> {
+    if (typeof window !== "undefined" && !localStorage.getItem("token")) {
+      return null;
+    }
     try {
-      const { data } = await apiClient.get<Envelope<AuthUser>>("/auth/me");
+      const { data } = await apiClient.get<MeResponse>("/auth/me");
       return data.data;
     } catch (error) {
       if (error instanceof ApiError && error.isUnauthenticated) {
+        localStorage.removeItem("token");
         return null;
       }
       throw error;

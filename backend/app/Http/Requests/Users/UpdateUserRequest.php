@@ -38,6 +38,9 @@ final class UpdateUserRequest extends FormRequest
             'roles' => ['sometimes', 'array', 'min:1'],
             'roles.*' => ['string', Rule::in(Role::values())],
             'is_active' => ['sometimes', 'boolean'],
+            'availability' => ['sometimes', 'string', 'in:available,busy,away'],
+            'expertise' => ['sometimes', 'nullable', 'string', 'max:5000'],
+            'notes' => ['sometimes', 'nullable', 'string', 'max:5000'],
         ];
     }
 }

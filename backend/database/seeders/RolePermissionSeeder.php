@@ -39,8 +39,14 @@ final class RolePermissionSeeder extends Seeder
         'reports.view', 'analytics.view',
         // Tasks
         'tasks.view', 'tasks.manage',
+        // Calendar
+        'calendar.view', 'calendar.manage',
         // Settings
         'settings.manage',
+        // Complaints, Templates, and Audit Logs
+        'complaints.view', 'complaints.manage',
+        'document_templates.view', 'document_templates.manage',
+        'audit_logs.view',
     ];
 
     public function run(): void
@@ -78,6 +84,9 @@ final class RolePermissionSeeder extends Seeder
                 'finance.view',
                 'reports.view', 'analytics.view',
                 'tasks.view', 'tasks.manage',
+                'calendar.view', 'calendar.manage',
+                'complaints.view', 'complaints.manage',
+                'document_templates.view', 'document_templates.manage',
             ],
 
             Role::Writer->value => [
@@ -86,6 +95,8 @@ final class RolePermissionSeeder extends Seeder
                 'messages.view', 'messages.send',
                 'finance.view',
                 'tasks.view', 'tasks.manage',
+                'calendar.view',
+                'document_templates.view',
             ],
 
             Role::Client->value => [
@@ -93,6 +104,9 @@ final class RolePermissionSeeder extends Seeder
                 'files.view', 'files.upload',
                 'messages.view', 'messages.send',
                 'finance.view',
+                'calendar.view',
+                'complaints.view',
+                'document_templates.view',
             ],
         ];
     }

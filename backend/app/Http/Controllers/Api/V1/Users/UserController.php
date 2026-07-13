@@ -27,7 +27,9 @@ final class UserController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        $this->authorize('viewAny', User::class);
+        if (!$request->user()->can('users.view') && !$request->user()->can('tasks.manage') && !$request->user()->can('assignments.assign')) {
+            $this->authorize('viewAny', User::class);
+        }
 
         /** @var array<string, mixed> $filter */
         $filter = (array) $request->query('filter', []);
