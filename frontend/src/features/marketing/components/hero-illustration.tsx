@@ -1,15 +1,35 @@
 "use client";
 
 import { motion, useTransform, type MotionValue } from "framer-motion";
-import { Pencil, Search, Upload } from "lucide-react";
 
 /**
- * Hero illustration — an assignment "workspace" scene: a laptop on a glowing
- * platform with the assignment document (and a green approval check) lifting
- * out of the screen, ringed by floating glass action labels (Research / Write /
- * Submit) and academic props (open book, plant, stacked books, mug). Sub-groups
- * parallax toward the cursor and drift on gentle loops. Navy + electric blue.
+ * ONE premium workspace illustration for the hero — a laptop with the
+ * assignment document floating above it, being "typed" line by line with a
+ * blinking caret and a verification check on completion, over a slowly
+ * rotating glow with drifting particles. Deliberately singular and calm
+ * (Stripe / Linear feel), not a cluster of cards. Parallaxes gently to the
+ * cursor. One 6s loop keeps every element in sync.
  */
+
+const CYCLE = 6;
+
+// Typed lines: [target width, y offset in px, start fraction of the cycle].
+const LINES: [string, number, number][] = [
+  ["92%", 0, 0.08],
+  ["78%", 18, 0.2],
+  ["88%", 36, 0.32],
+  ["60%", 54, 0.44],
+];
+
+const PARTICLES = [
+  { left: "12%", size: 5, delay: 0, duration: 7 },
+  { left: "28%", size: 3, delay: 1.4, duration: 9 },
+  { left: "48%", size: 4, delay: 2.6, duration: 8 },
+  { left: "68%", size: 3, delay: 0.8, duration: 10 },
+  { left: "82%", size: 5, delay: 3.2, duration: 7.5 },
+  { left: "92%", size: 3, delay: 1.9, duration: 9.5 },
+];
+
 export function HeroIllustration({
   mx,
   my,
@@ -17,371 +37,288 @@ export function HeroIllustration({
   mx: MotionValue<number>;
   my: MotionValue<number>;
 }) {
-  const deskX = useTransform(mx, [-0.5, 0.5], [-6, 6]);
-  const deskY = useTransform(my, [-0.5, 0.5], [-5, 5]);
-  const docX = useTransform(mx, [-0.5, 0.5], [-14, 14]);
-  const docY = useTransform(my, [-0.5, 0.5], [-11, 11]);
-  const chipAX = useTransform(mx, [-0.5, 0.5], [-26, 26]);
-  const chipAY = useTransform(my, [-0.5, 0.5], [-20, 20]);
-  const chipBX = useTransform(mx, [-0.5, 0.5], [24, -24]);
-  const chipBY = useTransform(my, [-0.5, 0.5], [18, -18]);
-  const chipCX = useTransform(mx, [-0.5, 0.5], [30, -30]);
-  const chipCY = useTransform(my, [-0.5, 0.5], [-16, 16]);
-
-  const floatSlow = {
-    animate: { y: [0, -10, 0] },
-    transition: {
-      duration: 5.5,
-      ease: "easeInOut" as const,
-      repeat: Infinity,
-    },
-  };
+  const sceneX = useTransform(mx, [-0.5, 0.5], [-10, 10]);
+  const sceneY = useTransform(my, [-0.5, 0.5], [-8, 8]);
+  const docX = useTransform(mx, [-0.5, 0.5], [-20, 20]);
+  const docY = useTransform(my, [-0.5, 0.5], [-14, 14]);
 
   return (
-    <div className="relative mx-auto w-full max-w-xl">
-      <svg viewBox="0 0 520 460" className="h-auto w-full" aria-hidden>
-        <defs>
-          <linearGradient id="platform" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0" stopColor="#3b82f6" stopOpacity="0" />
-            <stop offset="0.5" stopColor="#60a5fa" stopOpacity="0.9" />
-            <stop offset="1" stopColor="#6366f1" stopOpacity="0" />
-          </linearGradient>
-          <linearGradient id="screen" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stopColor="#1e3a8a" />
-            <stop offset="1" stopColor="#0b1428" />
-          </linearGradient>
-        </defs>
-
-        {/* Glowing platform */}
-        <ellipse
-          cx="260"
-          cy="372"
-          rx="200"
-          ry="42"
-          fill="#3b82f6"
-          opacity="0.08"
-        />
-        <ellipse
-          cx="260"
-          cy="372"
-          rx="200"
-          ry="42"
-          fill="none"
-          stroke="url(#platform)"
-          strokeWidth="2"
-        />
-        <ellipse
-          cx="260"
-          cy="372"
-          rx="150"
-          ry="30"
-          fill="none"
-          stroke="url(#platform)"
-          strokeWidth="1.5"
-          opacity="0.5"
-        />
-
-        {/* Ambient sparkles */}
-        {[
-          [70, 120],
-          [450, 90],
-          [430, 250],
-          [90, 300],
-          [250, 60],
-        ].map(([cx, cy], i) => (
-          <circle key={i} cx={cx} cy={cy} r="2" fill="#93c5fd" opacity="0.7" />
-        ))}
-
-        {/* ---- Props behind laptop ---- */}
-        {/* Open book (top) */}
-        <motion.g
-          {...floatSlow}
-          style={{ transformBox: "fill-box", transformOrigin: "center" }}
-        >
-          <path d="M170 92 L232 78 L232 116 L170 128 Z" fill="#c7d2fe" />
-          <path d="M294 92 L232 78 L232 116 L294 128 Z" fill="#a5b4fc" />
-          <path d="M232 78 L232 116" stroke="#6366f1" strokeWidth="2" />
-          <path
-            d="M178 100 L224 90 M178 108 L224 98"
-            stroke="#8b93d6"
-            strokeWidth="1.5"
-          />
-          <path
-            d="M286 100 L240 90 M286 108 L240 98"
-            stroke="#7c83c9"
-            strokeWidth="1.5"
-          />
-        </motion.g>
-
-        {/* ---- Laptop (bob) ---- */}
-        <motion.g
-          style={{ x: deskX, y: deskY }}
-          animate={{ y: [0, -4, 0] }}
-          transition={{ duration: 5, ease: "easeInOut", repeat: Infinity }}
-        >
-          {/* Plant (left) */}
-          <path d="M96 322 L124 322 L119 352 L101 352 Z" fill="#1e3a8a" />
-          <path
-            d="M110 322 C104 300 92 296 88 302 C96 308 100 316 110 322 Z"
-            fill="#3b82f6"
-          />
-          <path
-            d="M110 322 C116 298 128 296 132 304 C122 308 116 314 110 322 Z"
-            fill="#60a5fa"
-          />
-          <path
-            d="M110 322 C110 296 110 288 110 288 C114 300 112 312 110 322 Z"
-            fill="#93c5fd"
-          />
-
-          {/* Screen */}
-          <rect
-            x="150"
-            y="150"
-            width="220"
-            height="150"
-            rx="12"
-            fill="#0e1730"
-            stroke="#2b3a63"
-            strokeWidth="3"
-          />
-          <rect
-            x="162"
-            y="162"
-            width="196"
-            height="126"
-            rx="6"
-            fill="url(#screen)"
-          />
-          {/* Hinge + keyboard base */}
-          <rect x="150" y="296" width="220" height="8" rx="3" fill="#1b2a4d" />
-          <path
-            d="M120 300 L400 300 L428 342 Q431 348 423 348 L97 348 Q89 348 92 342 Z"
-            fill="#152239"
-          />
-          <path d="M120 300 L400 300 L410 316 L110 316 Z" fill="#1d2b4a" />
-          <rect x="232" y="322" width="56" height="10" rx="4" fill="#22304f" />
-
-          {/* Stacked books (right) */}
-          <rect
-            x="392"
-            y="316"
-            width="64"
-            height="12"
-            rx="3"
-            fill="#6366f1"
-            transform="rotate(-3 424 322)"
-          />
-          <rect
-            x="398"
-            y="306"
-            width="58"
-            height="12"
-            rx="3"
-            fill="#3b82f6"
-            transform="rotate(2 427 312)"
-          />
-          <rect
-            x="402"
-            y="296"
-            width="50"
-            height="12"
-            rx="3"
-            fill="#60a5fa"
-            transform="rotate(-2 427 302)"
-          />
-
-          {/* Mug (right) */}
-          <rect x="430" y="330" width="34" height="26" rx="6" fill="#2563eb" />
-          <path
-            d="M464 336 q12 0 12 8 t-12 8"
-            fill="none"
-            stroke="#2563eb"
-            strokeWidth="4"
-          />
-          <ellipse cx="447" cy="332" rx="15" ry="4" fill="#1d4ed8" />
-        </motion.g>
-
-        {/* ---- Assignment document lifting out (parallax) ---- */}
-        <motion.g style={{ x: docX, y: docY }}>
-          <motion.g
-            animate={{ y: [0, -8, 0] }}
-            transition={{ duration: 4.5, ease: "easeInOut", repeat: Infinity }}
-            style={{ transformBox: "fill-box", transformOrigin: "center" }}
-            transform="rotate(-5 285 205)"
-          >
-            <rect
-              x="212"
-              y="116"
-              width="150"
-              height="180"
-              rx="10"
-              fill="#ffffff"
-            />
-            <rect
-              x="212"
-              y="116"
-              width="150"
-              height="180"
-              rx="10"
-              fill="url(#screen)"
-              opacity="0.04"
-            />
-            <text
-              x="228"
-              y="146"
-              fill="#2563eb"
-              fontSize="16"
-              fontWeight="700"
-              fontFamily="sans-serif"
-            >
-              ASSIGNMENT
-            </text>
-            <line
-              x1="228"
-              y1="162"
-              x2="346"
-              y2="162"
-              stroke="#cbd5e1"
-              strokeWidth="3"
-              strokeLinecap="round"
-            />
-            <line
-              x1="228"
-              y1="174"
-              x2="330"
-              y2="174"
-              stroke="#e2e8f0"
-              strokeWidth="3"
-              strokeLinecap="round"
-            />
-            {/* Image placeholder */}
-            <rect
-              x="228"
-              y="196"
-              width="52"
-              height="40"
-              rx="5"
-              fill="#dbeafe"
-            />
-            <path d="M236 226 l10 -12 l8 8 l6 -6 l8 10 Z" fill="#93c5fd" />
-            <circle cx="240" cy="208" r="4" fill="#93c5fd" />
-            <line
-              x1="292"
-              y1="200"
-              x2="346"
-              y2="200"
-              stroke="#cbd5e1"
-              strokeWidth="3"
-              strokeLinecap="round"
-            />
-            <line
-              x1="292"
-              y1="212"
-              x2="340"
-              y2="212"
-              stroke="#e2e8f0"
-              strokeWidth="3"
-              strokeLinecap="round"
-            />
-            <line
-              x1="292"
-              y1="224"
-              x2="344"
-              y2="224"
-              stroke="#e2e8f0"
-              strokeWidth="3"
-              strokeLinecap="round"
-            />
-            <line
-              x1="228"
-              y1="256"
-              x2="346"
-              y2="256"
-              stroke="#e2e8f0"
-              strokeWidth="3"
-              strokeLinecap="round"
-            />
-            <line
-              x1="228"
-              y1="268"
-              x2="322"
-              y2="268"
-              stroke="#e2e8f0"
-              strokeWidth="3"
-              strokeLinecap="round"
-            />
-          </motion.g>
-          {/* Green approval check */}
-          <motion.g
-            animate={{ scale: [1, 1.08, 1] }}
-            transition={{ duration: 2.4, ease: "easeInOut", repeat: Infinity }}
-            style={{ transformBox: "fill-box", transformOrigin: "center" }}
-          >
-            <circle cx="356" cy="276" r="21" fill="#10b981" />
-            <circle
-              cx="356"
-              cy="276"
-              r="21"
-              fill="none"
-              stroke="#34d399"
-              strokeWidth="3"
-              opacity="0.5"
-            />
-            <path
-              d="M347 276 l6 6 l11 -13"
-              fill="none"
-              stroke="#fff"
-              strokeWidth="4"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </motion.g>
-        </motion.g>
-      </svg>
-
-      {/* ---- Floating glass action labels (HTML overlay) ---- */}
+    <div className="relative mx-auto aspect-square w-full max-w-lg">
+      {/* Rotating glow behind the workspace */}
       <motion.div
-        style={{ x: chipAX, y: chipAY }}
-        className="absolute top-[3%] right-[0%]"
-      >
-        <motion.div {...floatSlow}>
-          <ChipLabel icon={<Search className="size-4" />} label="Research" />
-        </motion.div>
-      </motion.div>
+        aria-hidden
+        className="absolute top-1/2 left-1/2 size-[85%] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-40 blur-3xl"
+        style={{
+          background:
+            "conic-gradient(from 0deg, #3b82f6, #6366f1, #a855f7, #3b82f6)",
+        }}
+        animate={{ rotate: 360 }}
+        transition={{ duration: 24, ease: "linear", repeat: Infinity }}
+      />
 
-      <motion.div
-        style={{ x: chipBX, y: chipBY }}
-        className="absolute top-[36%] left-[-2%]"
-      >
+      {/* Drifting particles */}
+      {PARTICLES.map((p, i) => (
+        <motion.span
+          key={i}
+          aria-hidden
+          className="absolute bottom-[14%] rounded-full bg-blue-400/70"
+          style={{ left: p.left, width: p.size, height: p.size }}
+          animate={{ y: [0, -170], opacity: [0, 0.9, 0] }}
+          transition={{
+            duration: p.duration,
+            delay: p.delay,
+            ease: "easeInOut",
+            repeat: Infinity,
+          }}
+        />
+      ))}
+
+      {/* Whole scene: gentle float + mouse parallax */}
+      <motion.div className="absolute inset-0" style={{ x: sceneX, y: sceneY }}>
         <motion.div
-          animate={{ y: [0, 10, 0] }}
+          className="absolute inset-0"
+          animate={{ y: [0, -8, 0] }}
           transition={{ duration: 6, ease: "easeInOut", repeat: Infinity }}
         >
-          <ChipLabel icon={<Pencil className="size-4" />} label="Write" />
+          <svg viewBox="0 0 460 400" className="h-full w-full" aria-hidden>
+            <defs>
+              <linearGradient id="screenG" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stopColor="#16224a" />
+                <stop offset="1" stopColor="#0a1330" />
+              </linearGradient>
+              <linearGradient id="deckG" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stopColor="#223056" />
+                <stop offset="1" stopColor="#141d3a" />
+              </linearGradient>
+            </defs>
+
+            {/* Soft floor shadow */}
+            <ellipse
+              cx="230"
+              cy="330"
+              rx="150"
+              ry="26"
+              fill="#000"
+              opacity="0.35"
+            />
+
+            {/* Coffee cup (front-left) */}
+            <g>
+              <rect
+                x="70"
+                y="286"
+                width="40"
+                height="30"
+                rx="8"
+                fill="#2563eb"
+              />
+              <path
+                d="M110 292 q14 0 14 9 t-14 9"
+                fill="none"
+                stroke="#2563eb"
+                strokeWidth="4"
+              />
+              <ellipse cx="90" cy="288" rx="18" ry="5" fill="#1d4ed8" />
+              <motion.path
+                d="M84 280 q-4 -8 0 -14"
+                fill="none"
+                stroke="#93c5fd"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                animate={{ opacity: [0, 0.6, 0], y: [0, -6, -12] }}
+                transition={{
+                  duration: 3,
+                  ease: "easeInOut",
+                  repeat: Infinity,
+                }}
+              />
+            </g>
+
+            {/* Notebook + pencil (front-right) */}
+            <g transform="rotate(8 360 300)">
+              <rect
+                x="300"
+                y="278"
+                width="108"
+                height="44"
+                rx="6"
+                fill="#1e293b"
+              />
+              <rect x="300" y="278" width="14" height="44" fill="#0f172a" />
+              {[286, 296, 306, 316].map((cy) => (
+                <circle key={cy} cx="307" cy={cy} r="2.5" fill="#334155" />
+              ))}
+              <line
+                x1="326"
+                y1="292"
+                x2="392"
+                y2="292"
+                stroke="#475569"
+                strokeWidth="2.5"
+              />
+              <line
+                x1="326"
+                y1="302"
+                x2="384"
+                y2="302"
+                stroke="#475569"
+                strokeWidth="2.5"
+              />
+              <line
+                x1="326"
+                y1="312"
+                x2="392"
+                y2="312"
+                stroke="#475569"
+                strokeWidth="2.5"
+              />
+              <rect
+                x="356"
+                y="252"
+                width="6"
+                height="46"
+                rx="2"
+                fill="#f59e0b"
+                transform="rotate(32 359 275)"
+              />
+              <path
+                d="M372 262 l6 -3 l-1 6 Z"
+                fill="#0f172a"
+                transform="rotate(32 375 262)"
+              />
+            </g>
+
+            {/* Laptop */}
+            <rect
+              x="110"
+              y="70"
+              width="240"
+              height="158"
+              rx="14"
+              fill="#0e1730"
+              stroke="#2b3a63"
+              strokeWidth="3"
+            />
+            <rect
+              x="122"
+              y="82"
+              width="216"
+              height="134"
+              rx="8"
+              fill="url(#screenG)"
+            />
+            {/* Light reflection sweep across screen */}
+            <motion.rect
+              x="122"
+              y="82"
+              width="60"
+              height="134"
+              fill="#ffffff"
+              opacity="0.06"
+              transform="skewX(-18)"
+              animate={{ x: [80, 300] }}
+              transition={{
+                duration: 5,
+                ease: "easeInOut",
+                repeat: Infinity,
+                repeatDelay: 2,
+              }}
+            />
+            <rect
+              x="110"
+              y="224"
+              width="240"
+              height="8"
+              rx="3"
+              fill="#1b2a4d"
+            />
+            <path
+              d="M74 232 L386 232 L414 266 Q417 271 410 271 L50 271 Q43 271 46 266 Z"
+              fill="url(#deckG)"
+            />
+            <rect x="196" y="246" width="68" height="9" rx="4" fill="#2a3a63" />
+          </svg>
         </motion.div>
       </motion.div>
 
+      {/* Floating assignment document (typed on a loop) */}
       <motion.div
-        style={{ x: chipCX, y: chipCY }}
-        className="absolute top-[54%] right-[1%]"
+        className="absolute top-[6%] left-1/2 w-[54%] -translate-x-1/2"
+        style={{ x: docX, y: docY }}
       >
         <motion.div
-          animate={{ y: [0, -12, 0] }}
+          animate={{ y: [0, -12, 0], rotate: [-1.5, 1.5, -1.5] }}
           transition={{ duration: 5, ease: "easeInOut", repeat: Infinity }}
+          className="relative rounded-2xl border border-white/60 bg-white p-4 shadow-[0_30px_70px_-15px_rgba(0,0,0,0.6)]"
         >
-          <ChipLabel icon={<Upload className="size-4" />} label="Submit" />
+          {/* Header */}
+          <div className="mb-3 flex items-center gap-2">
+            <span className="size-2.5 rounded-full bg-blue-500" />
+            <span className="h-2 w-16 rounded bg-slate-300" />
+            <span className="ml-auto text-[9px] font-bold tracking-wide text-blue-600">
+              ASSIGNMENT
+            </span>
+          </div>
+
+          {/* Typed lines + caret */}
+          <div className="relative h-16">
+            {LINES.map(([width, top, start], i) => (
+              <motion.div
+                key={i}
+                className="absolute h-2 rounded bg-slate-200"
+                style={{ top }}
+                animate={{ width: ["0%", "0%", width, width, "0%"] }}
+                transition={{
+                  duration: CYCLE,
+                  ease: "easeInOut",
+                  repeat: Infinity,
+                  times: [0, start, start + 0.06, 0.9, 0.97],
+                }}
+              />
+            ))}
+            {/* Blinking caret that steps to each line's end */}
+            <motion.div
+              className="absolute"
+              animate={{
+                top: LINES.map(([, top]) => top).concat(54),
+                left: LINES.map(([w]) => w).concat("60%"),
+              }}
+              transition={{
+                duration: CYCLE,
+                repeat: Infinity,
+                times: [0, 0.2, 0.32, 0.44, 1],
+              }}
+            >
+              <motion.div
+                className="h-3 w-0.5 bg-blue-500"
+                animate={{ opacity: [1, 1, 0, 0, 1] }}
+                transition={{ duration: 0.9, repeat: Infinity }}
+              />
+            </motion.div>
+          </div>
+
+          {/* Verification check appears on completion */}
+          <motion.div
+            className="absolute -right-3 -bottom-3 flex size-9 items-center justify-center rounded-full bg-emerald-500 shadow-lg"
+            animate={{ scale: [0, 0, 1, 1, 0], opacity: [0, 0, 1, 1, 0] }}
+            transition={{
+              duration: CYCLE,
+              repeat: Infinity,
+              times: [0, 0.82, 0.88, 0.96, 0.99],
+            }}
+          >
+            <svg viewBox="0 0 24 24" className="size-5" fill="none">
+              <path
+                d="M5 12l5 5L19 7"
+                stroke="#fff"
+                strokeWidth="2.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </motion.div>
         </motion.div>
       </motion.div>
-    </div>
-  );
-}
-
-function ChipLabel({ icon, label }: { icon: React.ReactNode; label: string }) {
-  return (
-    <div className="flex items-center gap-2 rounded-xl border border-blue-400/25 bg-white/[0.07] px-3.5 py-2 text-sm font-medium text-white/90 shadow-[0_10px_30px_rgba(0,0,0,0.4)] backdrop-blur-md">
-      <span className="text-blue-300">{icon}</span>
-      {label}
     </div>
   );
 }

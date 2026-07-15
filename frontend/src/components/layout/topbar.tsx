@@ -1,6 +1,7 @@
 "use client";
 
 import { Loader2, LogOut, UserRound } from "lucide-react";
+import Link from "next/link";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,7 +17,6 @@ import { MobileNav } from "@/components/layout/mobile-nav";
 import { useAuth, useLogout } from "@/features/auth";
 import { NotificationBell } from "@/features/notifications";
 
-/** Initials for the avatar fallback, e.g. "System Admin" → "SA". */
 function initials(name: string): string {
   return name
     .split(/\s+/)
@@ -26,10 +26,6 @@ function initials(name: string): string {
     .join("");
 }
 
-/**
- * Top application bar: page area (left) and global actions (right — theme
- * toggle + user menu). Sticky, with a subtle glass effect on scroll.
- */
 export function Topbar() {
   const { user } = useAuth();
   const logout = useLogout();
@@ -68,12 +64,11 @@ export function Topbar() {
               </p>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem disabled>
-              <UserRound className="size-4" />
-              Profile
-              <span className="text-muted-foreground ml-auto text-xs">
-                Soon
-              </span>
+            <DropdownMenuItem asChild>
+              <Link href="/profile" className="flex w-full items-center gap-2">
+                <UserRound className="size-4" />
+                Profile
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
