@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Assignments;
 
 use App\Enums\AssignmentEventType;
+use App\Enums\AssignmentPriority;
 use App\Enums\AssignmentStatus;
 use App\Enums\Role;
 use App\Exceptions\DomainRuleException;
@@ -30,9 +31,10 @@ final class AssignmentService
     ) {}
 
     /**
-     * Client places an order.
+     * Client submits an assignment. Optional academic fields are persisted to
+     * their own columns so admin/PM panels can search, filter, and report.
      *
-     * @param  array{title: string, subject: string, description: string, deadline: string}  $data
+     * @param  array<string, mixed>  $data
      */
     public function create(User $client, array $data): Assignment
     {
@@ -40,6 +42,15 @@ final class AssignmentService
             $assignment = $this->assignments->create([
                 'title' => $data['title'],
                 'subject' => $data['subject'],
+                'type' => $data['type'] ?? null,
+                'academic_level' => $data['academic_level'] ?? null,
+                'course' => $data['course'] ?? null,
+                'university' => $data['university'] ?? null,
+                'word_count' => $data['word_count'] ?? null,
+                'referencing_style' => $data['referencing_style'] ?? null,
+                'priority' => $data['priority'] ?? AssignmentPriority::Standard->value,
+                'contact_phone' => $data['contact_phone'] ?? null,
+                'contact_whatsapp' => $data['contact_whatsapp'] ?? null,
                 'description' => $data['description'],
                 'deadline' => $data['deadline'],
                 'status' => AssignmentStatus::PendingAssignment,

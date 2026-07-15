@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\AcademicLevel;
+use App\Enums\AssignmentPriority;
 use App\Enums\AssignmentStatus;
+use App\Enums\AssignmentType;
 use App\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
@@ -15,9 +18,18 @@ use Illuminate\Support\Carbon;
 
 /**
  * @property AssignmentStatus $status
+ * @property ?AssignmentType $type
+ * @property ?AcademicLevel $academic_level
+ * @property AssignmentPriority $priority
+ * @property ?int $word_count
  * @property Carbon $deadline
  */
-#[Fillable(['title', 'subject', 'description', 'deadline', 'status', 'client_id', 'project_manager_id', 'writer_id'])]
+#[Fillable([
+    'title', 'subject', 'type', 'academic_level', 'course', 'university',
+    'word_count', 'referencing_style', 'priority', 'contact_phone',
+    'contact_whatsapp', 'description', 'deadline', 'status', 'client_id',
+    'project_manager_id', 'writer_id',
+])]
 class Assignment extends Model
 {
     use HasUuid;
@@ -31,6 +43,10 @@ class Assignment extends Model
         return [
             'deadline' => 'datetime',
             'status' => AssignmentStatus::class,
+            'type' => AssignmentType::class,
+            'academic_level' => AcademicLevel::class,
+            'priority' => AssignmentPriority::class,
+            'word_count' => 'integer',
         ];
     }
 

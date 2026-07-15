@@ -3,10 +3,13 @@
 import Link from "next/link";
 import { format } from "date-fns";
 import { ArrowLeft, Loader2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
 import { ROUTES } from "@/constants/routes";
+import { PRIORITY_META } from "../constants";
 import { useAssignment } from "../hooks/use-assignments";
 import { AssignmentActions } from "./assignment-actions";
 import { AssignmentTimeline } from "./assignment-timeline";
@@ -14,8 +17,15 @@ import { ChatPanel } from "./chat-panel";
 import { FilesPanel } from "./files-panel";
 import { StatusBadge } from "./status-badge";
 
-/** Label/value pair in the meta grid. */
-function Meta({ label, value }: { label: string; value: string }) {
+/** Label/value pair in the meta grid. Renders nothing when value is empty. */
+function Meta({
+  label,
+  value,
+}: {
+  label: string;
+  value: string | number | null | undefined;
+}) {
+  if (value === null || value === undefined || value === "") return null;
   return (
     <div>
       <p className="text-muted-foreground font-mono text-[10px] tracking-[0.18em] uppercase">
@@ -77,9 +87,19 @@ export function AssignmentDetail({ id }: { id: string }) {
             {assignment.title}
           </h1>
           <StatusBadge status={assignment.status} />
+          {assignment.priority !== "standard" && (
+            <Badge
+              variant="outline"
+              className={cn(PRIORITY_META[assignment.priority].className)}
+            >
+              {assignment.priorityLabel}
+            </Badge>
+          )}
         </div>
         <p className="text-muted-foreground mt-1 text-sm">
-          {assignment.subject}
+          {assignment.typeLabel
+            ? `${assignment.typeLabel} · ${assignment.subject}`
+            : assignment.subject}
         </p>
       </div>
 
@@ -115,6 +135,36 @@ export function AssignmentDetail({ id }: { id: string }) {
                   label="Manager"
                   value={assignment.projectManager?.name ?? "—"}
                 />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Assignment details</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                <Meta label="Type" value={assignment.typeLabel} />
+                <Meta label="Subject" value={assignment.subject} />
+                <Meta
+                  label="Academic level"
+                  value={assignment.academicLevelLabel}
+                />
+                <Meta label="Course" value={assignment.course} />
+                <Meta label="University" value={assignment.university} />
+                <Meta
+                  label="Word count"
+                  value={
+                    assignment.wordCount
+                      ? assignment.wordCount.toLocaleString()
+                      : null
+                  }
+                />
+                <Meta label="Referencing" value={assignment.referencingStyle} />
+                <Meta label="Priority" value={assignment.priorityLabel} />
+                <Meta label="Phone" value={assignment.contactPhone} />
+                <Meta label="WhatsApp" value={assignment.contactWhatsapp} />
               </div>
             </CardContent>
           </Card>

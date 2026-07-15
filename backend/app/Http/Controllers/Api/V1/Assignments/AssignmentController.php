@@ -60,7 +60,7 @@ final class AssignmentController extends Controller
 
     public function store(StoreAssignmentRequest $request): JsonResponse
     {
-        /** @var array{title: string, subject: string, description: string, deadline: string} $data */
+        /** @var array<string, mixed> $data */
         $data = $request->validated();
 
         $assignment = $this->service->create($this->actor($request), $data);

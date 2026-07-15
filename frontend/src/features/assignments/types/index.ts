@@ -43,10 +43,40 @@ export interface AssignmentEvent {
   createdAt: string | null;
 }
 
+export type AssignmentType =
+  | "essay"
+  | "report"
+  | "research_paper"
+  | "dissertation"
+  | "thesis"
+  | "coursework"
+  | "case_study"
+  | "literature_review"
+  | "presentation"
+  | "programming"
+  | "editing"
+  | "other";
+
+export type AcademicLevel = "high_school" | "undergraduate" | "masters" | "phd";
+
+export type AssignmentPriority = "standard" | "urgent" | "critical";
+
 export interface Assignment {
   id: string;
   title: string;
   subject: string;
+  type: AssignmentType | null;
+  typeLabel: string | null;
+  academicLevel: AcademicLevel | null;
+  academicLevelLabel: string | null;
+  course: string | null;
+  university: string | null;
+  wordCount: number | null;
+  referencingStyle: string | null;
+  priority: AssignmentPriority;
+  priorityLabel: string;
+  contactPhone: string | null;
+  contactWhatsapp: string | null;
   description: string;
   status: AssignmentStatus;
   statusLabel: string;
@@ -81,6 +111,15 @@ export interface AssignmentsPage {
 export interface CreateAssignmentPayload {
   title: string;
   subject: string;
+  type?: AssignmentType | null;
+  academic_level?: AcademicLevel | null;
+  course?: string | null;
+  university?: string | null;
+  word_count?: number | null;
+  referencing_style?: string | null;
+  priority?: AssignmentPriority;
+  contact_phone?: string | null;
+  contact_whatsapp?: string | null;
   description: string;
   deadline: string;
 }
