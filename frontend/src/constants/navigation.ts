@@ -1,11 +1,9 @@
 import {
-  AlertCircle,
   BarChart3,
   Calendar,
   CheckSquare,
   FileText,
   FolderOpen,
-  History,
   LayoutDashboard,
   MessageSquare,
   PieChart,
@@ -14,6 +12,8 @@ import {
   UserRound,
   Users,
   Wallet,
+  AlertCircle,
+  History,
   type LucideIcon,
 } from "lucide-react";
 import { ROUTES } from "./routes";
@@ -22,6 +22,7 @@ export interface NavItem {
   label: string;
   href: string;
   icon: LucideIcon;
+  /** Shown only when the user has this permission (omit = always shown). */
   permission?: string;
 }
 
@@ -30,6 +31,11 @@ export interface NavSection {
   items: NavItem[];
 }
 
+/**
+ * Sidebar navigation registry — single source of truth. Items are filtered
+ * per-user by permission (UX only; the backend enforces authorization).
+ * Modules appear here as they come online.
+ */
 export const NAV_SECTIONS: NavSection[] = [
   {
     title: "Overview",
