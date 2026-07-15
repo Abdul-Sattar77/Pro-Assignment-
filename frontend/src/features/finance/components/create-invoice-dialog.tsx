@@ -66,16 +66,17 @@ export function CreateInvoiceDialog({
         <DialogHeader>
           <DialogTitle>New invoice</DialogTitle>
           <DialogDescription>
-            Raise an invoice for an order. The client is billed automatically.
+            Raise an invoice for an assignment. The student is billed
+            automatically.
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label>Order</Label>
+            <Label>Assignment</Label>
             <Select value={assignmentId} onValueChange={setAssignmentId}>
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select an order" />
+                <SelectValue placeholder="Select an assignment" />
               </SelectTrigger>
               <SelectContent>
                 {orders?.assignments.map((order) => (

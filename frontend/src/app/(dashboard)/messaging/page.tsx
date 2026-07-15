@@ -21,7 +21,7 @@ export default function MessagingPage() {
       <motion.div variants={fadeIn}>
         <PageHeader
           title="Messages"
-          description="Open an order to chat with everyone working on it."
+          description="Open an assignment to chat with everyone working on it."
         />
       </motion.div>
       <motion.div variants={fadeIn}>

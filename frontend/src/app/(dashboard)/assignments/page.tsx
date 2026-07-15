@@ -19,7 +19,7 @@ export default function AssignmentsPage() {
     >
       <motion.div variants={fadeIn}>
         <PageHeader
-          title="Orders"
+          title="Assignments"
           description="Every assignment from brief to delivery — assign, review, and track."
         />
       </motion.div>

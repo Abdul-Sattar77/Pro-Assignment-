@@ -35,7 +35,7 @@ function greeting(): string {
 const STEPS = [
   {
     icon: Sparkles,
-    title: "Place your brief",
+    title: "Submit your brief",
     text: "Topic, requirements, deadline — it takes about two minutes.",
   },
   {
@@ -46,7 +46,7 @@ const STEPS = [
   {
     icon: MessagesSquare,
     title: "Track everything live",
-    text: "Milestones and updates land on your order's timeline as they happen.",
+    text: "Milestones and updates land on your assignment's timeline as they happen.",
   },
 ];
 
@@ -103,7 +103,7 @@ export function ClientHome() {
             className="aurora-glow group inline-flex h-13 items-center gap-2 rounded-full bg-[#d5b36b] px-7 text-base font-semibold text-[#0a0a0c] transition-all duration-200 hover:scale-[1.03] hover:bg-[#e2c584]"
           >
             <FilePlus2 className="size-5" />
-            Place your brief
+            Submit assignment
             <ArrowUpRight className="size-5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </Link>
           {hasOrders && (
@@ -111,7 +111,7 @@ export function ClientHome() {
               href={ROUTES.assignments}
               className="text-foreground/80 hover:text-foreground flex h-13 items-center rounded-full border border-white/15 px-6 text-sm transition-colors hover:border-white/30"
             >
-              All my orders
+              All my assignments
             </Link>
           )}
         </motion.div>
@@ -126,7 +126,7 @@ export function ClientHome() {
       >
         <div className="flex items-baseline justify-between">
           <p className="text-muted-foreground font-mono text-xs tracking-[0.3em] uppercase">
-            My orders
+            My assignments
           </p>
           {hasOrders && (
             <Link
@@ -150,7 +150,7 @@ export function ClientHome() {
           {!ordersLoading && !hasOrders && (
             <div className="aurora-border rounded-2xl px-6 py-10 text-center">
               <p className="font-display text-lg font-bold">
-                No orders yet — your first brief starts here.
+                No assignments yet — submit your first brief to get started.
               </p>
               <p className="text-muted-foreground mx-auto mt-2 max-w-sm text-sm">
                 Tell us what you need and a manager will match you with the
@@ -189,7 +189,7 @@ export function ClientHome() {
         animate="visible"
       >
         <p className="text-muted-foreground font-mono text-xs tracking-[0.3em] uppercase">
-          How your order flows
+          How your assignment flows
         </p>
         <div className="mt-6 grid gap-5 sm:grid-cols-3">
           {STEPS.map((step, index) => (

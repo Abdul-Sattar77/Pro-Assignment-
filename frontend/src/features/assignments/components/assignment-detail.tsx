@@ -39,7 +39,7 @@ export function AssignmentDetail({ id }: { id: string }) {
     return (
       <div className="text-muted-foreground flex items-center gap-2 py-24 text-sm">
         <Loader2 className="size-4 animate-spin" />
-        Loading order…
+        Loading assignment…
       </div>
     );
   }
@@ -47,7 +47,9 @@ export function AssignmentDetail({ id }: { id: string }) {
   if (isError || !assignment) {
     return (
       <div className="py-24 text-center">
-        <p className="text-sm font-medium">Couldn&apos;t load this order.</p>
+        <p className="text-sm font-medium">
+          Couldn&apos;t load this assignment.
+        </p>
         <Button
           variant="outline"
           size="sm"
@@ -67,7 +69,7 @@ export function AssignmentDetail({ id }: { id: string }) {
         <Button variant="ghost" size="sm" asChild className="mb-3 -ml-2">
           <Link href={ROUTES.assignments}>
             <ArrowLeft className="size-4" />
-            All orders
+            All assignments
           </Link>
         </Button>
         <div className="flex flex-wrap items-center gap-3">

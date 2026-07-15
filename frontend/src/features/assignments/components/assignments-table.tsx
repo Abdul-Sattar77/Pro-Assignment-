@@ -117,7 +117,7 @@ export function AssignmentsTable() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Order</TableHead>
+              <TableHead>Assignment</TableHead>
               <TableHead>Client</TableHead>
               <TableHead>Writer</TableHead>
               <TableHead>Status</TableHead>
@@ -152,9 +152,10 @@ export function AssignmentsTable() {
             {data && data.assignments.length === 0 && (
               <TableRow>
                 <TableCell colSpan={5} className="py-12 text-center">
-                  <p className="text-sm font-medium">No orders found</p>
+                  <p className="text-sm font-medium">No assignments found</p>
                   <p className="text-muted-foreground mt-1 text-sm">
-                    New client orders appear here the moment they are placed.
+                    New student assignments appear here the moment they are
+                    submitted.
                   </p>
                 </TableCell>
               </TableRow>
@@ -199,7 +200,7 @@ export function AssignmentsTable() {
         <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-muted-foreground text-sm tabular-nums">
             Page {pagination.page} of {pagination.totalPages} ·{" "}
-            {pagination.total} orders
+            {pagination.total} assignments
           </p>
           <div className="flex items-center gap-2">
             <Button

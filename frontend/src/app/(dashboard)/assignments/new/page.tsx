@@ -19,7 +19,7 @@ export default function NewAssignmentPage() {
     >
       <motion.div variants={fadeIn}>
         <PageHeader
-          title="Place your order"
+          title="Submit an assignment"
           description="Brief us once — we take it from there."
         />
       </motion.div>

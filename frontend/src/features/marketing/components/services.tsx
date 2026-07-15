@@ -153,7 +153,7 @@ export function Services() {
                   href={href}
                   className="aurora-text mt-5 inline-flex items-center gap-1 text-sm font-semibold"
                 >
-                  Order this
+                  Get help with this
                   <ArrowUpRight className="size-4 text-fuchsia-400 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </Link>
               </div>

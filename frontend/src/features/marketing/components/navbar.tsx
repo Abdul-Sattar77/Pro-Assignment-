@@ -85,7 +85,7 @@ export function Navbar() {
                 href={orderHref(false)}
                 className="flex h-10 items-center gap-1.5 rounded-full bg-[#d5b36b] px-5 text-sm font-semibold text-[#0a0a0c] transition-all hover:scale-[1.04] hover:bg-[#e2c584]"
               >
-                Start order
+                Submit assignment
                 <ArrowUpRight className="size-4" />
               </Link>
             </>
@@ -134,7 +134,7 @@ export function Navbar() {
                     href={orderHref(false)}
                     className="flex h-12 items-center justify-center gap-1.5 rounded-full bg-[#d5b36b] text-sm font-semibold text-[#0a0a0c]"
                   >
-                    Start order
+                    Submit assignment
                     <ArrowUpRight className="size-4" />
                   </Link>
                   <Link

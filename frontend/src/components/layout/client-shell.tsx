@@ -84,7 +84,7 @@ export function ClientShell({ children }: { children: ReactNode }) {
                 <DropdownMenuItem asChild>
                   <Link href={ROUTES.assignments}>
                     <FileText className="size-4" />
-                    My orders
+                    My assignments
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>

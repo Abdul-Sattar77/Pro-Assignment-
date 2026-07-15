@@ -101,10 +101,11 @@ export function Hero() {
           variants={wordReveal}
           initial="hidden"
           animate="visible"
-          className="text-muted-foreground pointer-events-auto mt-8 max-w-xl text-lg text-pretty"
+          className="text-foreground/85 pointer-events-auto mt-8 max-w-xl text-lg leading-relaxed text-pretty"
         >
-          Brief a vetted expert, watch the work take shape live, and approve
-          when it&apos;s perfect — inside one luminous workspace.
+          Essays, dissertations, programming, and research — submit your
+          assignment, get matched with a subject expert, and track every step to
+          polished, grade-ready work.
         </motion.p>
 
         <motion.div
@@ -118,7 +119,7 @@ export function Hero() {
             href={orderHref(isAuthed)}
             className="aurora-glow group flex h-14 items-center gap-2 rounded-full bg-[#d5b36b] px-8 text-base font-semibold text-[#0a0a0c] transition-all duration-200 hover:scale-[1.03] hover:bg-[#e2c584] active:scale-[0.98]"
           >
-            Start your order
+            Start your assignment
             <ArrowRight className="size-5 transition-transform group-hover:translate-x-1" />
           </Link>
           <a

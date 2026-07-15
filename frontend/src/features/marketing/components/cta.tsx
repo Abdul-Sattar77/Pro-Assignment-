@@ -56,12 +56,12 @@ export function Cta() {
             href={orderHref(isAuthed)}
             className="aurora-glow group flex h-14 items-center gap-2 rounded-full bg-[#d5b36b] px-9 text-base font-semibold text-[#0a0a0c] transition-all duration-200 hover:scale-[1.04] hover:bg-[#e2c584] active:scale-[0.98]"
           >
-            Start your order
+            Submit your assignment
             <ArrowRight className="size-5 transition-transform group-hover:translate-x-1" />
           </Link>
           <p className="text-muted-foreground text-sm">
-            Browse freely — your private studio account is created when you
-            order.
+            Browse freely — your private student account is created when you
+            submit.
           </p>
         </motion.div>
       </div>
