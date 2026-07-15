@@ -28,11 +28,7 @@ interface ChatWindowProps {
   isLoading: boolean;
 }
 
-export function ChatWindow({
-  conversation,
-  messages,
-  isLoading,
-}: ChatWindowProps) {
+export function ChatWindow({ conversation, messages, isLoading }: ChatWindowProps) {
   const { user, hasPermission } = useAuth();
   const deleteMessage = useDeleteMessage();
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -54,25 +50,19 @@ export function ChatWindow({
 
   const getFileIcon = (mimeType: string) => {
     const type = mimeType.toLowerCase();
-    if (
-      type.includes("pdf") ||
-      type.includes("word") ||
-      type.includes("text")
-    ) {
-      return <FileText className="size-5 shrink-0 text-blue-500" />;
+    if (type.includes("pdf") || type.includes("word") || type.includes("text")) {
+      return <FileText className="size-5 text-blue-500 shrink-0" />;
     }
     if (type.startsWith("image/")) {
-      return <FileImage className="size-5 shrink-0 text-emerald-500" />;
+      return <FileImage className="size-5 text-emerald-500 shrink-0" />;
     }
     if (type.includes("zip") || type.includes("rar")) {
-      return <FileArchive className="size-5 shrink-0 text-purple-500" />;
+      return <FileArchive className="size-5 text-purple-500 shrink-0" />;
     }
-    return <File className="size-5 shrink-0 text-slate-500" />;
+    return <File className="size-5 text-slate-500 shrink-0" />;
   };
 
-  const handleDownloadAttachment = (
-    attachment: Exclude<Message["attachment"], null | undefined>,
-  ) => {
+  const handleDownloadAttachment = (attachment: Exclude<Message["attachment"], null | undefined>) => {
     // Create a mock AppFile model to pass to fileService.download
     const fileMock: AppFile = {
       id: attachment.id,
@@ -88,19 +78,16 @@ export function ChatWindow({
   };
 
   return (
-    <div className="text-foreground flex h-full flex-col bg-zinc-50 dark:bg-zinc-950/20">
+    <div className="flex flex-col h-full bg-zinc-50 dark:bg-zinc-950/20 text-foreground">
       {/* Header */}
-      <div className="bg-card flex shrink-0 items-center justify-between border-b p-4 shadow-2xs">
+      <div className="p-4 border-b bg-card shrink-0 shadow-2xs flex items-center justify-between">
         <div>
-          <h3 className="max-w-[240px] truncate text-sm font-bold md:max-w-md">
+          <h3 className="text-sm font-bold truncate max-w-[240px] md:max-w-md">
             {conversation.assignment.title}
           </h3>
           <p className="text-2xs text-muted-foreground font-medium">
-            {conversation.type === "client"
-              ? "Client Channel"
-              : "Writer Channel"}{" "}
-            — Status:{" "}
-            <span className="text-primary font-semibold capitalize">
+            {conversation.type === "client" ? "Client Channel" : "Writer Channel"} — Status:{" "}
+            <span className="capitalize font-semibold text-primary">
               {conversation.assignment.status.replace("_", " ")}
             </span>
           </p>
@@ -110,48 +97,37 @@ export function ChatWindow({
       {/* Messages Scroll Area */}
       <ScrollArea className="flex-1 p-4">
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center gap-2 py-20">
-            <Loader2 className="text-primary size-6 animate-spin" />
-            <p className="text-muted-foreground text-xs font-medium">
-              Loading chat history...
-            </p>
+          <div className="flex flex-col items-center justify-center py-20 gap-2">
+            <Loader2 className="size-6 animate-spin text-primary" />
+            <p className="text-xs text-muted-foreground font-medium">Loading chat history...</p>
           </div>
         ) : messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 text-center">
-            <div className="bg-primary/10 mb-3 flex size-12 items-center justify-center rounded-full">
-              <FileText className="text-primary size-5" />
+            <div className="size-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
+              <FileText className="size-5 text-primary" />
             </div>
             <h4 className="text-sm font-bold">Start the discussion</h4>
-            <p className="text-muted-foreground mt-1 max-w-xs text-xs">
-              Type your message below to communicate with participants regarding
-              this assignment.
+            <p className="text-xs text-muted-foreground mt-1 max-w-xs">
+              Type your message below to communicate with participants regarding this assignment.
             </p>
           </div>
         ) : (
           <div className="space-y-4">
             {messages.map((msg) => {
               const isMe = msg.sender?.id === user?.id;
-              const showDelete =
-                !msg.isDeleted &&
-                (isMe ||
-                  isAdmin ||
-                  (hasPermission("calendar.manage") &&
-                    conversation.assignment.status !== "completed"));
+              const showDelete = !msg.isDeleted && (isMe || isAdmin || (hasPermission("calendar.manage") && conversation.assignment.status !== "completed"));
 
               return (
                 <div
                   key={msg.id}
-                  className={cn(
-                    "flex w-full max-w-[80%] flex-col gap-1",
-                    isMe ? "ml-auto items-end" : "mr-auto items-start",
-                  )}
+                  className={cn("flex flex-col gap-1 w-full max-w-[80%]", isMe ? "ml-auto items-end" : "mr-auto items-start")}
                 >
                   {/* Sender Metadata */}
                   <div className="flex items-center gap-1.5 px-1">
-                    <span className="text-3xs text-muted-foreground font-bold">
+                    <span className="text-3xs font-bold text-muted-foreground">
                       {msg.sender?.name || "System"}
                     </span>
-                    <span className="text-muted-foreground/80 text-[9px]">
+                    <span className="text-[9px] text-muted-foreground/80">
                       {format(new Date(msg.createdAt), "HH:mm")}
                     </span>
                   </div>
@@ -159,22 +135,22 @@ export function ChatWindow({
                   {/* Message Bubble */}
                   <div
                     className={cn(
-                      "shadow-3xs group relative flex flex-col gap-2 rounded-2xl px-4 py-2.5 text-xs transition-all",
+                      "rounded-2xl px-4 py-2.5 text-xs shadow-3xs group relative flex flex-col gap-2 transition-all",
                       msg.isDeleted
-                        ? "bg-muted text-muted-foreground border-muted-foreground/30 border border-dashed italic"
+                        ? "bg-muted text-muted-foreground italic border border-dashed border-muted-foreground/30"
                         : isMe
-                          ? "bg-primary text-primary-foreground rounded-tr-none"
-                          : "bg-card text-card-foreground rounded-tl-none border",
+                        ? "bg-primary text-primary-foreground rounded-tr-none"
+                        : "bg-card text-card-foreground rounded-tl-none border"
                     )}
                   >
                     {/* Render Text Body */}
-                    <div className="leading-relaxed font-medium whitespace-pre-wrap select-text">
+                    <div className="whitespace-pre-wrap leading-relaxed select-text font-medium">
                       {msg.message}
                     </div>
 
                     {/* Admin raw view badge */}
                     {msg.isDeleted && isAdmin && (
-                      <div className="mt-1 flex shrink-0 items-center gap-1 rounded-full border border-rose-300 bg-rose-100 px-2 py-0.5 text-[10px] font-bold text-rose-500 select-none dark:bg-rose-950/20">
+                      <div className="flex items-center gap-1 text-[10px] text-rose-500 font-bold border border-rose-300 bg-rose-100 dark:bg-rose-950/20 px-2 py-0.5 rounded-full mt-1 shrink-0 select-none">
                         <ShieldAlert className="size-3" />
                         Deleted Message (Admin view)
                       </div>
@@ -183,25 +159,21 @@ export function ChatWindow({
                     {/* File Attachment Card */}
                     {msg.attachment && (
                       <div
-                        onClick={() =>
-                          handleDownloadAttachment(msg.attachment!)
-                        }
+                        onClick={() => handleDownloadAttachment(msg.attachment!)}
                         className={cn(
-                          "mt-1 flex cursor-pointer items-center gap-3 rounded-xl border p-2 transition-all select-none hover:opacity-95",
+                          "flex items-center gap-3 border rounded-xl p-2 cursor-pointer transition-all hover:opacity-95 select-none mt-1",
                           isMe
                             ? "bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground"
-                            : "bg-muted/40 hover:bg-muted/75 text-card-foreground",
+                            : "bg-muted/40 hover:bg-muted/75 text-card-foreground"
                         )}
                         title="Click to Download"
                       >
                         {getFileIcon(msg.attachment.mimeType)}
-                        <div className="min-w-0 flex-1">
-                          <p className="truncate text-[11px] font-semibold">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[11px] font-semibold truncate">
                             {msg.attachment.originalName}
                           </p>
-                          <p className="text-[10px] opacity-75">
-                            {msg.attachment.humanSize}
-                          </p>
+                          <p className="text-[10px] opacity-75">{msg.attachment.humanSize}</p>
                         </div>
                         <Download className="size-4 shrink-0 opacity-80" />
                       </div>
@@ -209,11 +181,8 @@ export function ChatWindow({
 
                     {/* Image Render */}
                     {msg.messageType === "image" && msg.attachment && (
-                      <div className="mt-1 max-h-[220px] max-w-xs overflow-hidden rounded-lg border shadow-sm select-none md:max-w-sm">
-                        <SecureImageLoader
-                          attachmentId={msg.attachment.id}
-                          mimeType={msg.attachment.mimeType}
-                        />
+                      <div className="rounded-lg overflow-hidden border mt-1 max-w-xs md:max-w-sm max-h-[220px] shadow-sm select-none">
+                        <SecureImageLoader attachmentId={msg.attachment.id} mimeType={msg.attachment.mimeType} />
                       </div>
                     )}
 
@@ -222,8 +191,8 @@ export function ChatWindow({
                       <button
                         onClick={() => handleDelete(msg.id)}
                         className={cn(
-                          "bg-card absolute top-1/2 -translate-y-1/2 rounded-full border p-1.5 opacity-0 shadow-2xs transition-opacity group-hover:opacity-100 hover:text-rose-500",
-                          isMe ? "-left-10" : "-right-10",
+                          "absolute top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-card border rounded-full p-1.5 shadow-2xs hover:text-rose-500",
+                          isMe ? "-left-10" : "-right-10"
                         )}
                         title="Delete Message"
                       >
@@ -245,13 +214,7 @@ export function ChatWindow({
 /**
  * Image loader to securely download and display private attachments via object URLs.
  */
-function SecureImageLoader({
-  attachmentId,
-  mimeType,
-}: {
-  attachmentId: string;
-  mimeType: string;
-}) {
+function SecureImageLoader({ attachmentId, mimeType }: { attachmentId: string; mimeType: string }) {
   const [imgUrl, setImgUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -279,7 +242,7 @@ function SecureImageLoader({
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center bg-zinc-100 p-8 dark:bg-zinc-900">
+      <div className="flex items-center justify-center p-8 bg-zinc-100 dark:bg-zinc-900">
         <Loader2 className="size-4 animate-spin text-zinc-400" />
       </div>
     );
@@ -287,7 +250,7 @@ function SecureImageLoader({
 
   if (!imgUrl) {
     return (
-      <div className="bg-muted text-3xs text-muted-foreground p-4 italic">
+      <div className="p-4 bg-muted text-3xs text-muted-foreground italic">
         Failed to load image preview
       </div>
     );
@@ -298,7 +261,7 @@ function SecureImageLoader({
     <img
       src={imgUrl}
       alt="attachment"
-      className="h-auto max-h-[220px] w-full cursor-pointer object-cover transition-transform hover:scale-[1.01]"
+      className="w-full h-auto max-h-[220px] object-cover cursor-pointer hover:scale-[1.01] transition-transform"
       onClick={() => window.open(imgUrl, "_blank")}
     />
   );

@@ -6,35 +6,26 @@ interface Envelope<T> {
 }
 
 export const messageService = {
-  async listConversations(
-    search?: string,
-    type?: string,
-  ): Promise<Conversation[]> {
+  async listConversations(search?: string, type?: string): Promise<Conversation[]> {
     const params: Record<string, string> = {};
     if (search) params.search = search;
     if (type) params.type = type;
 
-    const { data } = await apiClient.get<Envelope<Conversation[]>>(
-      "/messages",
-      {
-        params,
-      },
-    );
+    const { data } = await apiClient.get<Envelope<Conversation[]>>("/messages", {
+      params,
+    });
     return data.data;
   },
 
   async listMessages(conversationId: string): Promise<Message[]> {
     const { data } = await apiClient.get<Envelope<Message[]>>(
-      `/messages/${conversationId}`,
+      `/messages/${conversationId}`
     );
     return data.data;
   },
 
   async sendMessage(payload: SendMessagePayload): Promise<Message> {
-    const { data } = await apiClient.post<Envelope<Message>>(
-      "/messages",
-      payload,
-    );
+    const { data } = await apiClient.post<Envelope<Message>>("/messages", payload);
     return data.data;
   },
 
@@ -44,7 +35,7 @@ export const messageService = {
 
   async getUnreadCount(): Promise<number> {
     const { data } = await apiClient.get<{ count: number }>(
-      "/messages/unread-count",
+      "/messages/unread-count"
     );
     return data.count;
   },

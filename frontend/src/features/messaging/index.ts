@@ -1,5 +1,19 @@
+/**
+ * Public surface of the messaging feature.
+ */
 export { ConversationList } from "./components/conversation-list";
-export { MessageList } from "./components/message-list";
+export { ChatWindow } from "./components/chat-window";
 export { MessageInput } from "./components/message-input";
-export { useMessaging } from "./hooks/use-messaging";
-export type { Message, Conversation, MessageRole } from "./types";
+export {
+  useConversations,
+  useChatHistory,
+  useSendMessage,
+  useDeleteMessage,
+  useUnreadCount,
+} from "./hooks/use-messaging";
+export {
+  type Conversation,
+  type Message,
+  type SendMessagePayload,
+} from "./types";
+export { MESSAGING_QUERY_KEYS } from "./constants";
