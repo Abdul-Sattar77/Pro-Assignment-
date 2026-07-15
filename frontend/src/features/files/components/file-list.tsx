@@ -24,6 +24,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useAuth } from "@/features/auth";
+import { apiClient } from "@/lib/api-client";
 import { useDeleteFile, useDownloadFile } from "../hooks/use-files";
 import type { AppFile } from "../types";
 import { FileRenameDialog } from "./file-rename-dialog";
@@ -298,7 +299,7 @@ function SecureImagePreview({ file }: { file: AppFile }) {
   useState(() => {
     let active = true;
     apiClient
-      .get(`/files/${file.id}/download`, { responseType: "blob" })
+      .get<Blob>(`/files/${file.id}/download`, { responseType: "blob" })
       .then((res) => {
         if (!active) return;
         const blob = new Blob([res.data], { type: file.mimeType });
