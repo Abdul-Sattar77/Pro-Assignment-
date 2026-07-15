@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ROUTES } from "@/constants/routes";
-import { LANDING_SECTIONS } from "../constants";
+import { NAV_LINKS } from "../constants";
 
 /** Aurora footer: hairline top rule, minimal links, gradient star sign-off. */
 export function Footer() {
@@ -16,14 +16,14 @@ export function Footer() {
         </Link>
 
         <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
-          {LANDING_SECTIONS.map((section) => (
-            <a
-              key={section.id}
-              href={`#${section.id}`}
+          {NAV_LINKS.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
               className="text-muted-foreground hover:text-foreground text-sm transition-colors"
             >
-              {section.label}
-            </a>
+              {link.label}
+            </Link>
           ))}
           <Link
             href={ROUTES.login}

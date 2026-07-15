@@ -1,11 +1,17 @@
 import { ROUTES } from "@/constants/routes";
 
-/** Anchor sections on the landing page. */
-export const LANDING_SECTIONS = [
-  { id: "services", label: "Services" },
-  { id: "fields", label: "Fields" },
-  { id: "process", label: "Process" },
-  { id: "why-us", label: "Why us" },
+/**
+ * Primary navigation for the public website. Each entry is a real page (the
+ * public site is deliberately separate from the internal portal), so students
+ * can explore before ever touching the studio.
+ */
+export const NAV_LINKS = [
+  { href: ROUTES.home, label: "Home" },
+  { href: ROUTES.about, label: "About" },
+  { href: ROUTES.servicesPage, label: "Services" },
+  { href: ROUTES.process, label: "Process" },
+  { href: ROUTES.faq, label: "FAQ" },
+  { href: ROUTES.contact, label: "Contact" },
 ] as const;
 
 /**

@@ -5,6 +5,13 @@
 export const ROUTES = {
   home: "/",
 
+  // Public marketing site
+  about: "/about",
+  servicesPage: "/services",
+  process: "/process",
+  faq: "/faq",
+  contact: "/contact",
+
   // Auth
   login: "/login",
   register: "/register",

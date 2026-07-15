@@ -12,3 +12,9 @@ export { Features } from "./components/features";
 export { Testimonials } from "./components/testimonials";
 export { Cta } from "./components/cta";
 export { Footer } from "./components/footer";
+
+// Public sub-pages
+export { PageHero } from "./components/page-hero";
+export { AboutContent } from "./components/about-content";
+export { FaqContent } from "./components/faq-content";
+export { ContactContent } from "./components/contact-content";
