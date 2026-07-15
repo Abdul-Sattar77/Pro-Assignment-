@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Footer, Navbar } from "@/features/marketing";
+import { Footer, Navbar, SplashScreen } from "@/features/marketing";
 
 /**
  * Public website shell — deliberately separate from the internal portal. Every
@@ -10,6 +10,8 @@ import { Footer, Navbar } from "@/features/marketing";
 export default function MarketingLayout({ children }: { children: ReactNode }) {
   return (
     <div className="theme-aurora bg-background text-foreground dark">
+      {/* Brand splash on first visit of the session */}
+      <SplashScreen />
       {/* Finishing textures */}
       <div aria-hidden className="aurora-vignette" />
       <div aria-hidden className="aurora-grain" />

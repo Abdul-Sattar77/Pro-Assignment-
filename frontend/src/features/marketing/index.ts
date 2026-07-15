@@ -2,6 +2,8 @@
  * Public surface of the marketing feature (landing page sections).
  */
 export { Navbar } from "./components/navbar";
+export { SplashScreen } from "./components/splash-screen";
+export { BrandMark } from "./components/brand-mark";
 export { Hero } from "./components/hero";
 export { Marquee } from "./components/marquee";
 export { Disciplines } from "./components/disciplines";
