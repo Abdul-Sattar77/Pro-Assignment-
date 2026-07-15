@@ -57,7 +57,7 @@ export function Testimonials() {
           {/* Glow frame */}
           <div
             aria-hidden
-            className="absolute -inset-6 rounded-[2rem] bg-[radial-gradient(ellipse_at_top,rgba(213,179,107,0.09),transparent_70%)] blur-xl"
+            className="absolute -inset-6 rounded-[2rem] bg-[radial-gradient(ellipse_at_top,rgba(59,130,246,0.09),transparent_70%)] blur-xl"
           />
 
           <div className="aurora-border relative rounded-3xl px-8 py-12 text-center sm:px-14">
@@ -98,7 +98,7 @@ export function Testimonials() {
                   onClick={() => setIndex(dotIndex)}
                   className={
                     dotIndex === index
-                      ? "h-1.5 w-8 rounded-full bg-[#d5b36b] transition-all"
+                      ? "h-1.5 w-8 rounded-full bg-[#3b82f6] transition-all"
                       : "h-1.5 w-4 rounded-full bg-white/15 transition-all hover:bg-white/30"
                   }
                 />

@@ -85,13 +85,13 @@ export function Features() {
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.5, ease: easeOut, delay: index * 0.06 }}
               className={cn(
-                "aurora-border group relative overflow-hidden rounded-2xl p-6 transition-colors duration-300 hover:border-[#d5b36b]/35",
+                "aurora-border group relative overflow-hidden rounded-2xl p-6 transition-colors duration-300 hover:border-[#3b82f6]/35",
                 cell.span,
               )}
             >
               <div
                 aria-hidden
-                className="absolute -top-16 -right-16 size-40 rounded-full bg-[#d5b36b]/6 blur-2xl transition-all duration-500 group-hover:bg-[#d5b36b]/12"
+                className="absolute -top-16 -right-16 size-40 rounded-full bg-[#3b82f6]/6 blur-2xl transition-all duration-500 group-hover:bg-[#3b82f6]/12"
               />
               <cell.icon className="aurora-text size-6" strokeWidth={1.75} />
               <h3 className="font-display mt-4 text-xl font-bold tracking-tight">

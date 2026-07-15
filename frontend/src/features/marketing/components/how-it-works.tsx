@@ -76,7 +76,7 @@ export function HowItWorks() {
           <motion.div
             aria-hidden
             style={{ scaleY: lineScale }}
-            className="absolute top-2 bottom-2 left-[7px] w-px origin-top bg-linear-to-b from-[#ecd9a8] via-[#d5b36b] to-[#8a6d33] sm:left-[11px]"
+            className="absolute top-2 bottom-2 left-[7px] w-px origin-top bg-linear-to-b from-[#bfdbfe] via-[#3b82f6] to-[#1d4ed8] sm:left-[11px]"
           />
 
           <div className="space-y-14">
@@ -94,8 +94,8 @@ export function HowItWorks() {
                   aria-hidden
                   className="absolute top-1.5 -left-8 flex size-4 items-center justify-center sm:-left-12 sm:size-6"
                 >
-                  <span className="absolute size-full animate-ping rounded-full bg-[#d5b36b]/20 [animation-duration:2.5s]" />
-                  <span className="aurora-glow relative size-2.5 rounded-full bg-[#d5b36b] sm:size-3" />
+                  <span className="absolute size-full animate-ping rounded-full bg-[#3b82f6]/20 [animation-duration:2.5s]" />
+                  <span className="aurora-glow relative size-2.5 rounded-full bg-[#3b82f6] sm:size-3" />
                 </span>
 
                 <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">

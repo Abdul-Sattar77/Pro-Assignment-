@@ -100,7 +100,7 @@ export function ClientHome() {
         >
           <Link
             href={ROUTES.newOrder}
-            className="aurora-glow group inline-flex h-13 items-center gap-2 rounded-full bg-[#d5b36b] px-7 text-base font-semibold text-[#0a0a0c] transition-all duration-200 hover:scale-[1.03] hover:bg-[#e2c584]"
+            className="aurora-glow group inline-flex h-13 items-center gap-2 rounded-full bg-[#3b82f6] px-7 text-base font-semibold text-white transition-all duration-200 hover:scale-[1.03] hover:bg-[#60a5fa]"
           >
             <FilePlus2 className="size-5" />
             Submit assignment
@@ -163,7 +163,7 @@ export function ClientHome() {
             <Link
               key={order.id}
               href={`/assignments/${order.id}`}
-              className="aurora-border group flex items-center justify-between gap-4 rounded-2xl px-6 py-4 transition-colors hover:border-[#d5b36b]/40"
+              className="aurora-border group flex items-center justify-between gap-4 rounded-2xl px-6 py-4 transition-colors hover:border-[#3b82f6]/40"
             >
               <div className="min-w-0">
                 <p className="truncate font-medium">{order.title}</p>
@@ -195,9 +195,9 @@ export function ClientHome() {
           {STEPS.map((step, index) => (
             <div
               key={step.title}
-              className="aurora-border rounded-2xl p-6 transition-colors hover:border-[#d5b36b]/35"
+              className="aurora-border rounded-2xl p-6 transition-colors hover:border-[#3b82f6]/35"
             >
-              <step.icon className="size-5 text-[#d5b36b]" strokeWidth={1.75} />
+              <step.icon className="size-5 text-[#3b82f6]" strokeWidth={1.75} />
               <p className="font-display mt-4 text-lg font-bold">
                 <span className="aurora-text mr-2">0{index + 1}</span>
                 {step.title}

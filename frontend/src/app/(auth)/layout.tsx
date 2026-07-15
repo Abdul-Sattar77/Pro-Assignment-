@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { ROUTES } from "@/constants/routes";
+import { BrandMark } from "@/features/marketing";
 
 /**
  * Auth route group shell: cinematic brand panel (desktop) + centered form
@@ -26,11 +27,11 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
         {/* Obsidian wash + gold breath */}
         <div
           aria-hidden
-          className="absolute inset-0 bg-linear-to-t from-[#0a0a0c] via-[#0a0a0c]/72 to-[#0a0a0c]/38"
+          className="absolute inset-0 bg-linear-to-t from-[#070b18] via-[#070b18]/72 to-[#070b18]/38"
         />
         <div
           aria-hidden
-          className="absolute inset-0 bg-[radial-gradient(ellipse_60%_45%_at_30%_85%,rgba(213,179,107,0.16),transparent_70%)]"
+          className="absolute inset-0 bg-[radial-gradient(ellipse_60%_45%_at_30%_85%,rgba(59,130,246,0.16),transparent_70%)]"
         />
         {/* Film grain */}
         <div
@@ -46,20 +47,20 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
         <div className="relative flex h-full flex-col justify-between p-12">
           <Link
             href={ROUTES.home}
-            className="font-display text-2xl font-bold tracking-tight text-[#f2f0ea]"
+            className="font-display flex items-center gap-2.5 text-2xl font-bold tracking-tight text-[#eaf0ff]"
           >
+            <BrandMark className="size-9 text-[#eaf0ff]" />
             prossignment
-            <span className="text-[#d5b36b]">*</span>
           </Link>
 
           <div className="max-w-md">
-            <p className="font-mono text-[11px] tracking-[0.3em] text-[#d5b36b] uppercase">
+            <p className="font-mono text-[11px] tracking-[0.3em] text-[#3b82f6] uppercase">
               The assignment studio
             </p>
-            <blockquote className="font-display mt-5 text-4xl leading-tight font-bold text-balance text-[#f2f0ea]">
+            <blockquote className="font-display mt-5 text-4xl leading-tight font-bold text-balance text-[#eaf0ff]">
               Every great grade begins with a single, well-placed brief.
             </blockquote>
-            <p className="mt-5 max-w-sm text-sm leading-relaxed text-[#f2f0ea]/60">
+            <p className="mt-5 max-w-sm text-sm leading-relaxed text-[#eaf0ff]/60">
               Vetted experts, live progress, revisions included — from first
               enquiry to final approval, in one private workspace.
             </p>
@@ -72,10 +73,10 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
                 ["4.9/5", "rating"],
               ].map(([value, label]) => (
                 <div key={label}>
-                  <p className="font-display text-xl font-bold text-[#d5b36b]">
+                  <p className="font-display text-xl font-bold text-[#3b82f6]">
                     {value}
                   </p>
-                  <p className="mt-0.5 font-mono text-[10px] tracking-[0.18em] text-[#f2f0ea]/50 uppercase">
+                  <p className="mt-0.5 font-mono text-[10px] tracking-[0.18em] text-[#eaf0ff]/50 uppercase">
                     {label}
                   </p>
                 </div>
@@ -83,7 +84,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
             </div>
           </div>
 
-          <p className="font-mono text-[11px] text-[#f2f0ea]/40">
+          <p className="font-mono text-[11px] text-[#eaf0ff]/40">
             © {new Date().getFullYear()} Prossignment Portal — Confidential &
             secure
           </p>
@@ -95,10 +96,10 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
         <div className="flex items-center justify-between p-6 lg:justify-end">
           <Link
             href={ROUTES.home}
-            className="font-display flex items-center text-lg font-bold tracking-tight lg:hidden"
+            className="font-display flex items-center gap-2 text-lg font-bold tracking-tight lg:hidden"
           >
+            <BrandMark className="text-foreground size-6" />
             prossignment
-            <span className="text-primary">*</span>
           </Link>
           <ThemeToggle />
         </div>

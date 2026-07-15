@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ROUTES } from "@/constants/routes";
 import { useAuth, useLogout } from "@/features/auth";
+import { BrandMark } from "@/features/marketing";
 import { NotificationBell } from "@/features/notifications";
 
 function initials(name: string): string {
@@ -45,13 +46,13 @@ export function ClientShell({ children }: { children: ReactNode }) {
 
       {/* Floating pill nav */}
       <header className="fixed inset-x-0 top-4 z-40 px-4">
-        <nav className="mx-auto flex h-14 max-w-5xl items-center justify-between gap-3 rounded-full border border-white/10 bg-[#0d0d0f]/85 px-4 backdrop-blur-xl sm:px-5">
+        <nav className="mx-auto flex h-14 max-w-5xl items-center justify-between gap-3 rounded-full border border-white/10 bg-[#0b1428]/85 px-4 backdrop-blur-xl sm:px-5">
           <Link
             href={ROUTES.dashboard}
-            className="font-display truncate text-lg font-bold tracking-tight"
+            className="font-display flex items-center gap-2 truncate text-lg font-bold tracking-tight"
           >
+            <BrandMark className="text-foreground size-6 shrink-0" />
             prossignment
-            <span className="aurora-text">*</span>
           </Link>
 
           <div className="flex items-center gap-2">
@@ -66,8 +67,8 @@ export function ClientShell({ children }: { children: ReactNode }) {
                   <span className="hidden max-w-32 truncate text-sm sm:inline">
                     {user.name}
                   </span>
-                  <Avatar className="size-8 border border-[#d5b36b]/40">
-                    <AvatarFallback className="bg-[#d5b36b]/15 text-xs font-semibold text-[#d5b36b]">
+                  <Avatar className="size-8 border border-[#3b82f6]/40">
+                    <AvatarFallback className="bg-[#3b82f6]/15 text-xs font-semibold text-[#3b82f6]">
                       {initials(user.name)}
                     </AvatarFallback>
                   </Avatar>

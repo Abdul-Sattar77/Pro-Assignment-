@@ -17,25 +17,25 @@
 :root {
   --radius: 0.625rem; /* 10px — radius-md */
 
-  /* Surfaces & text (Light — warm ivory) */
-  --background: #faf9f6;
-  --foreground: #1b1a17;
-  --card: #fffefb;
-  --card-foreground: #1b1a17;
-  --popover: #fffefb;
-  --popover-foreground: #1b1a17;
+  /* Surfaces & text (Light — clean white / navy ink) */
+  --background: #f7f9fc;
+  --foreground: #0b1220;
+  --card: #ffffff;
+  --card-foreground: #0b1220;
+  --popover: #ffffff;
+  --popover-foreground: #0b1220;
 
-  /* Brand — champagne gold (deepened for light-mode contrast) */
-  --primary: #a8823c;
+  /* Brand — AI blue */
+  --primary: #2563eb;
   --primary-foreground: #ffffff;
 
-  /* Neutrals (warm stone) */
-  --secondary: #f1efe9;
-  --secondary-foreground: #1b1a17;
-  --muted: #f1efe9;
-  --muted-foreground: #6f6c63;
-  --accent: #f5f2ea; /* subtle warm tint for hover */
-  --accent-foreground: #2a2822;
+  /* Neutrals (cool slate) */
+  --secondary: #eef2f9;
+  --secondary-foreground: #0b1220;
+  --muted: #eef2f9;
+  --muted-foreground: #5a6a86;
+  --accent: #e8f0ff; /* subtle blue tint for hover */
+  --accent-foreground: #12203c;
 
   /* Semantic status */
   --destructive: #dc2626;
@@ -44,84 +44,84 @@
   --success-foreground: #ffffff;
   --warning: #d97706;
   --warning-foreground: #ffffff;
-  --info: #a8823c;
+  --info: #2563eb;
   --info-foreground: #ffffff;
 
   /* Lines & focus */
-  --border: #e7e3d8;
-  --input: #e7e3d8;
-  --ring: #a8823c;
+  --border: #e2e8f2;
+  --input: #e2e8f2;
+  --ring: #2563eb;
 
-  /* Charts (warm metallic range + semantic) */
-  --chart-1: #a8823c;
-  --chart-2: #d5b36b;
-  --chart-3: #8c7a5b;
+  /* Charts (blue / indigo / cyan range + semantic) */
+  --chart-1: #2563eb;
+  --chart-2: #6366f1;
+  --chart-3: #06b6d4;
   --chart-4: #16a34a;
   --chart-5: #d97706;
 
   /* Sidebar */
-  --sidebar: #fffdf8;
-  --sidebar-foreground: #1b1a17;
-  --sidebar-primary: #a8823c;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #0b1220;
+  --sidebar-primary: #2563eb;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f1efe9;
-  --sidebar-accent-foreground: #1b1a17;
-  --sidebar-border: #e7e3d8;
-  --sidebar-ring: #a8823c;
+  --sidebar-accent: #eef2f9;
+  --sidebar-accent-foreground: #0b1220;
+  --sidebar-border: #e2e8f2;
+  --sidebar-ring: #2563eb;
 }
 
 .dark {
-  /* Surfaces & text (Dark — obsidian, matches the landing identity) */
-  --background: #0a0a0c;
-  --foreground: #f2f0ea;
-  --card: #121214;
-  --card-foreground: #f2f0ea;
-  --popover: #141416;
-  --popover-foreground: #f2f0ea;
+  /* Surfaces & text (Dark — deep navy, matches the landing identity) */
+  --background: #080d1c;
+  --foreground: #e9eefc;
+  --card: #0f1830;
+  --card-foreground: #e9eefc;
+  --popover: #101a34;
+  --popover-foreground: #e9eefc;
 
-  /* Brand — champagne gold */
-  --primary: #d5b36b;
-  --primary-foreground: #0a0a0c;
+  /* Brand — AI blue */
+  --primary: #3b82f6;
+  --primary-foreground: #ffffff;
 
-  /* Neutrals (warm charcoal) */
-  --secondary: #1a1a1d;
-  --secondary-foreground: #f2f0ea;
-  --muted: #1a1a1d;
-  --muted-foreground: #93908a;
-  --accent: #201f22;
-  --accent-foreground: #f2f0ea;
+  /* Neutrals (navy slate) */
+  --secondary: #16203c;
+  --secondary-foreground: #e9eefc;
+  --muted: #16203c;
+  --muted-foreground: #93a0bd;
+  --accent: #1c2848;
+  --accent-foreground: #e9eefc;
 
   /* Semantic status */
   --destructive: #ef4444;
-  --destructive-foreground: #0a0a0c;
+  --destructive-foreground: #ffffff;
   --success: #22c55e;
-  --success-foreground: #0a0a0c;
+  --success-foreground: #04140a;
   --warning: #f59e0b;
-  --warning-foreground: #0a0a0c;
-  --info: #d5b36b;
-  --info-foreground: #0a0a0c;
+  --warning-foreground: #1a1206;
+  --info: #3b82f6;
+  --info-foreground: #ffffff;
 
   /* Lines & focus */
-  --border: rgba(255, 255, 255, 0.09);
-  --input: rgba(255, 255, 255, 0.09);
-  --ring: #d5b36b;
+  --border: rgba(148, 178, 235, 0.14);
+  --input: rgba(148, 178, 235, 0.16);
+  --ring: #3b82f6;
 
-  /* Charts (metallic range + semantic) */
-  --chart-1: #d5b36b;
-  --chart-2: #ecd9a8;
-  --chart-3: #8c7a5b;
+  /* Charts (blue / indigo / cyan range + semantic) */
+  --chart-1: #3b82f6;
+  --chart-2: #60a5fa;
+  --chart-3: #22d3ee;
   --chart-4: #22c55e;
   --chart-5: #f59e0b;
 
   /* Sidebar */
-  --sidebar: #0d0d10;
-  --sidebar-foreground: #f2f0ea;
-  --sidebar-primary: #d5b36b;
-  --sidebar-primary-foreground: #0a0a0c;
-  --sidebar-accent: #1a1a1d;
-  --sidebar-accent-foreground: #f2f0ea;
-  --sidebar-border: rgba(255, 255, 255, 0.08);
-  --sidebar-ring: #d5b36b;
+  --sidebar: #0b1428;
+  --sidebar-foreground: #e9eefc;
+  --sidebar-primary: #3b82f6;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #16203c;
+  --sidebar-accent-foreground: #e9eefc;
+  --sidebar-border: rgba(148, 178, 235, 0.12);
+  --sidebar-ring: #3b82f6;
 }
 
 /* Map raw tokens → Tailwind theme so `bg-*`, `text-*`, `border-*` utilities exist. */
@@ -177,55 +177,55 @@
 
 /*
   ─────────────────────────────────────────────────────────────────────────
-  Obsidian & Champagne — scoped palette for the public landing experience.
-  Luxury dark: warm near-black, ivory type, ONE champagne-gold accent used
-  sparingly. Deliberately always-dark; the app keeps the core tokens above.
-  (Utility class names keep the `aurora-` prefix as stable identifiers.)
+  Navy & Electric — scoped palette for the public landing experience.
+  Modern AI aesthetic: deep navy canvas, near-white type, one electric-blue
+  accent with cyan/indigo highlights. Deliberately always-dark; the app keeps
+  the core tokens above. (Class names keep the `aurora-` prefix as stable IDs.)
   ─────────────────────────────────────────────────────────────────────────
 */
 .theme-aurora {
-  --background: #0a0a0c; /* obsidian */
-  --foreground: #f2f0ea; /* warm ivory */
-  --card: #121214;
-  --card-foreground: #f2f0ea;
-  --popover: #121214;
-  --popover-foreground: #f2f0ea;
-  --primary: #d5b36b; /* champagne gold */
-  --primary-foreground: #0a0a0c;
-  --secondary: #151517;
-  --secondary-foreground: #f2f0ea;
-  --muted: #151517;
-  --muted-foreground: #8f8d86;
-  --accent: #1a1a1d;
-  --accent-foreground: #f2f0ea;
+  --background: #070b18; /* deep navy */
+  --foreground: #eaf0ff; /* near white */
+  --card: #0e1730;
+  --card-foreground: #eaf0ff;
+  --popover: #0e1730;
+  --popover-foreground: #eaf0ff;
+  --primary: #3b82f6; /* electric blue */
+  --primary-foreground: #ffffff;
+  --secondary: #121d38;
+  --secondary-foreground: #eaf0ff;
+  --muted: #121d38;
+  --muted-foreground: #8fa0c4;
+  --accent: #172447;
+  --accent-foreground: #eaf0ff;
   --destructive: #f87171;
-  --border: rgba(255, 255, 255, 0.09);
-  --input: rgba(255, 255, 255, 0.09);
-  --ring: #d5b36b;
+  --border: rgba(148, 178, 235, 0.14);
+  --input: rgba(148, 178, 235, 0.14);
+  --ring: #3b82f6;
 }
 
-/* Champagne shimmer text — restrained, not rainbow. */
+/* Electric-blue gradient text — sky → blue → indigo, AI shimmer. */
 .aurora-text {
-  background: linear-gradient(105deg, #ecd9a8 0%, #d5b36b 50%, #a8853f 100%);
+  background: linear-gradient(105deg, #7dd3fc 0%, #3b82f6 50%, #818cf8 100%);
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
 }
 
-/* Soft warm glow for the primary CTA only. */
+/* Soft blue glow for the primary CTA only. */
 .aurora-glow {
   box-shadow:
-    0 0 20px rgba(213, 179, 107, 0.28),
-    0 0 56px rgba(213, 179, 107, 0.1);
+    0 0 20px rgba(59, 130, 246, 0.35),
+    0 0 56px rgba(59, 130, 246, 0.16);
 }
 
-/* Hairline glass card. Gold appears only on interaction. */
+/* Hairline glass card. Blue appears only on interaction. */
 .aurora-border {
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(148, 178, 235, 0.14);
   background: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0.028),
-    rgba(255, 255, 255, 0.006)
+    rgba(148, 178, 235, 0.05),
+    rgba(148, 178, 235, 0.012)
   );
 }
 

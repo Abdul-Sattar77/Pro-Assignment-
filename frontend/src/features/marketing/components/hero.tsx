@@ -1,383 +1,257 @@
 "use client";
 
-import { type ReactNode, useRef } from "react";
+import { useRef } from "react";
 import Link from "next/link";
-import {
-  motion,
-  useMotionValue,
-  useSpring,
-  useTransform,
-  type MotionValue,
-} from "framer-motion";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import {
   ArrowRight,
-  BookOpen,
-  Check,
+  Clock,
   FileText,
-  GraduationCap,
-  Sigma,
+  Headphones,
+  ShieldCheck,
+  Sparkles,
+  Star,
+  Users,
 } from "lucide-react";
 import { useCurrentUser } from "@/features/auth";
 import { easeOut } from "@/animations/variants";
 import { orderHref } from "../constants";
+import { HeroIllustration } from "./hero-illustration";
 
-const HEADLINE_TOP = ["Assignments,"];
-const HEADLINE_BOTTOM = ["mastered."];
-
-const wordReveal = {
-  hidden: { opacity: 0, y: 40, rotateX: 45 },
+const reveal = {
+  hidden: { opacity: 0, y: 24 },
   visible: (delay: number) => ({
     opacity: 1,
     y: 0,
-    rotateX: 0,
-    transition: { duration: 0.7, ease: easeOut, delay },
+    transition: { duration: 0.55, ease: easeOut, delay },
   }),
 };
 
-/**
- * A floating academic artifact. Two nested layers: the outer follows the cursor
- * (parallax by `depth`), the inner drifts on a gentle infinite loop. Hidden on
- * small screens so the copy stays front-and-centre.
- */
-function FloatCard({
-  mx,
-  my,
-  depth,
-  className,
-  drift = 14,
-  duration = 6,
-  rotate = 4,
-  children,
-}: {
-  mx: MotionValue<number>;
-  my: MotionValue<number>;
-  depth: number;
-  className: string;
-  drift?: number;
-  duration?: number;
-  rotate?: number;
-  children: ReactNode;
-}) {
-  const x = useTransform(mx, [-0.5, 0.5], [-depth, depth]);
-  const y = useTransform(my, [-0.5, 0.5], [-depth, depth]);
+const FEATURES = [
+  { icon: ShieldCheck, title: "100% Original", note: "Plagiarism-free work" },
+  { icon: Clock, title: "On-time delivery", note: "Always on time" },
+  { icon: Headphones, title: "24/7 support", note: "We're here anytime" },
+];
 
-  return (
-    <motion.div
-      style={{ x, y }}
-      className={`pointer-events-none absolute hidden md:block ${className}`}
-    >
-      <motion.div
-        animate={{ y: [0, -drift, 0], rotate: [-rotate, rotate, -rotate] }}
-        transition={{ duration, ease: "easeInOut", repeat: Infinity }}
-      >
-        {children}
-      </motion.div>
-    </motion.div>
-  );
-}
-
-/** Frosted-glass card wrapper shared by the floating artifacts. */
-function Glass({
-  className = "",
-  children,
-}: {
-  className?: string;
-  children: ReactNode;
-}) {
-  return (
-    <div
-      className={`rounded-2xl border border-white/12 bg-white/6 p-4 shadow-[0_12px_40px_rgba(0,0,0,0.35)] backdrop-blur-md ${className}`}
-    >
-      {children}
-    </div>
-  );
-}
-
-/** The centrepiece: a sheet of paper being "written" line by line, on a loop. */
-function WritingPaper() {
-  return (
-    <Glass className="w-52">
-      <div className="mb-3 flex items-center gap-1.5">
-        <span className="size-2 rounded-full bg-[#d5b36b]" />
-        <span className="bg-muted-foreground/40 h-1.5 w-16 rounded-full" />
-        <FileText className="text-muted-foreground/70 ml-auto size-3.5" />
-      </div>
-      <div className="space-y-2">
-        {[0, 1, 2, 3, 4].map((line) => (
-          <motion.div
-            key={line}
-            className="h-1.5 rounded-full bg-linear-to-r from-white/70 to-white/20"
-            initial={{ width: "0%" }}
-            animate={{
-              width: ["0%", `${92 - line * 6}%`, `${92 - line * 6}%`],
-            }}
-            transition={{
-              duration: 1.1,
-              ease: "easeInOut",
-              repeat: Infinity,
-              repeatDelay: 4,
-              delay: line * 0.5,
-              times: [0, 0.5, 1],
-            }}
-          />
-        ))}
-      </div>
-      {/* Pen nib tracing the last line */}
-      <motion.div
-        className="mt-3 flex items-center gap-1"
-        animate={{ x: [0, 60, 0] }}
-        transition={{
-          duration: 1.1,
-          ease: "easeInOut",
-          repeat: Infinity,
-          repeatDelay: 4,
-          delay: 2.5,
-        }}
-      >
-        <div className="bg-muted-foreground/30 h-1.5 flex-1 rounded-full" />
-        <div className="size-2 rotate-45 rounded-[2px] bg-[#d5b36b]" />
-      </motion.div>
-    </Glass>
-  );
-}
+const STATS = [
+  { icon: Users, value: "15,000+", label: "Happy students" },
+  { icon: FileText, value: "25,000+", label: "Assignments completed" },
+  { icon: Star, value: "4.9/5", label: "Average rating" },
+  { icon: ShieldCheck, value: "100%", label: "Satisfaction guarantee" },
+];
 
 /**
- * Assignment-themed hero. A field of academic artifacts — a paper being
- * written, a code block, a grade badge, formulas, a book — floats over a warm
- * haze and parallaxes to the cursor. Kinetic headline and CTAs sit above it.
+ * Hero: left-aligned value proposition with a gradient headline and feature
+ * row, beside an illustrated assignment workspace that parallaxes to the
+ * cursor, over a stats bar. Deep-navy AI aesthetic.
  */
 export function Hero() {
   const { data: user } = useCurrentUser();
   const isAuthed = Boolean(user);
   const sectionRef = useRef<HTMLElement>(null);
 
-  // Normalised cursor position (-0.5 … 0.5), smoothed with a spring.
   const rawX = useMotionValue(0);
   const rawY = useMotionValue(0);
-  const mx = useSpring(rawX, { stiffness: 60, damping: 18 });
-  const my = useSpring(rawY, { stiffness: 60, damping: 18 });
+  const mx = useSpring(rawX, { stiffness: 70, damping: 20 });
+  const my = useSpring(rawY, { stiffness: 70, damping: 20 });
 
-  const handlePointer = (event: React.PointerEvent) => {
+  const onPointerMove = (event: React.PointerEvent) => {
     const rect = sectionRef.current?.getBoundingClientRect();
     if (!rect) return;
     rawX.set((event.clientX - rect.left) / rect.width - 0.5);
     rawY.set((event.clientY - rect.top) / rect.height - 0.5);
   };
-
-  const resetPointer = () => {
+  const onPointerLeave = () => {
     rawX.set(0);
     rawY.set(0);
   };
 
-  // Background glow drifts opposite the cursor for depth.
-  const glowX = useTransform(mx, [-0.5, 0.5], [40, -40]);
-  const glowY = useTransform(my, [-0.5, 0.5], [30, -30]);
+  const glowAX = useTransform(mx, [-0.5, 0.5], [30, -30]);
+  const glowAY = useTransform(my, [-0.5, 0.5], [24, -24]);
 
   return (
     <section
       ref={sectionRef}
-      onPointerMove={handlePointer}
-      onPointerLeave={resetPointer}
-      className="relative flex min-h-dvh flex-col overflow-hidden"
+      onPointerMove={onPointerMove}
+      onPointerLeave={onPointerLeave}
+      className="relative flex min-h-dvh items-center overflow-hidden px-6 pt-28 pb-12"
     >
-      {/* Warm haze backdrop (follows the cursor) */}
+      {/* Background: drifting glows + grid */}
       <motion.div
         aria-hidden
-        style={{ x: glowX, y: glowY }}
-        className="absolute inset-0 bg-[radial-gradient(ellipse_55%_45%_at_70%_18%,rgba(213,179,107,0.12),transparent),radial-gradient(ellipse_45%_40%_at_22%_75%,rgba(139,92,246,0.10),transparent),radial-gradient(ellipse_60%_50%_at_50%_50%,rgba(255,255,255,0.02),transparent)]"
+        style={{ x: glowAX, y: glowAY }}
+        className="absolute top-[-10%] right-[6%] size-[38rem] rounded-full bg-blue-600/20 blur-[140px]"
       />
-      {/* Faint grid */}
       <div
         aria-hidden
-        className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.025)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.025)_1px,transparent_1px)] mask-[radial-gradient(ellipse_70%_60%_at_50%_40%,black,transparent)] bg-size-[56px_56px]"
+        className="absolute bottom-[-10%] left-[-6%] size-[34rem] rounded-full bg-indigo-600/15 blur-[140px]"
       />
-
-      {/* Floating academic artifacts */}
-      <FloatCard mx={mx} my={my} depth={38} className="top-[20%] left-[8%]">
-        <WritingPaper />
-      </FloatCard>
-
-      <FloatCard
-        mx={mx}
-        my={my}
-        depth={26}
-        drift={18}
-        duration={7}
-        className="top-[24%] right-[9%]"
-      >
-        <Glass className="w-48 font-mono text-[11px] leading-relaxed">
-          <div className="mb-2 flex gap-1.5">
-            <span className="size-2 rounded-full bg-red-400/70" />
-            <span className="size-2 rounded-full bg-amber-400/70" />
-            <span className="size-2 rounded-full bg-emerald-400/70" />
-          </div>
-          <p>
-            <span className="text-violet-300">def</span>{" "}
-            <span className="text-sky-300">solve</span>():
-          </p>
-          <p className="pl-3 text-white/60">return grade</p>
-          <p className="text-emerald-300"># A+ guaranteed</p>
-        </Glass>
-      </FloatCard>
-
-      <FloatCard
-        mx={mx}
-        my={my}
-        depth={54}
-        drift={10}
-        duration={5.5}
-        className="bottom-[22%] left-[14%]"
-      >
-        <Glass className="flex items-center gap-3">
-          <span className="flex size-9 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-300">
-            <Check className="size-5" />
-          </span>
-          <div>
-            <p className="text-sm font-semibold text-white">Grade A+</p>
-            <p className="text-muted-foreground text-[10px]">
-              Delivered on time
-            </p>
-          </div>
-        </Glass>
-      </FloatCard>
-
-      <FloatCard
-        mx={mx}
-        my={my}
-        depth={44}
-        drift={16}
-        duration={6.5}
-        className="right-[12%] bottom-[24%]"
-      >
-        <Glass className="flex items-center gap-2.5">
-          <GraduationCap className="size-6 text-[#d5b36b]" />
-          <span className="text-sm font-medium text-white">Dissertations</span>
-        </Glass>
-      </FloatCard>
-
-      <FloatCard
-        mx={mx}
-        my={my}
-        depth={64}
-        drift={12}
-        duration={5}
-        rotate={8}
-        className="top-[38%] left-[3%]"
-      >
-        <div className="flex size-14 items-center justify-center rounded-2xl border border-white/12 bg-white/6 font-mono text-lg text-violet-200 backdrop-blur-md">
-          <Sigma className="size-6" />
-        </div>
-      </FloatCard>
-
-      <FloatCard
-        mx={mx}
-        my={my}
-        depth={58}
-        drift={14}
-        duration={7.5}
-        rotate={7}
-        className="top-[46%] right-[4%]"
-      >
-        <div className="flex items-center gap-2 rounded-full border border-white/12 bg-white/6 px-3 py-1.5 backdrop-blur-md">
-          <BookOpen className="size-4 text-sky-300" />
-          <span className="font-mono text-[11px] tracking-wide text-white">
-            APA · MLA
-          </span>
-        </div>
-      </FloatCard>
-
-      {/* Bottom fade into the page body */}
       <div
         aria-hidden
-        className="from-background pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-linear-to-t to-transparent"
+        className="absolute inset-0 bg-[linear-gradient(rgba(148,178,235,0.045)_1px,transparent_1px),linear-gradient(90deg,rgba(148,178,235,0.045)_1px,transparent_1px)] mask-[radial-gradient(ellipse_80%_70%_at_50%_40%,black,transparent)] bg-size-[54px_54px]"
+      />
+      <div
+        aria-hidden
+        className="from-background pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-linear-to-t to-transparent"
       />
 
-      {/* Content */}
-      <div className="pointer-events-none relative z-10 mx-auto flex w-full max-w-6xl flex-1 flex-col items-center justify-center px-6 text-center">
-        <motion.p
-          custom={0.1}
-          variants={wordReveal}
-          initial="hidden"
-          animate="visible"
-          className="text-muted-foreground pointer-events-auto font-mono text-xs tracking-[0.35em] uppercase"
-        >
-          [ The pros for your assignments ]
-        </motion.p>
-
-        <h1
-          className="font-display mt-8 text-6xl leading-[0.95] font-bold tracking-tight sm:text-8xl lg:text-9xl"
-          style={{ perspective: 800 }}
-        >
-          {HEADLINE_TOP.map((word, index) => (
-            <motion.span
-              key={word}
-              custom={0.25 + index * 0.12}
-              variants={wordReveal}
+      <div className="relative z-10 mx-auto w-full max-w-6xl">
+        <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-6">
+          {/* Left — copy */}
+          <div className="text-center lg:text-left">
+            <motion.div
+              custom={0}
+              variants={reveal}
               initial="hidden"
               animate="visible"
-              className="block"
+              className="border-border bg-card/40 text-foreground/80 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-xs backdrop-blur-md"
             >
-              {word}
-            </motion.span>
-          ))}
-          {HEADLINE_BOTTOM.map((word, index) => (
-            <motion.span
-              key={word}
-              custom={0.45 + index * 0.12}
-              variants={wordReveal}
+              <Sparkles className="size-3.5 text-blue-400" />
+              #1 assignment help service
+            </motion.div>
+
+            <h1 className="font-display mt-6 text-5xl leading-[1.05] font-extrabold tracking-tight text-balance sm:text-6xl">
+              <motion.span
+                custom={0.1}
+                variants={reveal}
+                initial="hidden"
+                animate="visible"
+                className="block"
+              >
+                We do your
+              </motion.span>
+              <motion.span
+                custom={0.2}
+                variants={reveal}
+                initial="hidden"
+                animate="visible"
+                className="block bg-linear-to-r from-indigo-400 via-violet-400 to-blue-400 bg-clip-text text-transparent"
+              >
+                assignments,
+              </motion.span>
+              <motion.span
+                custom={0.3}
+                variants={reveal}
+                initial="hidden"
+                animate="visible"
+                className="block"
+              >
+                you get{" "}
+                <span className="relative inline-block bg-linear-to-r from-sky-400 to-blue-500 bg-clip-text text-transparent">
+                  results
+                  <svg
+                    aria-hidden
+                    viewBox="0 0 200 12"
+                    className="absolute -bottom-1 left-0 w-full"
+                    preserveAspectRatio="none"
+                  >
+                    <path
+                      d="M2 8 C50 2 150 2 198 6"
+                      fill="none"
+                      stroke="#3b82f6"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </span>
+              </motion.span>
+            </h1>
+
+            <motion.p
+              custom={0.4}
+              variants={reveal}
               initial="hidden"
               animate="visible"
-              className="aurora-text block pb-3"
+              className="text-foreground/70 mx-auto mt-6 max-w-md text-lg leading-relaxed text-pretty lg:mx-0"
             >
-              {word}
-            </motion.span>
-          ))}
-        </h1>
+              Expert writers, on-time delivery, and 100% original work — get
+              matched with a subject expert and track every step to grade-ready
+              results.
+            </motion.p>
 
-        <motion.p
-          custom={0.7}
-          variants={wordReveal}
-          initial="hidden"
-          animate="visible"
-          className="text-foreground/85 pointer-events-auto mt-8 max-w-xl text-lg leading-relaxed text-pretty"
-        >
-          Essays, dissertations, programming, and research — submit your
-          assignment, get matched with a subject expert, and track every step to
-          polished, grade-ready work.
-        </motion.p>
+            <motion.div
+              custom={0.5}
+              variants={reveal}
+              initial="hidden"
+              animate="visible"
+              className="mt-8 flex flex-wrap items-center justify-center gap-4 lg:justify-start"
+            >
+              <Link
+                href={orderHref(isAuthed)}
+                className="group flex h-13 items-center gap-2 rounded-xl bg-linear-to-r from-indigo-500 to-blue-500 px-7 text-base font-semibold text-white shadow-[0_10px_30px_-8px_rgba(59,130,246,0.6)] transition-all duration-200 hover:scale-[1.03] active:scale-[0.98]"
+              >
+                Start your assignment
+                <ArrowRight className="size-5 transition-transform group-hover:translate-x-1" />
+              </Link>
+              <a
+                href="#services"
+                className="text-foreground/85 hover:text-foreground border-border hover:border-primary/50 flex h-13 items-center gap-2 rounded-xl border px-6 text-base backdrop-blur-sm transition-colors"
+              >
+                <FileText className="size-4.5" />
+                View services
+              </a>
+            </motion.div>
 
+            {/* Feature row */}
+            <motion.div
+              custom={0.62}
+              variants={reveal}
+              initial="hidden"
+              animate="visible"
+              className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-3"
+            >
+              {FEATURES.map((feature) => (
+                <div
+                  key={feature.title}
+                  className="flex items-center justify-center gap-3 lg:justify-start"
+                >
+                  <span className="flex size-10 shrink-0 items-center justify-center rounded-full border border-blue-400/25 bg-blue-500/10 text-blue-300">
+                    <feature.icon className="size-5" />
+                  </span>
+                  <div className="text-left">
+                    <p className="text-sm font-semibold">{feature.title}</p>
+                    <p className="text-muted-foreground text-xs">
+                      {feature.note}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </motion.div>
+          </div>
+
+          {/* Right — illustration */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.94 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.7, ease: easeOut, delay: 0.25 }}
+          >
+            <HeroIllustration mx={mx} my={my} />
+          </motion.div>
+        </div>
+
+        {/* Stats bar */}
         <motion.div
-          custom={0.85}
-          variants={wordReveal}
-          initial="hidden"
-          animate="visible"
-          className="pointer-events-auto mt-10 flex flex-wrap items-center justify-center gap-4"
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: easeOut, delay: 0.55 }}
+          className="border-border bg-card/40 mt-12 grid grid-cols-2 gap-6 rounded-2xl border p-6 backdrop-blur-md sm:grid-cols-4 sm:divide-x sm:divide-white/10"
         >
-          <Link
-            href={orderHref(isAuthed)}
-            className="aurora-glow group flex h-14 items-center gap-2 rounded-full bg-[#d5b36b] px-8 text-base font-semibold text-[#0a0a0c] transition-all duration-200 hover:scale-[1.03] hover:bg-[#e2c584] active:scale-[0.98]"
-          >
-            Start your assignment
-            <ArrowRight className="size-5 transition-transform group-hover:translate-x-1" />
-          </Link>
-          <a
-            href="#services"
-            className="text-foreground/80 hover:text-foreground flex h-14 items-center rounded-full border border-white/15 px-7 text-base backdrop-blur-sm transition-colors hover:border-[#d5b36b]/50"
-          >
-            Explore the studio
-          </a>
+          {STATS.map((stat) => (
+            <div
+              key={stat.label}
+              className="flex items-center gap-3 sm:justify-center"
+            >
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-blue-500/12 text-blue-300">
+                <stat.icon className="size-5" />
+              </span>
+              <div>
+                <p className="text-xl font-bold tracking-tight">{stat.value}</p>
+                <p className="text-muted-foreground text-xs">{stat.label}</p>
+              </div>
+            </div>
+          ))}
         </motion.div>
       </div>
-
-      {/* Cursor hint */}
-      <motion.p
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.6, duration: 0.8 }}
-        className="text-muted-foreground/70 pointer-events-none relative z-10 mb-8 flex items-center justify-center gap-2 font-mono text-[11px] tracking-[0.25em] uppercase"
-      >
-        Move your cursor — the field responds
-      </motion.p>
     </section>
   );
 }

@@ -99,7 +99,7 @@ export function AboutContent() {
       {/* Values / why trust us */}
       <div className="mt-16">
         <div className="flex items-center gap-2">
-          <Sparkles className="size-4 text-[#d5b36b]" />
+          <Sparkles className="size-4 text-[#3b82f6]" />
           <p className="text-muted-foreground font-mono text-xs tracking-[0.3em] uppercase">
             Why students trust us
           </p>

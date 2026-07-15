@@ -58,20 +58,20 @@ export function StaffOverview() {
         />
         <div
           aria-hidden
-          className="absolute inset-0 bg-linear-to-r from-[#0a0a0c]/92 via-[#0a0a0c]/65 to-[#0a0a0c]/25"
+          className="absolute inset-0 bg-linear-to-r from-[#070b18]/92 via-[#070b18]/65 to-[#070b18]/25"
         />
         <div className="absolute inset-0 flex flex-col justify-center p-7 sm:p-9">
-          <p className="font-mono text-[11px] tracking-[0.28em] text-[#d5b36b] uppercase">
+          <p className="font-mono text-[11px] tracking-[0.28em] text-[#3b82f6] uppercase">
             {greeting()}
           </p>
-          <h1 className="font-display mt-2 text-3xl font-bold tracking-tight text-[#f2f0ea] sm:text-4xl">
+          <h1 className="font-display mt-2 text-3xl font-bold tracking-tight text-[#eaf0ff] sm:text-4xl">
             {firstName}&apos;s workspace
           </h1>
           <div className="mt-3 flex flex-wrap items-center gap-2">
             {user.roles.map((role) => (
               <Badge
                 key={role}
-                className="border-[#d5b36b]/40 bg-[#d5b36b]/15 text-[#ecd9a8] capitalize"
+                className="border-[#3b82f6]/40 bg-[#3b82f6]/15 text-[#bfdbfe] capitalize"
                 variant="outline"
               >
                 {role.replace("_", " ")}

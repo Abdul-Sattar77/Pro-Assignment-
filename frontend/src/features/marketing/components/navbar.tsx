@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/constants/routes";
 import { useCurrentUser } from "@/features/auth";
 import { NAV_LINKS, orderHref } from "../constants";
+import { BrandMark } from "./brand-mark";
 
 function subscribeToScroll(callback: () => void): () => void {
   window.addEventListener("scroll", callback, { passive: true });
@@ -44,16 +45,16 @@ export function Navbar() {
         className={cn(
           "mx-auto flex h-14 max-w-5xl items-center justify-between rounded-full border px-5 transition-all duration-300",
           scrolled
-            ? "border-white/12 bg-[#0d0d0f]/85 shadow-[0_8px_40px_rgba(0,0,0,0.45)] backdrop-blur-xl"
+            ? "border-white/12 bg-[#0b1428]/85 shadow-[0_8px_40px_rgba(0,0,0,0.45)] backdrop-blur-xl"
             : "border-transparent bg-transparent",
         )}
       >
         <Link
           href={ROUTES.home}
-          className="font-display text-lg font-bold tracking-tight"
+          className="font-display flex items-center gap-2 text-lg font-bold tracking-tight"
         >
+          <BrandMark className="text-foreground size-7" />
           prossignment
-          <span className="aurora-text">*</span>
         </Link>
 
         {/* Desktop */}
@@ -78,7 +79,7 @@ export function Navbar() {
           {isAuthed ? (
             <Link
               href={ROUTES.dashboard}
-              className="flex h-10 items-center gap-1.5 rounded-full bg-[#d5b36b] px-5 text-sm font-semibold text-[#0a0a0c] transition-all hover:scale-[1.04] hover:bg-[#e2c584]"
+              className="flex h-10 items-center gap-1.5 rounded-full bg-[#3b82f6] px-5 text-sm font-semibold text-white transition-all hover:scale-[1.04] hover:bg-[#60a5fa]"
             >
               Enter studio
               <ArrowUpRight className="size-4" />
@@ -93,7 +94,7 @@ export function Navbar() {
               </Link>
               <Link
                 href={orderHref(false)}
-                className="flex h-10 items-center gap-1.5 rounded-full bg-[#d5b36b] px-5 text-sm font-semibold text-[#0a0a0c] transition-all hover:scale-[1.04] hover:bg-[#e2c584]"
+                className="flex h-10 items-center gap-1.5 rounded-full bg-[#3b82f6] px-5 text-sm font-semibold text-white transition-all hover:scale-[1.04] hover:bg-[#60a5fa]"
               >
                 Submit assignment
                 <ArrowUpRight className="size-4" />
@@ -117,7 +118,7 @@ export function Navbar() {
 
       {/* Mobile panel */}
       {menuOpen && (
-        <div className="mx-auto mt-2 max-w-5xl rounded-3xl border border-white/12 bg-[#0d0d0f]/95 p-4 backdrop-blur-xl md:hidden">
+        <div className="mx-auto mt-2 max-w-5xl rounded-3xl border border-white/12 bg-[#0b1428]/95 p-4 backdrop-blur-xl md:hidden">
           <div className="flex flex-col">
             {NAV_LINKS.map((link) => (
               <Link
@@ -138,7 +139,7 @@ export function Navbar() {
               {isAuthed ? (
                 <Link
                   href={ROUTES.dashboard}
-                  className="flex h-12 items-center justify-center gap-1.5 rounded-full bg-[#d5b36b] text-sm font-semibold text-[#0a0a0c]"
+                  className="flex h-12 items-center justify-center gap-1.5 rounded-full bg-[#3b82f6] text-sm font-semibold text-white"
                 >
                   Enter studio
                   <ArrowUpRight className="size-4" />
@@ -147,7 +148,7 @@ export function Navbar() {
                 <>
                   <Link
                     href={orderHref(false)}
-                    className="flex h-12 items-center justify-center gap-1.5 rounded-full bg-[#d5b36b] text-sm font-semibold text-[#0a0a0c]"
+                    className="flex h-12 items-center justify-center gap-1.5 rounded-full bg-[#3b82f6] text-sm font-semibold text-white"
                   >
                     Submit assignment
                     <ArrowUpRight className="size-4" />

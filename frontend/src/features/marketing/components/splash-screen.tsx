@@ -37,7 +37,7 @@ export function SplashScreen() {
       {visible && (
         <motion.div
           key="splash"
-          className="fixed inset-0 z-100 flex flex-col items-center justify-center overflow-hidden bg-[#080a1f]"
+          className="fixed inset-0 z-100 flex flex-col items-center justify-center overflow-hidden bg-[#070b18]"
           initial={{ opacity: 1 }}
           exit={{ opacity: 0, scale: 1.04, filter: "blur(6px)" }}
           transition={{ duration: 0.8, ease: "easeInOut" }}
@@ -48,7 +48,7 @@ export function SplashScreen() {
             className="absolute inset-0"
             style={{
               background:
-                "radial-gradient(ellipse 50% 45% at 50% 42%, rgba(213,179,107,0.16), transparent 70%)",
+                "radial-gradient(ellipse 50% 45% at 50% 42%, rgba(59,130,246,0.16), transparent 70%)",
             }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -65,7 +65,7 @@ export function SplashScreen() {
             <motion.div
               aria-hidden
               className="absolute inset-0 blur-2xl"
-              style={{ color: "#d5b36b" }}
+              style={{ color: "#3b82f6" }}
               initial={{ opacity: 0 }}
               animate={{ opacity: [0, 0.5, 0.3] }}
               transition={{ duration: 2, times: [0, 0.7, 1] }}

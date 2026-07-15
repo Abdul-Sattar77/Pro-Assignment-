@@ -19,7 +19,7 @@ export function Cta() {
       {/* Converging warm glows */}
       <div
         aria-hidden
-        className="absolute inset-0 bg-[radial-gradient(ellipse_50%_45%_at_50%_60%,rgba(213,179,107,0.13),transparent),radial-gradient(ellipse_35%_30%_at_28%_40%,rgba(213,179,107,0.06),transparent),radial-gradient(ellipse_40%_35%_at_72%_45%,rgba(255,255,255,0.03),transparent)]"
+        className="absolute inset-0 bg-[radial-gradient(ellipse_50%_45%_at_50%_60%,rgba(59,130,246,0.13),transparent),radial-gradient(ellipse_35%_30%_at_28%_40%,rgba(59,130,246,0.06),transparent),radial-gradient(ellipse_40%_35%_at_72%_45%,rgba(255,255,255,0.03),transparent)]"
       />
 
       <div className="relative mx-auto max-w-4xl px-6 text-center">
@@ -54,7 +54,7 @@ export function Cta() {
         >
           <Link
             href={orderHref(isAuthed)}
-            className="aurora-glow group flex h-14 items-center gap-2 rounded-full bg-[#d5b36b] px-9 text-base font-semibold text-[#0a0a0c] transition-all duration-200 hover:scale-[1.04] hover:bg-[#e2c584] active:scale-[0.98]"
+            className="aurora-glow group flex h-14 items-center gap-2 rounded-full bg-[#3b82f6] px-9 text-base font-semibold text-white transition-all duration-200 hover:scale-[1.04] hover:bg-[#60a5fa] active:scale-[0.98]"
           >
             Submit your assignment
             <ArrowRight className="size-5 transition-transform group-hover:translate-x-1" />

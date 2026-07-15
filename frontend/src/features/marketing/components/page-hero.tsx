@@ -24,7 +24,7 @@ export function PageHero({
       {/* Warm haze backdrop */}
       <div
         aria-hidden
-        className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_0%,rgba(213,179,107,0.10),transparent)]"
+        className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_0%,rgba(59,130,246,0.10),transparent)]"
       />
       <motion.div
         initial={{ opacity: 0, y: 20 }}

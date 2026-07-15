@@ -127,7 +127,7 @@ export function Services() {
                 />
                 <div
                   aria-hidden
-                  className="absolute inset-0 bg-linear-to-t from-[#0c0c1b] via-[#0c0c1b]/30 to-transparent"
+                  className="absolute inset-0 bg-linear-to-t from-[#070b18] via-[#070b18]/30 to-transparent"
                 />
               </div>
 
