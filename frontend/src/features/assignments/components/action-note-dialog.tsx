@@ -16,7 +16,7 @@ import { useAssignmentAction } from "../hooks/use-assignments";
 import type { AssignmentAction } from "../types";
 
 export interface NoteActionConfig {
-  action: Exclude<AssignmentAction, "assign">;
+  action: Exclude<AssignmentAction, "assign" | "assign_manager">;
   title: string;
   description: string;
   confirmLabel: string;

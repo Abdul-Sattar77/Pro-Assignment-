@@ -31,5 +31,9 @@ class AppServiceProvider extends ServiceProvider
 
             return "{$frontend}/reset-password?token={$token}&email=".urlencode($email);
         });
+
+        // Sync assignment writes into the calendar + task automation (adeel).
+        \App\Models\Assignment::observe(\App\Observers\AssignmentObserver::class);
+        \App\Models\Task::observe(\App\Observers\TaskObserver::class);
     }
 }

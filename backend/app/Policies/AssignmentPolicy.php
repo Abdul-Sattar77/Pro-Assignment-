@@ -59,4 +59,34 @@ final class AssignmentPolicy
     {
         return $this->view($actor, $assignment);
     }
+
+    /** Admin and PM may edit assignment fields (priority, notes, etc.). */
+    public function update(User $actor, Assignment $assignment): bool
+    {
+        return $actor->hasRole(Role::Admin->value) || $actor->hasRole(Role::ProjectManager->value);
+    }
+
+    /** Admin, PM, the assigned writer, or the owner client may upload files / voice notes to an assignment. */
+    public function uploadAttachment(User $actor, Assignment $assignment): bool
+    {
+        if ($actor->hasRole(Role::Admin->value) || $actor->hasRole(Role::ProjectManager->value)) {
+            return true;
+        }
+
+        if ($actor->hasRole(Role::Writer->value) && $assignment->writer_id === $actor->getKey()) {
+            return true;
+        }
+
+        if ($actor->hasRole(Role::Client->value) && $assignment->client_id === $actor->getKey()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /** Only admin may delete attachments. */
+    public function deleteAttachment(User $actor, Assignment $assignment): bool
+    {
+        return $actor->hasRole(Role::Admin->value);
+    }
 }

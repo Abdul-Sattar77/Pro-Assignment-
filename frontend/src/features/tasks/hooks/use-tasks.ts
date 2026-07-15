@@ -1,66 +1,131 @@
-import { useState } from "react";
-import type { Task, TaskStatus } from "../types";
+"use client";
 
-const MOCK_TASKS: Task[] = [
-  {
-    id: "1",
-    title: "Review assignment #A-101",
-    description: "Check submitted files and approve",
-    status: "todo",
-    priority: "high",
-    dueDate: "2026-07-12",
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: "2",
-    title: "Assign writer to #A-102",
-    description: "Find available writer and assign",
-    status: "doing",
-    priority: "high",
-    dueDate: "2026-07-11",
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: "3",
-    title: "Send weekly update to client",
-    description: "Prepare and send progress report",
-    status: "doing",
-    priority: "medium",
-    dueDate: "2026-07-10",
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: "4",
-    title: "Follow up on payment #INV-009",
-    status: "done",
-    priority: "low",
-    createdAt: new Date().toISOString(),
-  },
-];
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { toast } from "sonner";
+import type { ApiError } from "@/lib/http-error";
+import { TASKS_QUERY_KEYS } from "../constants";
+import { tasksService } from "../services/tasks-service";
+import type {
+  CreateTaskPayload,
+  Task,
+  TaskFilters,
+  TasksPage,
+  UpdateTaskPayload,
+} from "../types";
 
-export function useTasks() {
-  const [tasks, setTasks] = useState<Task[]>(MOCK_TASKS);
+export function useTasks(filters: TaskFilters) {
+  return useQuery<TasksPage, ApiError>({
+    queryKey: TASKS_QUERY_KEYS.list(filters),
+    queryFn: () => tasksService.list(filters),
+    placeholderData: keepPreviousData,
+    staleTime: 15 * 1000,
+  });
+}
 
-  function addTask(task: Omit<Task, "id" | "createdAt">) {
-    const newTask: Task = {
-      ...task,
-      id: Date.now().toString(),
-      createdAt: new Date().toISOString(),
-    };
-    setTasks((prev) => [newTask, ...prev]);
-  }
+export function useTask(id: string) {
+  return useQuery<Task, ApiError>({
+    queryKey: TASKS_QUERY_KEYS.detail(id),
+    queryFn: () => tasksService.get(id),
+  });
+}
 
-  function updateStatus(id: string, status: TaskStatus) {
-    setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, status } : t)));
-  }
+export function useCreateTask() {
+  const queryClient = useQueryClient();
 
-  function deleteTask(id: string) {
-    setTasks((prev) => prev.filter((t) => t.id !== id));
-  }
+  return useMutation<Task, ApiError, CreateTaskPayload>({
+    mutationFn: (payload) => tasksService.create(payload),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: TASKS_QUERY_KEYS.all,
+      });
+      toast.success("Task created successfully.");
+    },
+    onError: (error) => toast.error(error.message || "Failed to create task."),
+  });
+}
 
-  function getByStatus(status: TaskStatus) {
-    return tasks.filter((t) => t.status === status);
-  }
+export function useUpdateTask(taskId: string) {
+  const queryClient = useQueryClient();
 
-  return { tasks, addTask, updateStatus, deleteTask, getByStatus };
+  return useMutation<Task, ApiError, UpdateTaskPayload>({
+    mutationFn: (payload) => tasksService.update(taskId, payload),
+    onSuccess: (task) => {
+      queryClient.setQueryData(TASKS_QUERY_KEYS.detail(taskId), task);
+      void queryClient.invalidateQueries({
+        queryKey: TASKS_QUERY_KEYS.all,
+      });
+      toast.success("Task updated successfully.");
+    },
+    onError: (error) => toast.error(error.message || "Failed to update task."),
+  });
+}
+
+export function useDeleteTask() {
+  const queryClient = useQueryClient();
+
+  return useMutation<void, ApiError, string>({
+    mutationFn: (id) => tasksService.delete(id),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: TASKS_QUERY_KEYS.all,
+      });
+      toast.success("Task deleted successfully.");
+    },
+    onError: (error) => toast.error(error.message || "Failed to delete task."),
+  });
+}
+
+export function useAssignTask(taskId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation<Task, ApiError, string | null>({
+    mutationFn: (userId) => tasksService.assign(taskId, userId),
+    onSuccess: (task) => {
+      queryClient.setQueryData(TASKS_QUERY_KEYS.detail(taskId), task);
+      void queryClient.invalidateQueries({
+        queryKey: TASKS_QUERY_KEYS.all,
+      });
+      toast.success("Task assignee updated.");
+    },
+    onError: (error) =>
+      toast.error(error.message || "Failed to update assignee."),
+  });
+}
+
+export function useCompleteTask(taskId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation<Task, ApiError, void>({
+    mutationFn: () => tasksService.complete(taskId),
+    onSuccess: (task) => {
+      queryClient.setQueryData(TASKS_QUERY_KEYS.detail(taskId), task);
+      void queryClient.invalidateQueries({
+        queryKey: TASKS_QUERY_KEYS.all,
+      });
+      toast.success("Task completed.");
+    },
+    onError: (error) =>
+      toast.error(error.message || "Failed to complete task."),
+  });
+}
+
+export function useCancelTask(taskId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation<Task, ApiError, void>({
+    mutationFn: () => tasksService.cancel(taskId),
+    onSuccess: (task) => {
+      queryClient.setQueryData(TASKS_QUERY_KEYS.detail(taskId), task);
+      void queryClient.invalidateQueries({
+        queryKey: TASKS_QUERY_KEYS.all,
+      });
+      toast.success("Task cancelled.");
+    },
+    onError: (error) => toast.error(error.message || "Failed to cancel task."),
+  });
 }

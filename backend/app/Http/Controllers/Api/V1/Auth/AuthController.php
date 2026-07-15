@@ -33,34 +33,48 @@ final class AuthController extends Controller
 
         $user = $this->auth->register($data);
 
-        Auth::login($user);
-        $request->session()->regenerate();
+        $token = $user->createToken('auth-token')->plainTextToken;
 
-        return ApiResponse::resource(UserResource::make($user->load('roles', 'permissions')), 201);
+        return response()->json([
+            'success' => true,
+            'token' => $token,
+            'user' => UserResource::make($user->load('roles', 'permissions')),
+        ], 201);
     }
 
     public function login(LoginRequest $request): JsonResponse
     {
         $request->authenticate();
-        $request->session()->regenerate();
 
         /** @var User $user */
         $user = Auth::user();
 
         if (!$user->is_active) {
-            $this->flushSession($request);
-
             return ApiResponse::error('ACCOUNT_INACTIVE', 'Your account is inactive. Contact an administrator.', 403);
         }
 
-        return ApiResponse::resource(UserResource::make($user->load('roles', 'permissions')));
+        $token = $user->createToken('auth-token')->plainTextToken;
+
+        return response()->json([
+            'success' => true,
+            'token' => $token,
+            'user' => UserResource::make($user->load('roles', 'permissions')),
+        ]);
     }
 
     public function logout(Request $request): JsonResponse
     {
-        $this->flushSession($request);
+        /** @var User $user */
+        $user = $request->user();
 
-        return ApiResponse::noContent();
+        if ($user) {
+            $user->currentAccessToken()->delete();
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Logged out successfully.',
+        ]);
     }
 
     public function me(Request $request): JsonResponse
@@ -69,12 +83,5 @@ final class AuthController extends Controller
         $user = $request->user();
 
         return ApiResponse::resource(UserResource::make($user->load('roles', 'permissions')));
-    }
-
-    private function flushSession(Request $request): void
-    {
-        Auth::guard('web')->logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
     }
 }

@@ -18,6 +18,9 @@ export function userFormSchema(isEdit: boolean) {
           )
       : z.string().min(8, "Password must be at least 8 characters."),
     role: z.string().min(1, "Select a role."),
+    availability: z.string().optional(),
+    expertise: z.string().optional(),
+    notes: z.string().optional(),
   });
 }
 

@@ -31,7 +31,7 @@ final class UserService
     }
 
     /**
-     * @param  array{name: string, email: string, password: string, roles: array<int, string>, is_active?: bool}  $data
+     * @param  array{name: string, email: string, password: string, roles: array<int, string>, is_active?: bool, availability?: string, expertise?: string|null, notes?: string|null}  $data
      */
     public function create(array $data): User
     {
@@ -41,6 +41,9 @@ final class UserService
                 'email' => $data['email'],
                 'password' => $data['password'],
                 'is_active' => $data['is_active'] ?? true,
+                'availability' => $data['availability'] ?? 'available',
+                'expertise' => $data['expertise'] ?? null,
+                'notes' => $data['notes'] ?? null,
             ]);
 
             $user->syncRoles($data['roles']);
@@ -50,7 +53,7 @@ final class UserService
     }
 
     /**
-     * @param  array{name?: string, email?: string, password?: string|null, roles?: array<int, string>, is_active?: bool}  $data
+     * @param  array{name?: string, email?: string, password?: string|null, roles?: array<int, string>, is_active?: bool, availability?: string, expertise?: string|null, notes?: string|null}  $data
      */
     public function update(User $actor, User $user, array $data): User
     {
@@ -69,6 +72,18 @@ final class UserService
 
             if (array_key_exists('is_active', $data)) {
                 $attributes['is_active'] = $data['is_active'];
+            }
+
+            if (array_key_exists('availability', $data)) {
+                $attributes['availability'] = $data['availability'];
+            }
+
+            if (array_key_exists('expertise', $data)) {
+                $attributes['expertise'] = $data['expertise'];
+            }
+
+            if (array_key_exists('notes', $data)) {
+                $attributes['notes'] = $data['notes'];
             }
 
             if ($attributes !== []) {

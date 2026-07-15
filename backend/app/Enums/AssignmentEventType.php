@@ -20,20 +20,24 @@ enum AssignmentEventType: string
     case RevisionRequested = 'revision_requested';
     case Completed = 'completed';
     case Cancelled = 'cancelled';
+    case Updated = 'updated';
+    case AttachmentAdded = 'attachment_added';
 
     public function label(): string
     {
         return match ($this) {
-            self::Created => 'Order placed',
-            self::WriterAssigned => 'Writer assigned',
-            self::WriterAccepted => 'Writer accepted',
-            self::WriterRejected => 'Writer declined',
-            self::WorkSubmitted => 'Work submitted',
+            self::Created         => 'Order placed',
+            self::WriterAssigned  => 'Writer assigned',
+            self::WriterAccepted  => 'Writer accepted',
+            self::WriterRejected  => 'Writer declined',
+            self::WorkSubmitted   => 'Work submitted',
             self::ReturnedToWriter => 'Returned to writer',
-            self::Delivered => 'Delivered to client',
+            self::Delivered       => 'Delivered to client',
             self::RevisionRequested => 'Revision requested',
-            self::Completed => 'Approved & completed',
-            self::Cancelled => 'Cancelled',
+            self::Completed       => 'Approved & completed',
+            self::Cancelled       => 'Cancelled',
+            self::Updated         => 'Details updated',
+            self::AttachmentAdded => 'File attached',
         };
     }
 }

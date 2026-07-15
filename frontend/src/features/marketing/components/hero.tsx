@@ -54,17 +54,17 @@ export function Hero() {
       onPointerLeave={onPointerLeave}
       className="relative flex min-h-dvh items-center overflow-hidden bg-[#070b1a] px-6 py-28"
     >
-      {/* Slowly shifting gradient wash */}
+      {/* Slowly shifting gradient wash (cross-fading light layers) */}
       <motion.div
         aria-hidden
-        className="absolute inset-0"
-        animate={{
-          background: [
-            "radial-gradient(60% 50% at 25% 30%, rgba(59,130,246,0.14), transparent 70%)",
-            "radial-gradient(60% 50% at 70% 60%, rgba(139,92,246,0.14), transparent 70%)",
-            "radial-gradient(60% 50% at 25% 30%, rgba(59,130,246,0.14), transparent 70%)",
-          ],
-        }}
+        className="absolute inset-0 bg-[radial-gradient(60%_50%_at_25%_30%,rgba(59,130,246,0.16),transparent_70%)]"
+        animate={{ opacity: [0.9, 0.3, 0.9] }}
+        transition={{ duration: 14, ease: "easeInOut", repeat: Infinity }}
+      />
+      <motion.div
+        aria-hidden
+        className="absolute inset-0 bg-[radial-gradient(60%_50%_at_72%_62%,rgba(139,92,246,0.16),transparent_70%)]"
+        animate={{ opacity: [0.3, 0.9, 0.3] }}
         transition={{ duration: 14, ease: "easeInOut", repeat: Infinity }}
       />
       {/* Blurred radial lights */}

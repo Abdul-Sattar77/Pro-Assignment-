@@ -17,7 +17,7 @@ use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 use Spatie\Permission\Traits\HasRoles;
 
-#[Fillable(['name', 'email', 'password', 'is_active', 'university', 'department', 'study_year'])]
+#[Fillable(['name', 'email', 'password', 'is_active', 'university', 'department', 'study_year', 'availability', 'expertise', 'notes'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -48,9 +48,43 @@ class User extends Authenticatable
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['name', 'email', 'is_active'])
+            ->logOnly(['name', 'email', 'is_active', 'availability', 'expertise', 'notes'])
             ->logOnlyDirty()
             ->dontLogEmptyChanges()
             ->useLogName('user');
+    }
+
+    public function writerRatings(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(WriterRating::class, 'writer_id');
+    }
+
+    public function clientRatings(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(WriterRating::class, 'client_id');
+    }
+
+    public function complaints(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Complaint::class, 'client_id');
+    }
+
+    public function templates(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(DocumentTemplate::class, 'uploaded_by');
+    }
+
+    public function getAverageRatingAttribute(): float
+    {
+        return (float) ($this->writerRatings()->avg('overall_rating') ?? 0.0);
+    }
+
+    public function getTotalEarningsAttribute(): float
+    {
+        return (float) Payment::query()
+            ->where('user_id', $this->id)
+            ->where('payment_type', \App\Enums\PaymentType::WriterPayout->value)
+            ->where('status', \App\Enums\PaymentStatus::Verified->value)
+            ->sum('amount');
     }
 }

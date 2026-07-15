@@ -1,14 +1,19 @@
 import {
+  AlertCircle,
+  BarChart3,
   Calendar,
   CheckSquare,
   FileText,
   FolderOpen,
+  History,
   LayoutDashboard,
   MessageSquare,
+  PieChart,
   Settings,
   ShieldCheck,
   UserRound,
   Users,
+  Wallet,
   type LucideIcon,
 } from "lucide-react";
 import { ROUTES } from "./routes";
@@ -74,6 +79,41 @@ export const NAV_SECTIONS: NavSection[] = [
     ],
   },
   {
+    title: "Business",
+    items: [
+      {
+        label: "Finance",
+        href: ROUTES.finance,
+        icon: Wallet,
+        permission: "finance.view",
+      },
+      {
+        label: "Reports",
+        href: ROUTES.reports,
+        icon: BarChart3,
+        permission: "reports.view",
+      },
+      {
+        label: "Analytics",
+        href: ROUTES.analytics,
+        icon: PieChart,
+        permission: "analytics.view",
+      },
+      {
+        label: "Complaints",
+        href: ROUTES.complaints,
+        icon: AlertCircle,
+        permission: "complaints.view",
+      },
+      {
+        label: "Templates",
+        href: ROUTES.documentTemplates,
+        icon: FileText,
+        permission: "document_templates.view",
+      },
+    ],
+  },
+  {
     title: "Administration",
     items: [
       {
@@ -88,7 +128,17 @@ export const NAV_SECTIONS: NavSection[] = [
         icon: ShieldCheck,
         permission: "roles.view",
       },
-      { label: "Settings", href: ROUTES.settings, icon: Settings },
+      {
+        label: "Audit Logs",
+        href: ROUTES.auditLogs,
+        icon: History,
+        permission: "audit_logs.view",
+      },
+      {
+        label: "Settings",
+        href: ROUTES.settings,
+        icon: Settings,
+      },
     ],
   },
 ];

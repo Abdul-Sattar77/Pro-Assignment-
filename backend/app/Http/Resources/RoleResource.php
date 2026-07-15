@@ -1,0 +1,27 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Http\Resources;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+use Spatie\Permission\Models\Role;
+
+/**
+ * Class RoleResource
+ *
+ * @mixin Role
+ */
+final class RoleResource extends JsonResource
+{
+    public function toArray(Request $request): array
+    {
+        return [
+            'id' => (string) $this->id,
+            'name' => $this->name,
+            'permissions' => $this->permissions->pluck('name')->toArray(),
+            'createdAt' => $this->created_at?->toIso8601String(),
+        ];
+    }
+}
