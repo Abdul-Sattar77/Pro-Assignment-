@@ -20,6 +20,7 @@ export type AssignmentStatus =
 /** Workflow action keys as sent by the backend. */
 export type AssignmentAction =
   | "assign"
+  | "assign_manager"
   | "accept"
   | "reject"
   | "submit"
@@ -59,7 +60,32 @@ export type AssignmentType =
 
 export type AcademicLevel = "high_school" | "undergraduate" | "masters" | "phd";
 
-export type AssignmentPriority = "standard" | "urgent" | "critical";
+/**
+ * Priority values are anchored to the backend AssignmentPriority enum
+ * (main branch). The const is exposed so admin-panel components can iterate
+ * priorities without hardcoding strings.
+ */
+export const ASSIGNMENT_PRIORITY = {
+  STANDARD: "standard",
+  URGENT: "urgent",
+  CRITICAL: "critical",
+} as const;
+
+export type AssignmentPriority =
+  (typeof ASSIGNMENT_PRIORITY)[keyof typeof ASSIGNMENT_PRIORITY];
+
+/** Attachment / voice-note on an assignment (admin panel). */
+export interface AssignmentAttachment {
+  id: string;
+  type: "file" | "voice_note";
+  originalName: string | null;
+  mimeType: string | null;
+  size: number | null;
+  humanSize: string;
+  url: string;
+  uploadedBy?: PersonRef;
+  createdAt: string | null;
+}
 
 export interface Assignment {
   id: string;
@@ -81,10 +107,17 @@ export interface Assignment {
   status: AssignmentStatus;
   statusLabel: string;
   deadline: string;
+  // Admin-panel cost/notes fields (optional; populated by admin endpoints).
+  notes?: string | null;
+  clientPrice?: number;
+  writerCost?: number;
+  discount?: number;
+  netProfit?: number;
   client?: PersonRef;
   writer?: PersonRef | null;
   projectManager?: PersonRef | null;
   events?: AssignmentEvent[];
+  attachments?: AssignmentAttachment[];
   actions: AssignmentAction[];
   createdAt: string | null;
 }
@@ -94,6 +127,31 @@ export interface AssignmentFilters {
   search?: string;
   page?: number;
   perPage?: number;
+}
+
+/** Extended filters used by the admin assignments queue. */
+export interface AdminAssignmentFilters extends AssignmentFilters {
+  priority?: AssignmentPriority;
+  writerId?: string;
+  projectManagerId?: string;
+  deadlineFrom?: string;
+  deadlineTo?: string;
+  sort?: string;
+}
+
+/** Partial update payload for the admin edit dialog. */
+export interface UpdateAssignmentPayload {
+  title?: string;
+  subject?: string;
+  description?: string;
+  deadline?: string;
+  priority?: AssignmentPriority;
+  word_count?: number | null;
+  notes?: string | null;
+  client_price?: number;
+  writer_cost?: number;
+  discount?: number;
+  net_profit?: number;
 }
 
 export interface PaginationMeta {

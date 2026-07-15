@@ -13,6 +13,8 @@ export const ASSIGNMENTS_QUERY_KEYS = {
   list: (filters: AssignmentFilters) =>
     ["assignments", "list", filters] as const,
   detail: (id: string) => ["assignments", "detail", id] as const,
+  attachments: (id: string) =>
+    ["assignments", "detail", id, "attachments"] as const,
 };
 
 interface StatusMeta {
@@ -124,7 +126,12 @@ export const PRIORITY_OPTIONS: {
 
 interface PriorityMeta {
   label: string;
+  /** Outline/border+text classes (used by the detail/queue chip). */
   className: string;
+  /** Badge background/text classes (used by the admin PriorityBadge). */
+  badgeClass: string;
+  /** Dot color class (used by the admin PriorityBadge). */
+  dotClass: string;
 }
 
 /** Badge styling per priority for detail/queue surfaces. */
@@ -132,15 +139,22 @@ export const PRIORITY_META: Record<AssignmentPriority, PriorityMeta> = {
   standard: {
     label: "Standard",
     className: "text-muted-foreground border-border",
+    badgeClass: "bg-muted text-muted-foreground",
+    dotClass: "bg-muted-foreground",
   },
   urgent: {
     label: "Urgent",
     className:
       "text-amber-600 border-amber-500/40 dark:text-amber-400 dark:border-amber-400/40",
+    badgeClass:
+      "bg-amber-500/10 text-amber-600 dark:text-amber-400",
+    dotClass: "bg-amber-500",
   },
   critical: {
     label: "Critical",
     className:
       "text-red-600 border-red-500/40 dark:text-red-400 dark:border-red-400/40",
+    badgeClass: "bg-red-500/10 text-red-600 dark:text-red-400",
+    dotClass: "bg-red-500",
   },
 };

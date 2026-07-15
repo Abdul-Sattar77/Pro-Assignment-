@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Loader2, Edit3 } from "lucide-react";
@@ -109,13 +109,17 @@ export function EditAssignmentDialog({
   const updateAssignment = useUpdateAssignment(assignment.id);
 
   const form = useForm<EditAssignmentFormValues>({
-    resolver: zodResolver(editAssignmentSchema),
+    // preprocess() fields widen the resolver's input type to unknown; the cast
+    // reconciles it with the inferred output type (runtime behaviour is correct).
+    resolver: zodResolver(
+      editAssignmentSchema,
+    ) as unknown as Resolver<EditAssignmentFormValues>,
     defaultValues: {
       title: assignment.title,
       subject: assignment.subject,
       description: assignment.description,
       deadline: toLocalDatetimeString(assignment.deadline),
-      priority: assignment.priority ?? ASSIGNMENT_PRIORITY.NORMAL,
+      priority: assignment.priority ?? ASSIGNMENT_PRIORITY.STANDARD,
       word_count: assignment.wordCount ?? undefined,
       notes: assignment.notes ?? "",
       client_price: assignment.clientPrice,
