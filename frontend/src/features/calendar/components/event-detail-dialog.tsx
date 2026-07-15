@@ -15,7 +15,11 @@ import {
 import { useAuth } from "@/features/auth";
 import { useDeleteCalendarEvent } from "../hooks/use-calendar";
 import { EVENT_TYPE_META, STATUS_META } from "../constants";
-import { CALENDAR_EVENT_TYPE, type CalendarEvent } from "../types";
+import {
+  CALENDAR_EVENT_TYPE,
+  type CalendarEvent,
+  type CalendarEventType,
+} from "../types";
 
 interface EventDetailDialogProps {
   event: CalendarEvent | null;
@@ -38,11 +42,13 @@ export function EventDetailDialog({
   const statusMeta = STATUS_META[event.status];
 
   // Auto-synced event categories cannot be edited/deleted manually
-  const isAutoEvent = [
-    CALENDAR_EVENT_TYPE.ASSIGNMENT_DEADLINE,
-    CALENDAR_EVENT_TYPE.WRITER_DEADLINE,
-    CALENDAR_EVENT_TYPE.PAYMENT_DUE,
-  ].includes(event.eventType);
+  const isAutoEvent = (
+    [
+      CALENDAR_EVENT_TYPE.ASSIGNMENT_DEADLINE,
+      CALENDAR_EVENT_TYPE.WRITER_DEADLINE,
+      CALENDAR_EVENT_TYPE.PAYMENT_DUE,
+    ] as CalendarEventType[]
+  ).includes(event.eventType);
 
   const handleDelete = () => {
     if (

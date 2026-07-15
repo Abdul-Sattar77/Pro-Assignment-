@@ -18,7 +18,7 @@ export function useUpdateProfile() {
     mutationFn: (payload) => profileService.updateProfile(payload),
     onSuccess: (user) => {
       // Keep the app-wide session cache in sync.
-      queryClient.setQueryData(AUTH_QUERY_KEYS.me, user);
+      queryClient.setQueryData(AUTH_QUERY_KEYS.ME, user);
       toast.success("Profile updated.");
     },
   });

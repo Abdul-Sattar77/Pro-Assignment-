@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Loader2, ClipboardPlus } from "lucide-react";
@@ -89,7 +89,9 @@ export function CreateTaskDialog({
   });
 
   const form = useForm<CreateTaskFormValues>({
-    resolver: zodResolver(createTaskSchema),
+    resolver: zodResolver(
+      createTaskSchema,
+    ) as unknown as Resolver<CreateTaskFormValues>,
     defaultValues: {
       title: "",
       description: "",

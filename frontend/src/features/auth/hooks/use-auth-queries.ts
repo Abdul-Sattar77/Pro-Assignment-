@@ -15,7 +15,7 @@ import type { AuthUser, LoginPayload, RegisterPayload } from "../types";
  */
 export function useCurrentUser() {
   return useQuery<AuthUser | null>({
-    queryKey: AUTH_QUERY_KEYS.me,
+    queryKey: AUTH_QUERY_KEYS.ME,
     queryFn: () => authService.me(),
     staleTime: 5 * 60 * 1000,
     retry: false,
@@ -38,7 +38,7 @@ export function useLogin() {
         remember: variables.remember,
       }),
     onSuccess: (user, variables) => {
-      queryClient.setQueryData(AUTH_QUERY_KEYS.me, user);
+      queryClient.setQueryData(AUTH_QUERY_KEYS.ME, user);
       toast.success(`Welcome back, ${user.name.split(" ")[0]}!`);
       router.replace(variables.redirectTo ?? ROUTES.dashboard);
     },
@@ -52,7 +52,7 @@ export function useRegister() {
   return useMutation<AuthUser, ApiError, RegisterPayload>({
     mutationFn: (payload) => authService.register(payload),
     onSuccess: (user) => {
-      queryClient.setQueryData(AUTH_QUERY_KEYS.me, user);
+      queryClient.setQueryData(AUTH_QUERY_KEYS.ME, user);
       toast.success(
         `Welcome, ${user.name.split(" ")[0]}! Your account is ready.`,
       );
@@ -69,7 +69,7 @@ export function useLogout() {
     mutationFn: () => authService.logout(),
     onSettled: () => {
       // Clear ALL cached server state — nothing user-scoped may survive logout.
-      queryClient.setQueryData(AUTH_QUERY_KEYS.me, null);
+      queryClient.setQueryData(AUTH_QUERY_KEYS.ME, null);
       queryClient.removeQueries({ predicate: (q) => q.queryKey[0] !== "auth" });
       router.replace(ROUTES.login);
     },

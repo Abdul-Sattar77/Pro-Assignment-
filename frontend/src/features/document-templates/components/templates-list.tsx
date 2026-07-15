@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTemplates, useDeleteTemplate } from "../hooks/use-templates";
 import { CreateTemplateDialog } from "./create-template-dialog";
 import { TEMPLATE_CATEGORIES, TEMPLATE_SORT_OPTIONS } from "../constants";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -196,7 +197,10 @@ export function TemplatesList() {
                     className="text-primary flex items-center gap-1 font-semibold hover:underline"
                   >
                     <FileDown className="size-4" />
-                    <span>Download ({tpl.file.humanSize})</span>
+                    <span>
+                      Download ({Math.max(1, Math.round(tpl.file.size / 1024))}{" "}
+                      KB)
+                    </span>
                   </a>
                 ) : (
                   <span className="text-muted-foreground text-[10px]">

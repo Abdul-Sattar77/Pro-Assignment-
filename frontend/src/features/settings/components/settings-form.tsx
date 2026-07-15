@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useSettings, useUpdateSettings } from "../hooks/use-settings";
@@ -52,7 +52,9 @@ export function SettingsForm() {
   const updateSettings = useUpdateSettings();
 
   const form = useForm<SettingsFormValues>({
-    resolver: zodResolver(settingsSchema),
+    resolver: zodResolver(
+      settingsSchema,
+    ) as unknown as Resolver<SettingsFormValues>,
     defaultValues: {
       portal_name: "",
       company_name: "",

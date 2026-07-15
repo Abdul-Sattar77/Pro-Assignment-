@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Loader2, UserPlus } from "lucide-react";
@@ -72,7 +72,9 @@ export function CreateLeadDialog({
   const createLead = useCreateLead();
 
   const form = useForm<CreateLeadFormValues>({
-    resolver: zodResolver(createLeadSchema),
+    resolver: zodResolver(
+      createLeadSchema,
+    ) as unknown as Resolver<CreateLeadFormValues>,
     defaultValues: {
       name: "",
       email: "",
