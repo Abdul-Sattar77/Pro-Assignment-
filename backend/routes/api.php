@@ -12,7 +12,9 @@ use App\Http\Controllers\Api\V1\Complaints\ComplaintController;
 use App\Http\Controllers\Api\V1\Dashboard\DashboardController;
 use App\Http\Controllers\Api\V1\Documents\DocumentTemplateController;
 use App\Http\Controllers\Api\V1\Files\FileController;
+use App\Http\Controllers\Api\V1\Finance\FinanceController;
 use App\Http\Controllers\Api\V1\Finance\InvoiceController;
+use App\Http\Controllers\Api\V1\Finance\PaymentController;
 use App\Http\Controllers\Api\V1\Leads\LeadController;
 use App\Http\Controllers\Api\V1\Messages\MessageController;
 use App\Http\Controllers\Api\V1\Notifications\NotificationController;
@@ -145,6 +147,15 @@ Route::prefix('v1')->group(function (): void {
         Route::post('invoices/{invoice}/submit-payment', [InvoiceController::class, 'submitPayment'])->name('invoices.submit-payment');
         Route::post('invoices/{invoice}/verify', [InvoiceController::class, 'verify'])->name('invoices.verify');
         Route::post('invoices/{invoice}/cancel', [InvoiceController::class, 'cancel'])->name('invoices.cancel');
+    });
+
+    // ---- Payments subsystem (admin panel; net-new) ----
+    Route::middleware('auth:sanctum')->group(function (): void {
+        Route::get('finance/stats', [FinanceController::class, 'stats'])->name('finance.stats');
+        Route::post('payments/{payment}/verify', [PaymentController::class, 'verify'])->name('payments.verify');
+        Route::apiResource('payments', PaymentController::class)
+            ->parameters(['payments' => 'payment'])
+            ->names('payments');
     });
 
     // ---- Notifications (in-app) ----

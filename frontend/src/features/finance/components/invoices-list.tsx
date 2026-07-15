@@ -3,7 +3,11 @@
 import { useState } from "react";
 import { useInvoices, useDeleteInvoice } from "../hooks/use-finance";
 import { CreateInvoiceDialog } from "./create-invoice-dialog";
-import { INVOICE_STATUS_META, INVOICE_SORT_OPTIONS } from "../constants";
+import {
+  INVOICE_STATUS_META,
+  INVOICE_SORT_OPTIONS,
+  formatMoney,
+} from "../constants";
 import { INVOICE_STATUS, type Invoice, type InvoiceStatus } from "../types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -177,20 +181,20 @@ export function InvoicesList() {
               invoices.map((invoice) => (
                 <TableRow key={invoice.id}>
                   <TableCell className="font-mono font-medium">
-                    {invoice.invoiceNumber}
+                    {invoice.number}
                   </TableCell>
-                  <TableCell>{invoice.client?.name || "N/A"}</TableCell>
+                  <TableCell>{invoice.client || "N/A"}</TableCell>
                   <TableCell className="max-w-xs truncate">
                     {invoice.assignment?.title || "N/A"}
                   </TableCell>
                   <TableCell className="font-semibold text-slate-900 dark:text-slate-100">
-                    PKR {invoice.amount.toLocaleString()}
+                    {formatMoney(invoice.amountCents, invoice.currency)}
                   </TableCell>
                   <TableCell>
-                    {invoice.dueDate ? (
+                    {invoice.createdAt ? (
                       <div className="text-muted-foreground flex items-center gap-1.5 text-xs">
                         <Calendar className="h-3.5 w-3.5" />
-                        {format(new Date(invoice.dueDate), "MMM dd, yyyy")}
+                        {format(new Date(invoice.createdAt), "MMM dd, yyyy")}
                       </div>
                     ) : (
                       "-"

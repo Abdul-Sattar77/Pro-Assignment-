@@ -1,11 +1,17 @@
 import { apiClient, ensureCsrfCookie } from "@/lib/api-client";
 import type {
   CreateInvoicePayload,
+  FinanceStats,
   FinanceSummary,
   Invoice,
   InvoiceFilters,
   InvoicesPage,
   PaginationMeta,
+  Payment,
+  PaymentFilters,
+  PaymentsPage,
+  RecordPaymentPayload,
+  VerifyPaymentPayload,
 } from "../types";
 
 interface ListEnvelope {
@@ -67,6 +73,62 @@ export const financeService = {
     await ensureCsrfCookie();
     const { data } = await apiClient.post<ItemEnvelope>(
       `/invoices/${id}/cancel`,
+    );
+    return data.data;
+  },
+
+  async deleteInvoice(id: string): Promise<void> {
+    await ensureCsrfCookie();
+    await apiClient.delete(`/invoices/${id}`);
+  },
+
+  // ---- Payments subsystem (admin panel) ----
+  async listPayments(filters: PaymentFilters): Promise<PaymentsPage> {
+    const params: Record<string, string | number> = {};
+    if (filters.status) params["filter[status]"] = filters.status;
+    if (filters.paymentType) params["filter[payment_type]"] = filters.paymentType;
+    if (filters.assignmentId) params["filter[assignment_id]"] = filters.assignmentId;
+    if (filters.userId) params["filter[user_id]"] = filters.userId;
+    if (filters.sort) params.sort = filters.sort;
+    if (filters.page) params.page = filters.page;
+    if (filters.perPage) params.per_page = filters.perPage;
+
+    const { data } = await apiClient.get<{
+      data: Payment[];
+      meta: { pagination: PaginationMeta };
+    }>("/payments", { params });
+    return { payments: data.data, pagination: data.meta.pagination };
+  },
+
+  async recordPayment(payload: RecordPaymentPayload): Promise<Payment> {
+    await ensureCsrfCookie();
+    const { data } = await apiClient.post<{ data: Payment }>(
+      "/payments",
+      payload,
+    );
+    return data.data;
+  },
+
+  async verifyPayment(
+    id: string,
+    payload: VerifyPaymentPayload,
+  ): Promise<Payment> {
+    await ensureCsrfCookie();
+    const { data } = await apiClient.post<{ data: Payment }>(
+      `/payments/${id}/verify`,
+      payload,
+    );
+    return data.data;
+  },
+
+  async deletePayment(id: string): Promise<void> {
+    await ensureCsrfCookie();
+    await apiClient.delete(`/payments/${id}`);
+  },
+
+  async getStats(): Promise<FinanceStats> {
+    const { data } = await apiClient.get<{ data: FinanceStats }>(
+      "/finance/stats",
     );
     return data.data;
   },

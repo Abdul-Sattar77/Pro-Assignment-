@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Loader2, Plus, Upload, FileText, CheckCircle2 } from "lucide-react";
@@ -29,6 +29,7 @@ import { useUsers } from "@/features/users/hooks/use-users";
 import { useUploadFile } from "@/features/files/hooks/use-files";
 import { useAuth } from "@/features/auth";
 import { applyFieldErrors } from "@/lib/apply-field-errors";
+import { formatMoney } from "../constants";
 import { PAYMENT_TYPE, type PaymentType } from "../types";
 
 const recordPaymentSchema = z.object({
@@ -70,7 +71,9 @@ export function RecordPaymentDialog({
   const { data: usersData } = useUsers({ perPage: 100 });
 
   const form = useForm<RecordPaymentFormValues>({
-    resolver: zodResolver(recordPaymentSchema),
+    resolver: zodResolver(
+      recordPaymentSchema,
+    ) as unknown as Resolver<RecordPaymentFormValues>,
     defaultValues: {
       assignmentId: "",
       invoiceId: "",
@@ -311,7 +314,7 @@ export function RecordPaymentDialog({
                       <SelectItem value="">None</SelectItem>
                       {invoices.map((i) => (
                         <SelectItem key={i.id} value={i.id}>
-                          {i.invoiceNumber} (PKR {i.amount})
+                          {i.number} ({formatMoney(i.amountCents, i.currency)})
                         </SelectItem>
                       ))}
                     </SelectContent>
