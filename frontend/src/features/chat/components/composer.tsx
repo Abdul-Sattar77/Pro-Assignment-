@@ -1,0 +1,169 @@
+"use client";
+
+import { useRef, useState } from "react";
+import { Camera, Loader2, Mic, Paperclip, Send, Square, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { useSendMessage } from "../hooks/use-chat";
+import { CameraCapture } from "./camera-capture";
+
+/** Message composer: text + file attach + voice note + camera photo/video. */
+export function Composer({ conversationId }: { conversationId: string }) {
+  const send = useSendMessage(conversationId);
+  const [text, setText] = useState("");
+  const [pending, setPending] = useState<File | null>(null);
+  const [recording, setRecording] = useState(false);
+  const [cameraOpen, setCameraOpen] = useState(false);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const recorderRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
+  const streamRef = useRef<MediaStream | null>(null);
+
+  const canSend =
+    (text.trim().length > 0 || pending !== null) && !send.isPending;
+
+  const submit = () => {
+    if (!canSend) return;
+    send.mutate(
+      { body: text.trim() || undefined, file: pending ?? undefined },
+      {
+        onSuccess: () => {
+          setText("");
+          setPending(null);
+        },
+      },
+    );
+  };
+
+  const startVoice = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      streamRef.current = stream;
+      const recorder = new MediaRecorder(stream);
+      chunksRef.current = [];
+      recorder.ondataavailable = (e) => {
+        if (e.data.size > 0) chunksRef.current.push(e.data);
+      };
+      recorder.onstop = () => {
+        const blob = new Blob(chunksRef.current, { type: "audio/webm" });
+        setPending(
+          new File([blob], `voice-${Date.now()}.webm`, { type: "audio/webm" }),
+        );
+        streamRef.current?.getTracks().forEach((t) => t.stop());
+      };
+      recorder.start();
+      recorderRef.current = recorder;
+      setRecording(true);
+    } catch {
+      /* mic denied */
+    }
+  };
+
+  const stopVoice = () => {
+    recorderRef.current?.stop();
+    setRecording(false);
+  };
+
+  return (
+    <div className="relative border-t p-3">
+      {cameraOpen && (
+        <CameraCapture
+          onCapture={(file) => setPending(file)}
+          onClose={() => setCameraOpen(false)}
+        />
+      )}
+
+      {/* Pending attachment chip */}
+      {pending && (
+        <div className="bg-muted/50 mb-2 flex items-center gap-2 rounded-md px-2.5 py-1.5 text-xs">
+          <Paperclip className="size-3.5" />
+          <span className="max-w-48 flex-1 truncate">{pending.name}</span>
+          <button
+            type="button"
+            onClick={() => setPending(null)}
+            aria-label="Remove attachment"
+            className="text-muted-foreground hover:text-destructive"
+          >
+            <X className="size-3.5" />
+          </button>
+        </div>
+      )}
+
+      <div className="flex items-end gap-1.5">
+        <input
+          ref={fileInputRef}
+          type="file"
+          className="hidden"
+          onChange={(e) => {
+            if (e.target.files?.[0]) setPending(e.target.files[0]);
+            e.target.value = "";
+          }}
+        />
+        <Button
+          type="button"
+          size="icon"
+          variant="ghost"
+          className="shrink-0"
+          aria-label="Attach file"
+          onClick={() => fileInputRef.current?.click()}
+        >
+          <Paperclip className="size-4.5" />
+        </Button>
+        <Button
+          type="button"
+          size="icon"
+          variant="ghost"
+          className="shrink-0"
+          aria-label="Camera"
+          onClick={() => setCameraOpen(true)}
+        >
+          <Camera className="size-4.5" />
+        </Button>
+        <Button
+          type="button"
+          size="icon"
+          variant={recording ? "destructive" : "ghost"}
+          className={cn("shrink-0", recording && "animate-pulse")}
+          aria-label={recording ? "Stop recording" : "Record voice note"}
+          onClick={recording ? stopVoice : startVoice}
+        >
+          {recording ? (
+            <Square className="size-4" />
+          ) : (
+            <Mic className="size-4.5" />
+          )}
+        </Button>
+
+        <textarea
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              submit();
+            }
+          }}
+          rows={1}
+          placeholder={recording ? "Recording…" : "Type a message…"}
+          className="border-input focus-visible:ring-ring/50 max-h-28 min-h-9 flex-1 resize-none rounded-md border bg-transparent px-3 py-2 text-sm outline-none focus-visible:ring-2"
+        />
+
+        <Button
+          type="button"
+          size="icon"
+          className="shrink-0"
+          aria-label="Send"
+          disabled={!canSend}
+          onClick={submit}
+        >
+          {send.isPending ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            <Send className="size-4" />
+          )}
+        </Button>
+      </div>
+    </div>
+  );
+}

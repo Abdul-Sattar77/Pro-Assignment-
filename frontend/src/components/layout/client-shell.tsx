@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ROUTES } from "@/constants/routes";
 import { useAuth, useLogout } from "@/features/auth";
+import { ChatWidget } from "@/features/chat";
 import { BrandMark } from "@/features/marketing";
 import { NotificationBell } from "@/features/notifications";
 
@@ -131,6 +132,8 @@ export function ClientShell({ children }: { children: ReactNode }) {
           © {new Date().getFullYear()} Prossignment — Confidential & secure
         </p>
       </footer>
+
+      <ChatWidget />
     </div>
   );
 }

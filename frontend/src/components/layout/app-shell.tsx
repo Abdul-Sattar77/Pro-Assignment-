@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import { ChatWidget } from "@/features/chat";
 import { AppSidebar } from "./app-sidebar";
 import { Topbar } from "./topbar";
 import { useSidebarStore } from "./use-sidebar-store";
@@ -27,6 +28,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           {children}
         </main>
       </div>
+      <ChatWidget />
     </div>
   );
 }

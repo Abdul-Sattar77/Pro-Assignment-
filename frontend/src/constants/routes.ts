@@ -35,6 +35,7 @@ export const ROUTES = {
   complaints: "/complaints",
   documentTemplates: "/document-templates",
   auditLogs: "/audit-logs",
+  chatAdmin: "/chat-admin",
 } as const;
 
 export type RouteKey = keyof typeof ROUTES;
