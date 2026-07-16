@@ -26,11 +26,12 @@ final class StoreFileRequest extends FormRequest
     public function rules(): array
     {
         return [
+            // Any file type is accepted (PDF, Office, images, video, audio,
+            // archives, etc.). Only a size cap is enforced.
             'file' => [
                 'required',
                 'file',
-                'max:25600', // 25 MB
-                'mimes:pdf,doc,docx,ppt,pptx,xls,xlsx,zip,jpg,jpeg,png,gif,webp,mp3,wav,m4a,txt',
+                'max:102400', // 100 MB (accommodates video)
             ],
         ];
     }
@@ -41,8 +42,7 @@ final class StoreFileRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'file.max' => 'Files must be 25 MB or smaller.',
-            'file.mimes' => 'That file type is not supported.',
+            'file.max' => 'Files must be 100 MB or smaller.',
         ];
     }
 }

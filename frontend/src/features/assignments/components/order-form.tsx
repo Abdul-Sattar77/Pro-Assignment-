@@ -1,9 +1,19 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
-import { BookOpen, FileText, Loader2, Send, UserRound } from "lucide-react";
+import {
+  BookOpen,
+  FileText,
+  Loader2,
+  Paperclip,
+  Send,
+  UploadCloud,
+  UserRound,
+  X,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -18,6 +28,7 @@ import {
 import { applyFieldErrors } from "@/lib/apply-field-errors";
 import { useCurrentUser } from "@/features/auth";
 import { useCreateAssignment } from "../hooks/use-assignments";
+import { filesService } from "../services/files-service";
 import {
   ACADEMIC_LEVEL_OPTIONS,
   ASSIGNMENT_TYPE_OPTIONS,
@@ -33,6 +44,15 @@ import {
 function orNull(value: string | undefined): string | undefined {
   const trimmed = value?.trim();
   return trimmed ? trimmed : undefined;
+}
+
+/** Client-side cap mirrors the backend (100 MB). */
+const MAX_FILE_BYTES = 100 * 1024 * 1024;
+
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
 function FieldError({ message }: { message?: string }) {
@@ -103,6 +123,31 @@ export function OrderForm() {
 
   const { errors } = form.formState;
 
+  const [files, setFiles] = useState<File[]>([]);
+  const [uploading, setUploading] = useState(false);
+
+  const addFiles = (list: FileList | null) => {
+    if (!list) return;
+    const incoming = Array.from(list);
+    const tooBig = incoming.filter((f) => f.size > MAX_FILE_BYTES);
+    const valid = incoming.filter((f) => f.size <= MAX_FILE_BYTES);
+    setFiles((current) => {
+      const seen = new Set(current.map((f) => `${f.name}:${f.size}`));
+      return [
+        ...current,
+        ...valid.filter((f) => !seen.has(`${f.name}:${f.size}`)),
+      ];
+    });
+    if (tooBig.length > 0) {
+      form.setError("root", {
+        message: `${tooBig.length} file(s) skipped — each must be 100 MB or smaller.`,
+      });
+    }
+  };
+
+  const removeFile = (index: number) =>
+    setFiles((current) => current.filter((_, i) => i !== index));
+
   const onSubmit = form.handleSubmit((values) => {
     const trimmedWords = values.word_count?.trim();
     const wordCount = trimmedWords ? Number(trimmedWords) : undefined;
@@ -126,7 +171,19 @@ export function OrderForm() {
         deadline: new Date(values.deadline).toISOString(),
       },
       {
-        onSuccess: (assignment) => {
+        onSuccess: async (assignment) => {
+          // Upload any attached files to the new assignment, then land on it.
+          if (files.length > 0) {
+            setUploading(true);
+            for (const file of files) {
+              try {
+                await filesService.upload(assignment.id, file);
+              } catch {
+                // A failed upload can be retried from the assignment page.
+              }
+            }
+            setUploading(false);
+          }
           router.replace(`/assignments/${assignment.id}`);
         },
         onError: (error) => {
@@ -138,6 +195,8 @@ export function OrderForm() {
       },
     );
   });
+
+  const busy = createAssignment.isPending || uploading;
 
   return (
     <form
@@ -417,11 +476,58 @@ export function OrderForm() {
             <FieldError message={errors.description?.message} />
           </div>
 
-          <p className="text-muted-foreground bg-muted/40 rounded-md border px-3 py-2 text-xs">
-            Have briefs, reference files, images, or voice notes? Submit this
-            form first — you can attach files to the assignment on the next
-            screen.
-          </p>
+          {/* Attachments — any file type */}
+          <div className="space-y-2">
+            <Label htmlFor="attachments">Attachments (optional)</Label>
+            <label
+              htmlFor="attachments"
+              className="border-input hover:border-primary/50 hover:bg-muted/40 flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-dashed px-4 py-8 text-center transition-colors"
+            >
+              <UploadCloud className="text-muted-foreground size-7" />
+              <span className="text-sm font-medium">
+                Click to upload or drop files here
+              </span>
+              <span className="text-muted-foreground text-xs">
+                Any file type — PDF, Word, images, video, audio, ZIP… up to
+                100&nbsp;MB each
+              </span>
+              <input
+                id="attachments"
+                type="file"
+                multiple
+                className="hidden"
+                onChange={(event) => {
+                  addFiles(event.target.files);
+                  event.target.value = "";
+                }}
+              />
+            </label>
+
+            {files.length > 0 && (
+              <ul className="space-y-2">
+                {files.map((file, index) => (
+                  <li
+                    key={`${file.name}:${file.size}:${index}`}
+                    className="bg-muted/40 flex items-center gap-3 rounded-md border px-3 py-2"
+                  >
+                    <Paperclip className="text-muted-foreground size-4 shrink-0" />
+                    <span className="flex-1 truncate text-sm">{file.name}</span>
+                    <span className="text-muted-foreground shrink-0 text-xs tabular-nums">
+                      {formatBytes(file.size)}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => removeFile(index)}
+                      aria-label={`Remove ${file.name}`}
+                      className="text-muted-foreground hover:text-destructive shrink-0"
+                    >
+                      <X className="size-4" />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </CardContent>
       </Card>
 
@@ -435,18 +541,17 @@ export function OrderForm() {
       )}
 
       <div className="space-y-3">
-        <Button
-          type="submit"
-          size="lg"
-          className="w-full"
-          disabled={createAssignment.isPending}
-        >
-          {createAssignment.isPending ? (
+        <Button type="submit" size="lg" className="w-full" disabled={busy}>
+          {busy ? (
             <Loader2 className="size-4 animate-spin" />
           ) : (
             <Send className="size-4" />
           )}
-          Submit assignment
+          {uploading
+            ? "Uploading files…"
+            : createAssignment.isPending
+              ? "Submitting…"
+              : "Submit assignment"}
         </Button>
         <p className="text-muted-foreground text-center text-xs">
           No payment is taken now — your manager confirms scope and price with

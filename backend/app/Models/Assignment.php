@@ -85,4 +85,11 @@ class Assignment extends Model
     {
         return $this->hasMany(Message::class)->oldest('id');
     }
+
+    /** Admin-panel attachments & voice notes (separate from per-order files). */
+    /** @return HasMany<AssignmentAttachment, $this> */
+    public function attachments(): HasMany
+    {
+        return $this->hasMany(AssignmentAttachment::class)->latest('id');
+    }
 }
