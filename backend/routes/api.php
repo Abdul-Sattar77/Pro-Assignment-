@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\V1\Audit\AuditLogController;
 use App\Http\Controllers\Api\V1\Auth\AuthController;
 use App\Http\Controllers\Api\V1\Auth\PasswordResetController;
 use App\Http\Controllers\Api\V1\Calendar\CalendarEventController;
+use App\Http\Controllers\Api\V1\Chat\ChatController;
 use App\Http\Controllers\Api\V1\Complaints\ComplaintController;
 use App\Http\Controllers\Api\V1\Dashboard\DashboardController;
 use App\Http\Controllers\Api\V1\Documents\DocumentTemplateController;
@@ -58,6 +59,23 @@ Route::prefix('v1')->group(function (): void {
     Route::middleware('auth:sanctum')->prefix('profile')->name('profile.')->group(function (): void {
         Route::patch('/', [ProfileController::class, 'update'])->name('update');
         Route::post('password', [ProfileController::class, 'changePassword'])->name('password');
+    });
+
+    // ---- Direct messaging (cross-role chat) ----
+    Route::middleware('auth:sanctum')->prefix('chat')->name('chat.')->group(function (): void {
+        Route::get('contacts', [ChatController::class, 'contacts'])->name('contacts');
+        Route::get('conversations', [ChatController::class, 'index'])->name('conversations.index');
+        Route::post('conversations', [ChatController::class, 'store'])->name('conversations.store');
+        Route::get('conversations/{conversation}/messages', [ChatController::class, 'messages'])->name('conversations.messages');
+        Route::post('conversations/{conversation}/messages', [ChatController::class, 'send'])->name('conversations.send');
+        Route::post('conversations/{conversation}/read', [ChatController::class, 'read'])->name('conversations.read');
+        Route::get('messages/{message}/download', [ChatController::class, 'download'])->name('messages.download');
+
+        // Admin: oversight + permission matrix
+        Route::get('admin/conversations', [ChatController::class, 'adminConversations'])->name('admin.conversations');
+        Route::get('admin/conversations/{conversation}/messages', [ChatController::class, 'adminMessages'])->name('admin.messages');
+        Route::get('admin/policies', [ChatController::class, 'policies'])->name('admin.policies.index');
+        Route::put('admin/policies', [ChatController::class, 'updatePolicies'])->name('admin.policies.update');
     });
 
     // ---- User Management (admin provisioning) ----
