@@ -1,8 +1,21 @@
 "use client";
 
+import { useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { getEcho } from "@/lib/echo";
 import { chatService } from "../services/chat-service";
 import type { ChatMessage, SendMessagePayload } from "../types";
+
+/** Shape of the broadcast payload from ChatMessageSent. */
+interface BroadcastMessage {
+  id: string;
+  type: ChatMessage["type"];
+  body: string | null;
+  senderId: string | null;
+  senderName: string | null;
+  attachment: ChatMessage["attachment"];
+  createdAt: string | null;
+}
 
 const KEYS = {
   contacts: ["chat", "contacts"] as const,
@@ -38,8 +51,47 @@ export function useMessages(conversationId: string | null) {
     queryKey: KEYS.messages(conversationId ?? "none"),
     queryFn: () => chatService.messages(conversationId as string),
     enabled: Boolean(conversationId),
-    refetchInterval: conversationId ? 3_000 : false,
+    // Slow poll as a fallback; realtime (below) delivers instantly when up.
+    refetchInterval: conversationId ? 12_000 : false,
   });
+}
+
+/**
+ * Subscribe to the conversation's private channel for instant delivery. New
+ * messages (from others — the sender appends optimistically) are merged into
+ * the cache. No-op when Reverb isn't configured; polling still covers it.
+ */
+export function useConversationRealtime(conversationId: string | null) {
+  const qc = useQueryClient();
+
+  useEffect(() => {
+    if (!conversationId) return;
+    const echo = getEcho();
+    if (!echo) return;
+
+    const channelName = `chat.conversation.${conversationId}`;
+    echo.private(channelName).listen(".message.sent", (e: BroadcastMessage) => {
+      const message: ChatMessage = {
+        id: e.id,
+        type: e.type,
+        body: e.body,
+        mine: false,
+        sender: { id: e.senderId, name: e.senderName },
+        attachment: e.attachment,
+        createdAt: e.createdAt,
+      };
+      qc.setQueryData<ChatMessage[]>(KEYS.messages(conversationId), (prev) => {
+        if (!prev) return [message];
+        if (prev.some((m) => m.id === message.id)) return prev;
+        return [...prev, message];
+      });
+      void qc.invalidateQueries({ queryKey: KEYS.conversations });
+    });
+
+    return () => {
+      echo.leave(channelName);
+    };
+  }, [conversationId, qc]);
 }
 
 export function useStartConversation() {

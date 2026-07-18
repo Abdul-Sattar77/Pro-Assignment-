@@ -2,13 +2,14 @@
 
 import { useEffect, useRef } from "react";
 import { Loader2 } from "lucide-react";
-import { useMessages } from "../hooks/use-chat";
+import { useConversationRealtime, useMessages } from "../hooks/use-chat";
 import { Composer } from "./composer";
 import { MessageBubble } from "./message-bubble";
 
 /** Active conversation: scrolling message list + composer. */
 export function ChatThread({ conversationId }: { conversationId: string }) {
   const { data: messages, isPending } = useMessages(conversationId);
+  useConversationRealtime(conversationId);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

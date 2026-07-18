@@ -26,6 +26,8 @@ use App\Http\Controllers\Api\V1\Settings\SettingController;
 use App\Http\Controllers\Api\V1\Tasks\TaskController;
 use App\Http\Controllers\Api\V1\Users\UserController;
 use App\Http\Controllers\Api\V1\Users\WriterRatingController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -60,6 +62,11 @@ Route::prefix('v1')->group(function (): void {
         Route::patch('/', [ProfileController::class, 'update'])->name('update');
         Route::post('password', [ProfileController::class, 'changePassword'])->name('password');
     });
+
+    // ---- Broadcasting auth (Reverb) — Bearer-token compatible ----
+    Route::middleware('auth:sanctum')->post('broadcasting/auth', function (Request $request) {
+        return Broadcast::auth($request);
+    })->name('broadcasting.auth');
 
     // ---- Direct messaging (cross-role chat) ----
     Route::middleware('auth:sanctum')->prefix('chat')->name('chat.')->group(function (): void {
