@@ -33,7 +33,7 @@ final class SettingController extends Controller
             $settings[$key] = Setting::get($key, $default);
         }
 
-        return ApiResponse::resource($settings);
+        return ApiResponse::item($settings);
     }
 
     public function update(Request $request): JsonResponse
@@ -61,6 +61,6 @@ final class SettingController extends Controller
             $settings[$key] = Setting::get($key, $default);
         }
 
-        return ApiResponse::resource($settings);
+        return ApiResponse::item($settings);
     }
 }
