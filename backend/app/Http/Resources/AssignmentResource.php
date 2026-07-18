@@ -60,20 +60,17 @@ final class AssignmentResource extends JsonResource
                 'id' => $this->projectManager->uuid,
                 'name' => $this->projectManager->name,
             ]),
-            'priority'      => $this->priority?->value,
-            'priorityLabel' => $this->priority?->label(),
-            'wordCount'     => $this->word_count,
-            'notes'         => $this->notes,
-            'clientPrice'   => $this->client_price,
-            'writerCost'    => $this->writer_cost,
-            'discount'      => $this->discount,
-            'netProfit'     => $this->net_profit,
-            'events'        => AssignmentEventResource::collection($this->whenLoaded('events')),
-            'attachments'   => AssignmentAttachmentResource::collection($this->whenLoaded('attachments')),
-            'actions'       => $viewer === null
+            'notes' => $this->notes,
+            'clientPrice' => $this->client_price,
+            'writerCost' => $this->writer_cost,
+            'discount' => $this->discount,
+            'netProfit' => $this->net_profit,
+            'events' => AssignmentEventResource::collection($this->whenLoaded('events')),
+            'attachments' => AssignmentAttachmentResource::collection($this->whenLoaded('attachments')),
+            'actions' => $viewer === null
                 ? []
                 : app(AssignmentService::class)->allowedActionsFor($viewer, $this->resource),
-            'createdAt'     => $this->created_at?->toIso8601String(),
+            'createdAt' => $this->created_at?->toIso8601String(),
         ];
     }
 }

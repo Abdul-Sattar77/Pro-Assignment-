@@ -30,7 +30,7 @@ final class PaymentController extends Controller
         private readonly AssignmentRepositoryInterface $assignments,
         private readonly InvoiceRepositoryInterface $invoices,
         private readonly UserRepositoryInterface $users,
-        private readonly FileRepositoryInterface $files
+        private readonly FileRepositoryInterface $files,
     ) {}
 
     public function index(Request $request): JsonResponse
@@ -71,12 +71,12 @@ final class PaymentController extends Controller
                 'user_id' => $userId,
             ],
             is_string($sort) ? $sort : '-created_at',
-            min(is_numeric($perPage) ? (int) $perPage : 15, 100)
+            min(is_numeric($perPage) ? (int) $perPage : 15, 100),
         );
 
         return ApiResponse::collection(
             PaymentResource::collection($paginator->getCollection()),
-            $paginator
+            $paginator,
         );
     }
 
@@ -140,13 +140,13 @@ final class PaymentController extends Controller
             $request->user(),
             $payment,
             $data['status'],
-            $data['notes'] ?? null
+            $data['notes'] ?? null,
         );
 
         return ApiResponse::resource(PaymentResource::make($updated->load(['assignment', 'invoice', 'user', 'proofFile', 'verifiedBy'])));
     }
 
-    public function destroy(Payment $payment): JsonResponse
+    public function destroy(Request $request, Payment $payment): JsonResponse
     {
         $this->authorize('delete', $payment);
 
