@@ -34,10 +34,10 @@ final class DocumentTemplateRepository implements DocumentTemplateRepositoryInte
         }
 
         if (isset($filters['search']) && $filters['search'] !== '') {
-            $search = '%' . $filters['search'] . '%';
+            $search = '%'.$filters['search'].'%';
             $query->where(function ($q) use ($search): void {
                 $q->where('title', 'like', $search)
-                  ->orWhere('description', 'like', $search);
+                    ->orWhere('description', 'like', $search);
             });
         }
 

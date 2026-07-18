@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\PaymentStatus;
+use App\Enums\PaymentType;
 use App\Traits\HasUuid;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -54,22 +57,22 @@ class User extends Authenticatable
             ->useLogName('user');
     }
 
-    public function writerRatings(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function writerRatings(): HasMany
     {
         return $this->hasMany(WriterRating::class, 'writer_id');
     }
 
-    public function clientRatings(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function clientRatings(): HasMany
     {
         return $this->hasMany(WriterRating::class, 'client_id');
     }
 
-    public function complaints(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function complaints(): HasMany
     {
         return $this->hasMany(Complaint::class, 'client_id');
     }
 
-    public function templates(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function templates(): HasMany
     {
         return $this->hasMany(DocumentTemplate::class, 'uploaded_by');
     }
@@ -83,8 +86,8 @@ class User extends Authenticatable
     {
         return (float) Payment::query()
             ->where('user_id', $this->id)
-            ->where('payment_type', \App\Enums\PaymentType::WriterPayout->value)
-            ->where('status', \App\Enums\PaymentStatus::Verified->value)
+            ->where('payment_type', PaymentType::WriterPayout->value)
+            ->where('status', PaymentStatus::Verified->value)
             ->sum('amount');
     }
 }

@@ -60,11 +60,11 @@ final class CalendarEventRepository extends BaseRepository implements CalendarEv
                     $q->whereHas('assignment', function ($aq) use ($actor): void {
                         $aq->where('client_id', $actor->getKey());
                     })
-                    ->orWhereHas('task', function ($tq) use ($actor): void {
-                        $tq->whereHas('assignment', function ($taq) use ($actor): void {
-                            $taq->where('client_id', $actor->getKey());
+                        ->orWhereHas('task', function ($tq) use ($actor): void {
+                            $tq->whereHas('assignment', function ($taq) use ($actor): void {
+                                $taq->where('client_id', $actor->getKey());
+                            });
                         });
-                    });
                 });
             } else {
                 // Deny all other roles
@@ -75,7 +75,7 @@ final class CalendarEventRepository extends BaseRepository implements CalendarEv
         // ---- Filtering ----
         $month = $filters['month'] ?? null;
         if (is_string($month) && preg_match('/^\d{4}-\d{2}$/', $month)) {
-            $start = Carbon::parse($month . '-01')->startOfMonth();
+            $start = Carbon::parse($month.'-01')->startOfMonth();
             $end = $start->copy()->endOfMonth();
             $query->whereBetween('start_date', [$start, $end]);
         }

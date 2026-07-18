@@ -18,7 +18,7 @@ use Illuminate\Http\Request;
 final class ComplaintController extends Controller
 {
     public function __construct(
-        private readonly ComplaintRepositoryInterface $repository
+        private readonly ComplaintRepositoryInterface $repository,
     ) {}
 
     public function index(Request $request): JsonResponse
@@ -47,12 +47,12 @@ final class ComplaintController extends Controller
         $perPage = $request->query('per_page', '15');
         $paginator = $this->repository->getFiltered(
             $filters,
-            is_numeric($perPage) ? (int) $perPage : 15
+            is_numeric($perPage) ? (int) $perPage : 15,
         );
 
         return ApiResponse::collection(
             ComplaintResource::collection($paginator->getCollection()),
-            $paginator
+            $paginator,
         );
     }
 

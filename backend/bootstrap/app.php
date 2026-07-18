@@ -19,7 +19,6 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
 
-
         // Tag every API request with a traceable id (response + logs).
         $middleware->appendToGroup('api', AssignRequestId::class);
 

@@ -104,7 +104,7 @@ final class AnalyticsService
         $assignmentTrendsQuery = DB::table('assignments')
             ->select(
                 DB::raw("TO_CHAR(created_at, 'YYYY-MM') as month"),
-                DB::raw("COUNT(*) as count")
+                DB::raw('COUNT(*) as count'),
             )
             ->where('created_at', '>=', Carbon::now()->subMonths(5)->startOfMonth())
             ->whereNull('deleted_at')
@@ -124,7 +124,7 @@ final class AnalyticsService
         $revenueTrendsQuery = DB::table('payments')
             ->select(
                 DB::raw("TO_CHAR(created_at, 'YYYY-MM') as month"),
-                DB::raw("SUM(amount) as total")
+                DB::raw('SUM(amount) as total'),
             )
             ->where('status', PaymentStatus::Verified->value)
             ->whereIn('payment_type', [
@@ -204,7 +204,7 @@ final class AnalyticsService
                 'revenueTrends' => $revenueTrends,
                 'writerPerformance' => $writerPerformance,
                 'clientActivity' => $clientActivity,
-            ]
+            ],
         ];
     }
 }

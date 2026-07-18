@@ -24,7 +24,6 @@ interface InvoiceRepositoryInterface extends RepositoryInterface
      * Paginated, filtered, sorted listing scoped by actor.
      *
      * @param  array{search?: string|null, status?: string|null, client_id?: int|null, assignment_id?: int|null}  $filters
-     * @param  string  $sort
      * @return LengthAwarePaginator<int, Invoice>
      */
     public function paginateFor(User $actor, array $filters, string $sort, int $perPage): LengthAwarePaginator;

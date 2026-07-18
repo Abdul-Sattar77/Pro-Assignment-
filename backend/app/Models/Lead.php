@@ -15,11 +15,11 @@ use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 
 /**
- * @property string      $name
+ * @property string $name
  * @property string|null $email
  * @property string|null $phone
- * @property LeadSource  $source
- * @property LeadStatus  $status
+ * @property LeadSource $source
+ * @property LeadStatus $status
  * @property string|null $notes
  * @property string|null $lost_reason
  * @property Carbon|null $created_at

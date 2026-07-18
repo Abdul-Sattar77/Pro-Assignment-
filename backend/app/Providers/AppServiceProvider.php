@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Models\Assignment;
+use App\Models\Task;
+use App\Observers\AssignmentObserver;
+use App\Observers\TaskObserver;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\ServiceProvider;
 
@@ -33,7 +37,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         // Sync assignment writes into the calendar + task automation (adeel).
-        \App\Models\Assignment::observe(\App\Observers\AssignmentObserver::class);
-        \App\Models\Task::observe(\App\Observers\TaskObserver::class);
+        Assignment::observe(AssignmentObserver::class);
+        Task::observe(TaskObserver::class);
     }
 }

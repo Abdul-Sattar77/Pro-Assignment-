@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\V1\Finance;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\PaymentResource;
 use App\Services\Finance\FinanceService;
 use App\Support\ApiResponse;
 use Illuminate\Http\JsonResponse;
@@ -13,7 +14,7 @@ use Illuminate\Http\Request;
 final class FinanceController extends Controller
 {
     public function __construct(
-        private readonly FinanceService $service
+        private readonly FinanceService $service,
     ) {}
 
     public function stats(Request $request): JsonResponse
@@ -26,7 +27,7 @@ final class FinanceController extends Controller
         $stats = $this->service->getStats($request->user());
 
         // Transform recent payments using PaymentResource
-        $stats['recentPayments'] = \App\Http\Resources\PaymentResource::collection($stats['recentPayments']);
+        $stats['recentPayments'] = PaymentResource::collection($stats['recentPayments']);
 
         return ApiResponse::item($stats);
     }

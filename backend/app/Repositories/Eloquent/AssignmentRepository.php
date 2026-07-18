@@ -49,6 +49,7 @@ final class AssignmentRepository extends BaseRepository implements AssignmentRep
     {
         $model->fill($data);
         $model->save();
+
         return $model->refresh();
     }
 

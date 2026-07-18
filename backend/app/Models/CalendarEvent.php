@@ -16,18 +16,18 @@ use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 
 /**
- * @property string              $title
- * @property string|null         $description
- * @property CalendarEventType   $event_type
- * @property Carbon              $start_date
- * @property Carbon|null         $end_date
- * @property int|null            $assignment_id
- * @property int|null            $task_id
- * @property int|null            $user_id
- * @property int                 $created_by_id
+ * @property string $title
+ * @property string|null $description
+ * @property CalendarEventType $event_type
+ * @property Carbon $start_date
+ * @property Carbon|null $end_date
+ * @property int|null $assignment_id
+ * @property int|null $task_id
+ * @property int|null $user_id
+ * @property int $created_by_id
  * @property CalendarEventStatus $status
- * @property Carbon|null         $created_at
- * @property Carbon|null         $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  */
 #[Fillable(['title', 'description', 'event_type', 'start_date', 'end_date', 'assignment_id', 'task_id', 'user_id', 'created_by_id', 'status'])]
 class CalendarEvent extends Model

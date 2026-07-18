@@ -23,10 +23,10 @@ final class ActivityRepository implements ActivityRepositoryInterface
         }
 
         if (isset($filters['search']) && $filters['search'] !== '') {
-            $search = '%' . $filters['search'] . '%';
+            $search = '%'.$filters['search'].'%';
             $query->where(function ($q) use ($search): void {
                 $q->where('description', 'like', $search)
-                  ->orWhere('log_name', 'like', $search);
+                    ->orWhere('log_name', 'like', $search);
             });
         }
 

@@ -16,22 +16,22 @@ use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 
 /**
- * @property int            $id
- * @property string         $uuid
- * @property int|null       $assignment_id
- * @property int|null       $invoice_id
- * @property int|null       $user_id
- * @property float          $amount
- * @property string         $payment_method
- * @property PaymentType    $payment_type
- * @property int|null       $proof_file_id
- * @property PaymentStatus  $status
- * @property Carbon|null    $verified_at
- * @property int|null       $verified_by
- * @property string|null    $notes
- * @property Carbon|null    $created_at
- * @property Carbon|null    $updated_at
- * @property Carbon|null    $deleted_at
+ * @property int $id
+ * @property string $uuid
+ * @property int|null $assignment_id
+ * @property int|null $invoice_id
+ * @property int|null $user_id
+ * @property float $amount
+ * @property string $payment_method
+ * @property PaymentType $payment_type
+ * @property int|null $proof_file_id
+ * @property PaymentStatus $status
+ * @property Carbon|null $verified_at
+ * @property int|null $verified_by
+ * @property string|null $notes
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
  */
 #[Fillable(['assignment_id', 'invoice_id', 'user_id', 'amount', 'payment_method', 'payment_type', 'proof_file_id', 'status', 'verified_at', 'verified_by', 'notes'])]
 class Payment extends Model

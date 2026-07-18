@@ -41,6 +41,7 @@ final class InvoiceRepository extends BaseRepository implements InvoiceRepositor
     {
         $model->fill($data);
         $model->save();
+
         return $model->refresh();
     }
 
@@ -98,6 +99,7 @@ final class InvoiceRepository extends BaseRepository implements InvoiceRepositor
         // Clients see their own invoices only
         if ($actor->hasRole(Role::Client->value)) {
             $query->where('client_id', $actor->getKey());
+
             return;
         }
 

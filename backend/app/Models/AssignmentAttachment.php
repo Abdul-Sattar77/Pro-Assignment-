@@ -9,15 +9,14 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Storage;
 
 /**
- * @property string      $type          'file' | 'voice_note'
- * @property string      $disk
- * @property string      $path
+ * @property string $type 'file' | 'voice_note'
+ * @property string $disk
+ * @property string $path
  * @property string|null $original_name
  * @property string|null $mime_type
- * @property int|null    $size          bytes
+ * @property int|null $size bytes
  */
 #[Fillable(['assignment_id', 'uploaded_by', 'type', 'disk', 'path', 'original_name', 'mime_type', 'size'])]
 class AssignmentAttachment extends Model
@@ -60,9 +59,16 @@ class AssignmentAttachment extends Model
     {
         $bytes = $this->size ?? 0;
 
-        if ($bytes < 1024) return "{$bytes} B";
-        if ($bytes < 1048576) return round($bytes / 1024, 1) . ' KB';
-        if ($bytes < 1073741824) return round($bytes / 1048576, 1) . ' MB';
-        return round($bytes / 1073741824, 1) . ' GB';
+        if ($bytes < 1024) {
+            return "{$bytes} B";
+        }
+        if ($bytes < 1048576) {
+            return round($bytes / 1024, 1).' KB';
+        }
+        if ($bytes < 1073741824) {
+            return round($bytes / 1048576, 1).' MB';
+        }
+
+        return round($bytes / 1073741824, 1).' GB';
     }
 }

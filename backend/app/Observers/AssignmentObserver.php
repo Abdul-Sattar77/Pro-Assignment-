@@ -39,7 +39,7 @@ final class AssignmentObserver
                 'status' => $status->value,
                 'created_by_id' => $creatorId,
                 'user_id' => $assignment->client_id,
-            ]
+            ],
         );
 
         // 2. Sync Payment Due
@@ -55,7 +55,7 @@ final class AssignmentObserver
                 'status' => $status->value,
                 'created_by_id' => $creatorId,
                 'user_id' => $assignment->client_id,
-            ]
+            ],
         );
 
         // 3. Sync Writer Deadline
@@ -72,7 +72,7 @@ final class AssignmentObserver
                     'status' => $status->value,
                     'created_by_id' => $creatorId,
                     'user_id' => $assignment->writer_id,
-                ]
+                ],
             );
         } else {
             CalendarEvent::query()

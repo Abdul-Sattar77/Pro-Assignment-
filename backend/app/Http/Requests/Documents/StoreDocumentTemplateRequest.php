@@ -12,6 +12,7 @@ final class StoreDocumentTemplateRequest extends FormRequest
     {
         // Admins and PMs manage document templates.
         $user = $this->user();
+
         return $user !== null && ($user->hasRole('admin') || $user->hasRole('project_manager'));
     }
 

@@ -11,7 +11,6 @@ use App\Enums\Role;
 use App\Models\Assignment;
 use App\Models\Payment;
 use App\Models\User;
-use App\Models\WriterRating;
 use Illuminate\Support\Facades\DB;
 use Spatie\Activitylog\Models\Activity;
 
@@ -19,9 +18,9 @@ final class DashboardService
 {
     public function getAdminDashboardData(): array
     {
-        $inflowTypes  = [PaymentType::Advance->value, PaymentType::Partial->value, PaymentType::Balance->value];
+        $inflowTypes = [PaymentType::Advance->value, PaymentType::Partial->value, PaymentType::Balance->value];
         $outflowTypes = [PaymentType::WriterPayout->value, PaymentType::Expense->value];
-        $done         = AssignmentStatus::Completed->value;
+        $done = AssignmentStatus::Completed->value;
 
         // ----------------------------------------------------------------
         // 1. Payment totals — 2 sum queries
@@ -40,10 +39,10 @@ final class DashboardService
         // 2. Assignment counts — single aggregated query via DB::table
         //    (was 5 separate COUNT queries)
         // ----------------------------------------------------------------
-        $now  = now()->toDateTimeString();
+        $now = now()->toDateTimeString();
         $week = now()->addDays(7)->toDateTimeString();
 
-        $activeStatuses  = implode("','", [
+        $activeStatuses = implode("','", [
             AssignmentStatus::Assigned->value,
             AssignmentStatus::InProgress->value,
             AssignmentStatus::RevisionRequested->value,
@@ -71,7 +70,7 @@ final class DashboardService
         // ----------------------------------------------------------------
         $totalClients = User::role(Role::Client->value)->count();
         $totalWriters = User::role(Role::Writer->value)->count();
-        $totalPms     = User::role(Role::ProjectManager->value)->count();
+        $totalPms = User::role(Role::ProjectManager->value)->count();
 
         // ----------------------------------------------------------------
         // 4. Recent Assignments — single eager-loaded query, limit 5
@@ -82,12 +81,12 @@ final class DashboardService
             ->limit(5)
             ->get()
             ->map(fn ($a) => [
-                'id'       => 'ASG-' . $a->id,
-                'name'     => $a->title,
-                'client'   => $a->client?->name ?? 'None',
-                'subject'  => $a->subject,
+                'id' => 'ASG-'.$a->id,
+                'name' => $a->title,
+                'client' => $a->client?->name ?? 'None',
+                'subject' => $a->subject,
                 'priority' => $a->priority->value ?? 'medium',
-                'status'   => $a->status->value   ?? 'pending',
+                'status' => $a->status->value ?? 'pending',
                 'deadline' => $a->deadline->toDateString(),
             ]);
 
@@ -100,21 +99,27 @@ final class DashboardService
             ->limit(8)
             ->get()
             ->map(function ($act) {
-                $icon = 'CheckCircle2'; $iconBg = 'bg-success/10'; $iconColor = 'text-success';
+                $icon = 'CheckCircle2';
+                $iconBg = 'bg-success/10';
+                $iconColor = 'text-success';
 
                 if ($act->log_name === 'assignment') {
-                    $icon = 'FileUp'; $iconBg = 'bg-primary/10'; $iconColor = 'text-primary';
+                    $icon = 'FileUp';
+                    $iconBg = 'bg-primary/10';
+                    $iconColor = 'text-primary';
                 } elseif ($act->log_name === 'payment') {
-                    $icon = 'ShieldCheck'; $iconBg = 'bg-primary/5'; $iconColor = 'text-primary';
+                    $icon = 'ShieldCheck';
+                    $iconBg = 'bg-primary/5';
+                    $iconColor = 'text-primary';
                 }
 
                 return [
-                    'id'        => (string) $act->id,
-                    'type'      => $act->log_name,
-                    'message'   => $act->description,
+                    'id' => (string) $act->id,
+                    'type' => $act->log_name,
+                    'message' => $act->description,
                     'timestamp' => $act->created_at?->diffForHumans() ?? 'Just now',
-                    'iconName'  => $icon,
-                    'iconBg'    => $iconBg,
+                    'iconName' => $icon,
+                    'iconBg' => $iconBg,
                     'iconColor' => $iconColor,
                 ];
             });
@@ -140,14 +145,14 @@ final class DashboardService
             ->groupByRaw("TO_CHAR(created_at, 'YYYY-MM')")
             ->pluck('total', 'ym');
 
-        $months  = [];
+        $months = [];
         $volumes = [];
         $inflows = [];
 
         for ($i = 5; $i >= 0; $i--) {
-            $m         = now()->subMonths($i);
-            $key       = $m->format('Y-m');
-            $months[]  = $m->format('M');
+            $m = now()->subMonths($i);
+            $key = $m->format('Y-m');
+            $months[] = $m->format('M');
             $volumes[] = (int) ($volumeByMonth[$key] ?? 0);
             $inflows[] = (float) ($inflowByMonth[$key] ?? 0.0);
         }
@@ -180,10 +185,10 @@ final class DashboardService
             ->limit(20)
             ->get()
             ->map(fn ($u) => [
-                'name'        => $u->name,
+                'name' => $u->name,
                 'assignments' => (int) ($completedByWriter[$u->id] ?? 0),
-                'rating'      => round((float) ($avgRatings[$u->id] ?? 5.0), 1),
-                'status'      => $u->is_active ? 'active' : 'inactive',
+                'rating' => round((float) ($avgRatings[$u->id] ?? 5.0), 1),
+                'status' => $u->is_active ? 'active' : 'inactive',
             ])
             ->sortByDesc('rating')
             ->take(4)
@@ -218,9 +223,9 @@ final class DashboardService
             ->limit(20)
             ->get()
             ->map(fn ($u) => [
-                'name'       => $u->name,
-                'active'     => (int) ($activeByClient[$u->id] ?? 0),
-                'spend'      => 'PKR ' . number_format((float) ($clientSpends[$u->id] ?? 0)),
+                'name' => $u->name,
+                'active' => (int) ($activeByClient[$u->id] ?? 0),
+                'spend' => 'PKR '.number_format((float) ($clientSpends[$u->id] ?? 0)),
                 'lastActive' => $u->updated_at?->diffForHumans() ?? '—',
             ])
             ->sortByDesc('active')
@@ -229,26 +234,26 @@ final class DashboardService
 
         return [
             'stats' => [
-                'revenue'               => $totalInflow,
-                'expenses'              => $totalOutflow,
-                'profit'                => $totalInflow - $totalOutflow,
-                'active_assignments'    => (int) ($counts->active    ?? 0),
+                'revenue' => $totalInflow,
+                'expenses' => $totalOutflow,
+                'profit' => $totalInflow - $totalOutflow,
+                'active_assignments' => (int) ($counts->active ?? 0),
                 'completed_assignments' => (int) ($counts->completed ?? 0),
-                'pending_assignments'   => (int) ($counts->pending   ?? 0),
-                'overdue_assignments'   => (int) ($counts->overdue   ?? 0),
-                'due_assignments'       => (int) ($counts->due_week  ?? 0),
-                'total_clients'         => $totalClients,
-                'total_writers'         => $totalWriters,
-                'total_pms'             => $totalPms,
+                'pending_assignments' => (int) ($counts->pending ?? 0),
+                'overdue_assignments' => (int) ($counts->overdue ?? 0),
+                'due_assignments' => (int) ($counts->due_week ?? 0),
+                'total_clients' => $totalClients,
+                'total_writers' => $totalWriters,
+                'total_pms' => $totalPms,
             ],
             'recent_assignments' => $recentAssignments,
-            'recent_activities'  => $recentActivities,
+            'recent_activities' => $recentActivities,
             'trends' => [
-                'months'  => $months,
+                'months' => $months,
                 'volumes' => $volumes,
                 'inflows' => $inflows,
             ],
-            'top_writers'     => $topWriters,
+            'top_writers' => $topWriters,
             'client_activity' => $clientActivity,
         ];
     }

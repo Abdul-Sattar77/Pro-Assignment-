@@ -38,7 +38,7 @@ final class NewMessageNotification extends Notification
             'senderName' => $this->message->sender?->name ?? 'System',
             'snippet' => $this->message->message_type === 'text'
                 ? mb_substr((string) $this->message->message, 0, 80)
-                : 'Shared a file: ' . ($this->message->attachment?->original_name ?? 'File'),
+                : 'Shared a file: '.($this->message->attachment?->original_name ?? 'File'),
             'type' => 'new_message',
             'createdAt' => $this->message->created_at?->toIso8601String(),
         ];

@@ -16,18 +16,18 @@ use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 
 /**
- * @property string            $title
- * @property string|null       $description
- * @property int|null          $assignment_id
- * @property int|null          $assigned_user_id
- * @property int               $created_by_id
- * @property TaskPriority      $priority
- * @property TaskStatus        $status
- * @property Carbon|null       $due_date
- * @property Carbon|null       $completed_at
- * @property string|null       $notes
- * @property Carbon|null       $created_at
- * @property Carbon|null       $updated_at
+ * @property string $title
+ * @property string|null $description
+ * @property int|null $assignment_id
+ * @property int|null $assigned_user_id
+ * @property int $created_by_id
+ * @property TaskPriority $priority
+ * @property TaskStatus $status
+ * @property Carbon|null $due_date
+ * @property Carbon|null $completed_at
+ * @property string|null $notes
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  */
 #[Fillable(['title', 'description', 'assignment_id', 'assigned_user_id', 'created_by_id', 'priority', 'status', 'due_date', 'completed_at', 'notes'])]
 class Task extends Model

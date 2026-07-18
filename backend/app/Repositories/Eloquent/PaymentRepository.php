@@ -42,6 +42,7 @@ final class PaymentRepository extends BaseRepository implements PaymentRepositor
     {
         $model->fill($data);
         $model->save();
+
         return $model->refresh();
     }
 
@@ -101,11 +102,13 @@ final class PaymentRepository extends BaseRepository implements PaymentRepositor
                         $sq->where('client_id', $actor->getKey());
                     });
             });
+
             return;
         }
 
         if ($actor->hasRole(Role::Writer->value)) {
             $query->where('user_id', $actor->getKey());
+
             return;
         }
 

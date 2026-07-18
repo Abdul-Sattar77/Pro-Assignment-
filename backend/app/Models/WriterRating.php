@@ -8,13 +8,14 @@ use App\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 
 #[Fillable([
-    'writer_id', 'client_id', 'assignment_id', 
-    'quality', 'timeliness', 'communication', 
-    'overall_rating', 'comment'
+    'writer_id', 'client_id', 'assignment_id',
+    'quality', 'timeliness', 'communication',
+    'overall_rating', 'comment',
 ])]
 class WriterRating extends Model
 {
@@ -22,17 +23,17 @@ class WriterRating extends Model
     use HasUuid;
     use LogsActivity;
 
-    public function writer(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function writer(): BelongsTo
     {
         return $this->belongsTo(User::class, 'writer_id');
     }
 
-    public function client(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function client(): BelongsTo
     {
         return $this->belongsTo(User::class, 'client_id');
     }
 
-    public function assignment(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function assignment(): BelongsTo
     {
         return $this->belongsTo(Assignment::class, 'assignment_id');
     }
