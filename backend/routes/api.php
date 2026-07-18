@@ -76,6 +76,7 @@ Route::prefix('v1')->group(function (): void {
         Route::get('conversations/{conversation}/messages', [ChatController::class, 'messages'])->name('conversations.messages');
         Route::post('conversations/{conversation}/messages', [ChatController::class, 'send'])->name('conversations.send');
         Route::post('conversations/{conversation}/read', [ChatController::class, 'read'])->name('conversations.read');
+        Route::post('conversations/{conversation}/signal', [ChatController::class, 'signal'])->name('conversations.signal');
         Route::get('messages/{message}/download', [ChatController::class, 'download'])->name('messages.download');
 
         // Admin: oversight + permission matrix

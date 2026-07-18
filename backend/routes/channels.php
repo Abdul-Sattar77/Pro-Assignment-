@@ -17,3 +17,9 @@ Broadcast::channel(
             && app(ChatService::class)->isParticipant($user, $conv);
     },
 );
+
+/** A user's personal call-signaling channel — only they may subscribe. */
+Broadcast::channel(
+    'calls.{userUuid}',
+    fn (User $user, string $userUuid): bool => $user->uuid === $userUuid,
+);
