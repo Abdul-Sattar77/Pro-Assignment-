@@ -26,7 +26,7 @@ import {
 } from "lucide-react";
 
 type AssignmentStatus = "in_progress" | "completed" | "pending" | "overdue";
-type AssignmentPriority = "high" | "medium" | "low";
+type AssignmentPriority = "standard" | "urgent" | "critical";
 
 const statusStyles: Record<
   AssignmentStatus,
@@ -58,17 +58,17 @@ const priorityStyles: Record<
   AssignmentPriority,
   { label: string; className: string }
 > = {
-  high: {
-    label: "High",
+  critical: {
+    label: "Critical",
     className:
       "border-destructive/30 bg-destructive/10 text-destructive font-semibold",
   },
-  medium: {
-    label: "Medium",
+  urgent: {
+    label: "Urgent",
     className: "border-warning/30 bg-warning/10 text-warning font-semibold",
   },
-  low: {
-    label: "Low",
+  standard: {
+    label: "Standard",
     className:
       "border-border bg-sidebar-accent/50 text-muted-foreground font-semibold",
   },
@@ -123,7 +123,7 @@ export function RecentAssignments() {
               const StatusIcon = statusCfg.icon;
               const priorityCfg =
                 priorityStyles[asg.priority as AssignmentPriority] ||
-                priorityStyles.medium;
+                priorityStyles.standard;
 
               return (
                 <TableRow key={asg.id}>

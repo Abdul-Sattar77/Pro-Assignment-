@@ -135,6 +135,12 @@ export const NAV_SECTIONS: NavSection[] = [
         permission: "roles.view",
       },
       {
+        label: "Chat Policies",
+        href: ROUTES.chatAdmin,
+        icon: MessageSquare,
+        permission: "roles.manage",
+      },
+      {
         label: "Audit Logs",
         href: ROUTES.auditLogs,
         icon: History,

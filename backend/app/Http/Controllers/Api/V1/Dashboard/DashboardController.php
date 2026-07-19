@@ -25,6 +25,6 @@ final class DashboardController extends Controller
 
         $data = $this->service->getAdminDashboardData();
 
-        return ApiResponse::resource($data);
+        return ApiResponse::item($data);
     }
 }

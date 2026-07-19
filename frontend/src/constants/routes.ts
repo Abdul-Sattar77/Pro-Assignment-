@@ -31,7 +31,7 @@ export const ROUTES = {
   tasks: "/tasks",
   users: "/users",
   roles: "/roles",
-  settings: "/dashboard/settings",
+  settings: "/settings",
   complaints: "/complaints",
   documentTemplates: "/document-templates",
   auditLogs: "/audit-logs",

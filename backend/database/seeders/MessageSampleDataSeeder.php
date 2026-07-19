@@ -99,7 +99,7 @@ final class MessageSampleDataSeeder extends Seeder
                     'description' => 'An analysis of political and military factors leading to World War II.',
                     'deadline' => Carbon::now()->addDays(7),
                     'status' => AssignmentStatus::Assigned,
-                    'priority' => AssignmentPriority::Normal,
+                    'priority' => AssignmentPriority::Standard,
                     'word_count' => 1500,
                     'client_price' => 150.00,
                     'writer_cost' => 75.00,
