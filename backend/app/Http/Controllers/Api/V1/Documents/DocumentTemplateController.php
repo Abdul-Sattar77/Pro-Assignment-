@@ -17,7 +17,7 @@ use Illuminate\Http\Request;
 final class DocumentTemplateController extends Controller
 {
     public function __construct(
-        private readonly DocumentTemplateRepositoryInterface $repository
+        private readonly DocumentTemplateRepositoryInterface $repository,
     ) {}
 
     public function index(Request $request): JsonResponse
@@ -31,12 +31,12 @@ final class DocumentTemplateController extends Controller
         $perPage = $request->query('per_page', '15');
         $paginator = $this->repository->getFiltered(
             $filters,
-            is_numeric($perPage) ? (int) $perPage : 15
+            is_numeric($perPage) ? (int) $perPage : 15,
         );
 
         return ApiResponse::collection(
             DocumentTemplateResource::collection($paginator->getCollection()),
-            $paginator
+            $paginator,
         );
     }
 

@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Toaster } from "sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { CallProvider } from "@/features/chat";
 
 /**
  * Global client providers for the whole app.
@@ -40,7 +41,9 @@ export function Providers({ children }: { children: ReactNode }) {
       <QueryClientProvider client={queryClient}>
         {/* Honor the user's OS reduced-motion preference app-wide. */}
         <MotionConfig reducedMotion="user">
-          <TooltipProvider delayDuration={200}>{children}</TooltipProvider>
+          <TooltipProvider delayDuration={200}>
+            <CallProvider>{children}</CallProvider>
+          </TooltipProvider>
         </MotionConfig>
         <Toaster richColors position="bottom-right" closeButton />
         {process.env.NODE_ENV === "development" && (

@@ -15,6 +15,7 @@ final class UpdateInvoiceRequest extends FormRequest
     {
         /** @var Invoice $invoice */
         $invoice = $this->route('invoice');
+
         return $this->user()?->can('update', $invoice) ?? false;
     }
 

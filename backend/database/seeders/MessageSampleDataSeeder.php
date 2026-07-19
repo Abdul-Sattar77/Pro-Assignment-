@@ -124,17 +124,17 @@ final class MessageSampleDataSeeder extends Seeder
                     'client_id' => $client->id,
                     'project_manager_id' => $pm->id,
                     'writer_id' => $writer->id,
-                ])
+                ]),
             ]);
         }
 
         // 4. Create files for attachments
         $this->command->info('Seeding sample file attachments...');
         $pdfFile = File::create([
-            'filename' => 'sample_outline_pdf_' . time() . '.pdf',
+            'filename' => 'sample_outline_pdf_'.time().'.pdf',
             'original_name' => 'Project_Outline.pdf',
             'disk' => 'local',
-            'path' => 'attachments/sample_outline_pdf_' . time() . '.pdf',
+            'path' => 'attachments/sample_outline_pdf_'.time().'.pdf',
             'mime_type' => 'application/pdf',
             'size' => 102400,
             'uploaded_by' => $client->id,
@@ -142,10 +142,10 @@ final class MessageSampleDataSeeder extends Seeder
         ]);
 
         $imgFile = File::create([
-            'filename' => 'sample_chart_png_' . time() . '.png',
+            'filename' => 'sample_chart_png_'.time().'.png',
             'original_name' => 'Data_Chart.png',
             'disk' => 'local',
-            'path' => 'attachments/sample_chart_png_' . time() . '.png',
+            'path' => 'attachments/sample_chart_png_'.time().'.png',
             'mime_type' => 'image/png',
             'size' => 204800,
             'uploaded_by' => $writer->id,
@@ -153,10 +153,10 @@ final class MessageSampleDataSeeder extends Seeder
         ]);
 
         $docxFile = File::create([
-            'filename' => 'sample_draft_docx_' . time() . '.docx',
+            'filename' => 'sample_draft_docx_'.time().'.docx',
             'original_name' => 'First_Draft.docx',
             'disk' => 'local',
-            'path' => 'attachments/sample_draft_docx_' . time() . '.docx',
+            'path' => 'attachments/sample_draft_docx_'.time().'.docx',
             'mime_type' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
             'size' => 312000,
             'uploaded_by' => $writer->id,
@@ -193,31 +193,31 @@ final class MessageSampleDataSeeder extends Seeder
 
         // Conversation 1 Messages
         $messagesData[] = ['conv' => $conv1, 'sender' => $client, 'type' => 'text', 'body' => "Hello! I've uploaded the prompt and draft structure for the biology lab report.", 'file' => null, 'time' => Carbon::now()->subDays(2)];
-        $messagesData[] = ['conv' => $conv1, 'sender' => $pm, 'type' => 'text', 'body' => "Hi Alice, got it! Let me review the requirements. We will make sure the writer adheres to all guidelines.", 'file' => null, 'time' => Carbon::now()->subDays(2)->addMinutes(30)];
+        $messagesData[] = ['conv' => $conv1, 'sender' => $pm, 'type' => 'text', 'body' => 'Hi Alice, got it! Let me review the requirements. We will make sure the writer adheres to all guidelines.', 'file' => null, 'time' => Carbon::now()->subDays(2)->addMinutes(30)];
         $messagesData[] = ['conv' => $conv1, 'sender' => $pm, 'type' => 'text', 'body' => "I've assigned a biology writer who has a PhD in the subject. We will get back to you with an outline soon.", 'file' => null, 'time' => Carbon::now()->subDays(2)->addHours(1)];
-        $messagesData[] = ['conv' => $conv1, 'sender' => $client, 'type' => 'text', 'body' => "Sounds wonderful, thank you so much for the quick update!", 'file' => null, 'time' => Carbon::now()->subDays(1)];
+        $messagesData[] = ['conv' => $conv1, 'sender' => $client, 'type' => 'text', 'body' => 'Sounds wonderful, thank you so much for the quick update!', 'file' => null, 'time' => Carbon::now()->subDays(1)];
         $messagesData[] = ['conv' => $conv1, 'sender' => $pm, 'type' => 'text', 'body' => "You're welcome! Let us know if you need anything else.", 'file' => null, 'time' => Carbon::now()->subDays(1)->addHours(1)];
-        $messagesData[] = ['conv' => $conv1, 'sender' => $client, 'type' => 'file', 'body' => "Here is an updated bibliography guideline as well.", 'file' => $pdfFile, 'time' => Carbon::now()->subHours(12)];
-        $messagesData[] = ['conv' => $conv1, 'sender' => $admin, 'type' => 'text', 'body' => "System notification: PDF attachment received successfully.", 'file' => null, 'time' => Carbon::now()->subHours(12)->addMinutes(1)];
-        $messagesData[] = ['conv' => $conv1, 'sender' => $pm, 'type' => 'text', 'body' => "Thank you! I will pass this PDF outline to the writer immediately.", 'file' => null, 'time' => Carbon::now()->subHours(10)];
-        $messagesData[] = ['conv' => $conv1, 'sender' => $client, 'type' => 'text', 'body' => "Great, please let me know when the first draft is ready.", 'file' => null, 'time' => Carbon::now()->subHours(1)]; // Unread for PM & Admin
+        $messagesData[] = ['conv' => $conv1, 'sender' => $client, 'type' => 'file', 'body' => 'Here is an updated bibliography guideline as well.', 'file' => $pdfFile, 'time' => Carbon::now()->subHours(12)];
+        $messagesData[] = ['conv' => $conv1, 'sender' => $admin, 'type' => 'text', 'body' => 'System notification: PDF attachment received successfully.', 'file' => null, 'time' => Carbon::now()->subHours(12)->addMinutes(1)];
+        $messagesData[] = ['conv' => $conv1, 'sender' => $pm, 'type' => 'text', 'body' => 'Thank you! I will pass this PDF outline to the writer immediately.', 'file' => null, 'time' => Carbon::now()->subHours(10)];
+        $messagesData[] = ['conv' => $conv1, 'sender' => $client, 'type' => 'text', 'body' => 'Great, please let me know when the first draft is ready.', 'file' => null, 'time' => Carbon::now()->subHours(1)]; // Unread for PM & Admin
 
         // Conversation 2 Messages
         $messagesData[] = ['conv' => $conv2, 'sender' => $pm, 'type' => 'text', 'body' => "Hey John, here's a new assignment on Biology Lab Report. Let me know if you can take this.", 'file' => null, 'time' => Carbon::now()->subDays(2)];
-        $messagesData[] = ['conv' => $conv2, 'sender' => $writer, 'type' => 'text', 'body' => "Hi Jane, yes! The requirements look straightforward. I can start working on it tonight.", 'file' => null, 'time' => Carbon::now()->subDays(2)->addHours(1)];
-        $messagesData[] = ['conv' => $conv2, 'sender' => $pm, 'type' => 'text', 'body' => "Excellent. The deadline is in 5 days, please upload an outline/draft within 48 hours.", 'file' => null, 'time' => Carbon::now()->subDays(2)->addHours(2)];
+        $messagesData[] = ['conv' => $conv2, 'sender' => $writer, 'type' => 'text', 'body' => 'Hi Jane, yes! The requirements look straightforward. I can start working on it tonight.', 'file' => null, 'time' => Carbon::now()->subDays(2)->addHours(1)];
+        $messagesData[] = ['conv' => $conv2, 'sender' => $pm, 'type' => 'text', 'body' => 'Excellent. The deadline is in 5 days, please upload an outline/draft within 48 hours.', 'file' => null, 'time' => Carbon::now()->subDays(2)->addHours(2)];
         $messagesData[] = ['conv' => $conv2, 'sender' => $writer, 'type' => 'text', 'body' => "Will do! I'll outline the main methodology first.", 'file' => null, 'time' => Carbon::now()->subDays(1)];
         $messagesData[] = ['conv' => $conv2, 'sender' => $writer, 'type' => 'image', 'body' => "Hi Jane, I've plotted the client's lab data. Does this graph match the expected format?", 'file' => $imgFile, 'time' => Carbon::now()->subHours(18)];
         $messagesData[] = ['conv' => $conv2, 'sender' => $pm, 'type' => 'text', 'body' => "Yes, this chart looks perfect. Let's make sure we explain the standard deviation correctly.", 'file' => null, 'time' => Carbon::now()->subHours(16)];
-        $messagesData[] = ['conv' => $conv2, 'sender' => $writer, 'type' => 'text', 'body' => "Got it, continuing with the results section now.", 'file' => null, 'time' => Carbon::now()->subHours(14)];
-        $messagesData[] = ['conv' => $conv2, 'sender' => $writer, 'type' => 'file', 'body' => "Here is the first draft of the methodology and results section.", 'file' => $docxFile, 'time' => Carbon::now()->subHours(2)]; // Unread for PM & Admin
+        $messagesData[] = ['conv' => $conv2, 'sender' => $writer, 'type' => 'text', 'body' => 'Got it, continuing with the results section now.', 'file' => null, 'time' => Carbon::now()->subHours(14)];
+        $messagesData[] = ['conv' => $conv2, 'sender' => $writer, 'type' => 'file', 'body' => 'Here is the first draft of the methodology and results section.', 'file' => $docxFile, 'time' => Carbon::now()->subHours(2)]; // Unread for PM & Admin
 
         // Conversation 3 Messages
-        $messagesData[] = ['conv' => $conv3, 'sender' => $client, 'type' => 'text', 'body' => "Hello, can we discuss the timeline for the History essay?", 'file' => null, 'time' => Carbon::now()->subDays(3)];
-        $messagesData[] = ['conv' => $conv3, 'sender' => $pm, 'type' => 'text', 'body' => "Hi Alice, sure! The current deadline is in 7 days. Does that work for you?", 'file' => null, 'time' => Carbon::now()->subDays(3)->addHours(1)];
-        $messagesData[] = ['conv' => $conv3, 'sender' => $client, 'type' => 'text', 'body' => "Yes, that is perfect. I need to submit it to my professor by next Monday.", 'file' => null, 'time' => Carbon::now()->subDays(2)];
-        $messagesData[] = ['conv' => $conv3, 'sender' => $pm, 'type' => 'text', 'body' => "Noted. We will deliver the final paper at least 24 hours before your actual submission deadline.", 'file' => null, 'time' => Carbon::now()->subDays(2)->addHours(2)];
-        $messagesData[] = ['conv' => $conv3, 'sender' => $client, 'type' => 'text', 'body' => "That would be amazing. Thanks!", 'file' => null, 'time' => Carbon::now()->subDays(1)]; // Read by all
+        $messagesData[] = ['conv' => $conv3, 'sender' => $client, 'type' => 'text', 'body' => 'Hello, can we discuss the timeline for the History essay?', 'file' => null, 'time' => Carbon::now()->subDays(3)];
+        $messagesData[] = ['conv' => $conv3, 'sender' => $pm, 'type' => 'text', 'body' => 'Hi Alice, sure! The current deadline is in 7 days. Does that work for you?', 'file' => null, 'time' => Carbon::now()->subDays(3)->addHours(1)];
+        $messagesData[] = ['conv' => $conv3, 'sender' => $client, 'type' => 'text', 'body' => 'Yes, that is perfect. I need to submit it to my professor by next Monday.', 'file' => null, 'time' => Carbon::now()->subDays(2)];
+        $messagesData[] = ['conv' => $conv3, 'sender' => $pm, 'type' => 'text', 'body' => 'Noted. We will deliver the final paper at least 24 hours before your actual submission deadline.', 'file' => null, 'time' => Carbon::now()->subDays(2)->addHours(2)];
+        $messagesData[] = ['conv' => $conv3, 'sender' => $client, 'type' => 'text', 'body' => 'That would be amazing. Thanks!', 'file' => null, 'time' => Carbon::now()->subDays(1)]; // Read by all
 
         foreach ($messagesData as $msg) {
             Message::create([
@@ -237,7 +237,7 @@ final class MessageSampleDataSeeder extends Seeder
         $setParticipantRead = function (int $convId, int $userId, Carbon $lastReadTime) {
             DB::table('conversation_participants')->updateOrInsert(
                 ['conversation_id' => $convId, 'user_id' => $userId],
-                ['last_read_at' => $lastReadTime, 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]
+                ['last_read_at' => $lastReadTime, 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
             );
         };
 

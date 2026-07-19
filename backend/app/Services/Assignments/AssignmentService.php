@@ -63,6 +63,46 @@ final class AssignmentService
         });
     }
 
+    /**
+     * Admin/PM edits assignment meta fields (priority, notes, word count, etc.).
+     * Only fillable columns are applied.
+     *
+     * @param  array<string, mixed>  $data
+     */
+    public function update(User $actor, Assignment $assignment, array $data): Assignment
+    {
+        return DB::transaction(function () use ($actor, $assignment, $data): Assignment {
+            $assignment->fill($data);
+            $assignment->save();
+
+            $this->record($assignment, $actor, AssignmentEventType::Updated);
+
+            return $assignment->refresh();
+        });
+    }
+
+    /**
+     * Admin/PM sets the project manager on an assignment.
+     * The manager must hold the project_manager role.
+     */
+    public function assignManager(User $actor, Assignment $assignment, string $managerUuid): Assignment
+    {
+        $manager = $this->users->findByUuid($managerUuid);
+
+        if ($manager === null || !$manager->hasRole(Role::ProjectManager->value)) {
+            throw new DomainRuleException('The selected user is not an active project manager.', 'MANAGER_INVALID', 422);
+        }
+
+        return DB::transaction(function () use ($actor, $assignment, $manager): Assignment {
+            $assignment->fill(['project_manager_id' => $manager->getKey()]);
+            $assignment->save();
+
+            $this->record($assignment, $actor, AssignmentEventType::Updated, "Project manager set to {$manager->name}");
+
+            return $assignment->refresh();
+        });
+    }
+
     /** PM assigns a writer; PM becomes the order's manager. */
     public function assignWriter(User $actor, Assignment $assignment, string $writerUuid): Assignment
     {
@@ -268,7 +308,9 @@ final class AssignmentService
             AssignmentEventType::Delivered => [$assignment->client],
             AssignmentEventType::Completed => [$assignment->writer, $assignment->projectManager],
             AssignmentEventType::Cancelled => [$assignment->writer, $assignment->client, $assignment->projectManager],
-            AssignmentEventType::Created => [],
+            AssignmentEventType::Created,
+            AssignmentEventType::Updated,
+            AssignmentEventType::AttachmentAdded => [],
         };
 
         $message = "{$actor->name}: {$event->label()} — {$assignment->title}";

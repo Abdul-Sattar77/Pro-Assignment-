@@ -7,12 +7,15 @@ import {
   Loader2,
   MessageCircle,
   PenSquare,
+  Phone,
   Settings2,
+  Video,
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ROUTES } from "@/constants/routes";
 import { useCurrentUser } from "@/features/auth";
+import { useCall } from "../call/call-provider";
 import {
   useChatContacts,
   useConversations,
@@ -39,6 +42,7 @@ interface Active {
  */
 export function ChatWidget() {
   const { data: user } = useCurrentUser();
+  const call = useCall();
   const [open, setOpen] = useState(false);
   const [view, setView] = useState<View>("list");
   const [active, setActive] = useState<Active | null>(null);
@@ -114,6 +118,30 @@ export function ChatWidget() {
                 </p>
               )}
             </div>
+            {view === "thread" && active && call && (
+              <>
+                <button
+                  type="button"
+                  aria-label="Voice call"
+                  onClick={() =>
+                    call.startCall(active.id, active.name, "audio")
+                  }
+                  className="text-muted-foreground hover:text-primary"
+                >
+                  <Phone className="size-4.5" />
+                </button>
+                <button
+                  type="button"
+                  aria-label="Video call"
+                  onClick={() =>
+                    call.startCall(active.id, active.name, "video")
+                  }
+                  className="text-muted-foreground hover:text-primary"
+                >
+                  <Video className="size-4.5" />
+                </button>
+              </>
+            )}
             {view === "list" && user.roles.includes("admin") && (
               <Link
                 href={ROUTES.chatAdmin}

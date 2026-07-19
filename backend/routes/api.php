@@ -26,6 +26,8 @@ use App\Http\Controllers\Api\V1\Settings\SettingController;
 use App\Http\Controllers\Api\V1\Tasks\TaskController;
 use App\Http\Controllers\Api\V1\Users\UserController;
 use App\Http\Controllers\Api\V1\Users\WriterRatingController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -61,6 +63,11 @@ Route::prefix('v1')->group(function (): void {
         Route::post('password', [ProfileController::class, 'changePassword'])->name('password');
     });
 
+    // ---- Broadcasting auth (Reverb) — Bearer-token compatible ----
+    Route::middleware('auth:sanctum')->post('broadcasting/auth', function (Request $request) {
+        return Broadcast::auth($request);
+    })->name('broadcasting.auth');
+
     // ---- Direct messaging (cross-role chat) ----
     Route::middleware('auth:sanctum')->prefix('chat')->name('chat.')->group(function (): void {
         Route::get('contacts', [ChatController::class, 'contacts'])->name('contacts');
@@ -69,6 +76,7 @@ Route::prefix('v1')->group(function (): void {
         Route::get('conversations/{conversation}/messages', [ChatController::class, 'messages'])->name('conversations.messages');
         Route::post('conversations/{conversation}/messages', [ChatController::class, 'send'])->name('conversations.send');
         Route::post('conversations/{conversation}/read', [ChatController::class, 'read'])->name('conversations.read');
+        Route::post('conversations/{conversation}/signal', [ChatController::class, 'signal'])->name('conversations.signal');
         Route::get('messages/{message}/download', [ChatController::class, 'download'])->name('messages.download');
 
         // Admin: oversight + permission matrix

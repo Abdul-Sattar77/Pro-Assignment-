@@ -257,7 +257,7 @@ export function Hero() {
                 href={orderHref(isAuthed)}
                 className="group flex h-13 items-center gap-2 rounded-xl bg-linear-to-r from-violet-500 to-blue-500 px-7 text-base font-semibold text-white shadow-[0_12px_36px_-10px_rgba(99,102,241,0.7)] transition-all duration-200 hover:scale-[1.04] hover:shadow-[0_18px_50px_-8px_rgba(99,102,241,0.9)] active:scale-[0.98]"
               >
-                Order Assignment
+                Submit Assignment
                 <span className="flex size-6 items-center justify-center rounded-full bg-white/20 transition-transform duration-200 group-hover:translate-x-2">
                   <ArrowRight className="size-4" />
                 </span>

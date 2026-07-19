@@ -49,7 +49,7 @@ final class AssignmentController extends Controller
         /** @var array<string, mixed> $filter */
         $filter = (array) $request->query('filter', []);
         $search = $request->query('search');
-        $sort   = $request->query('sort', '-created_at');
+        $sort = $request->query('sort', '-created_at');
         $perPage = $request->query('per_page', '15');
 
         // Resolve writer / PM uuid → internal id for repository filters
@@ -68,13 +68,13 @@ final class AssignmentController extends Controller
         $paginator = $this->assignments->paginateFor(
             $this->actor($request),
             [
-                'status'             => is_string($filter['status'] ?? null) ? $filter['status'] : null,
-                'search'             => is_string($search) ? $search : null,
-                'priority'           => is_string($filter['priority'] ?? null) ? $filter['priority'] : null,
-                'writer_id'          => $writerId,
+                'status' => is_string($filter['status'] ?? null) ? $filter['status'] : null,
+                'search' => is_string($search) ? $search : null,
+                'priority' => is_string($filter['priority'] ?? null) ? $filter['priority'] : null,
+                'writer_id' => $writerId,
                 'project_manager_id' => $pmId,
-                'deadline_from'      => is_string($filter['deadline_from'] ?? null) ? $filter['deadline_from'] : null,
-                'deadline_to'        => is_string($filter['deadline_to'] ?? null) ? $filter['deadline_to'] : null,
+                'deadline_from' => is_string($filter['deadline_from'] ?? null) ? $filter['deadline_from'] : null,
+                'deadline_to' => is_string($filter['deadline_to'] ?? null) ? $filter['deadline_to'] : null,
             ],
             is_string($sort) ? $sort : '-created_at',
             min(is_numeric($perPage) ? (int) $perPage : 15, 100),

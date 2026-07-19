@@ -24,7 +24,7 @@ final class FinanceService
     public function __construct(
         private readonly InvoiceRepositoryInterface $invoices,
         private readonly PaymentRepositoryInterface $payments,
-        private readonly AssignmentRepositoryInterface $assignments
+        private readonly AssignmentRepositoryInterface $assignments,
     ) {}
 
     /**
@@ -45,7 +45,7 @@ final class FinanceService
 
         return DB::transaction(function () use ($assignment, $data): Invoice {
             $amount = $data['amount'] ?? ($assignment->client_price - $assignment->discount);
-            $invoiceNumber = 'INV-' . Carbon::now()->format('Ymd') . '-' . Str::upper(Str::random(6));
+            $invoiceNumber = 'INV-'.Carbon::now()->format('Ymd').'-'.Str::upper(Str::random(6));
 
             return $this->invoices->create([
                 'invoice_number' => $invoiceNumber,
@@ -241,7 +241,7 @@ final class FinanceService
             ->select(
                 DB::raw("TO_CHAR(created_at, 'YYYY-MM') as month"),
                 DB::raw("SUM(CASE WHEN status = 'verified' AND payment_type IN ('advance', 'partial', 'balance') THEN amount ELSE 0 END) as revenue"),
-                DB::raw("SUM(CASE WHEN status = 'verified' AND payment_type IN ('writer_payout', 'expense') THEN amount ELSE 0 END) as expenses")
+                DB::raw("SUM(CASE WHEN status = 'verified' AND payment_type IN ('writer_payout', 'expense') THEN amount ELSE 0 END) as expenses"),
             )
             ->where('created_at', '>=', Carbon::now()->subMonths(12))
             ->whereNull('deleted_at')

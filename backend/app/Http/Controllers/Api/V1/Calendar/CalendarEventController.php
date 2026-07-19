@@ -25,6 +25,9 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 
 /**
  * Controller exposing endpoints for Calendar Event listings and mutations.
@@ -44,25 +47,25 @@ final class CalendarEventController extends Controller
     public function index(Request $request): JsonResponse
     {
         // Self-healing check: Ensure calendar permissions are seeded in the database
-        if (!\Spatie\Permission\Models\Permission::where('name', 'calendar.view')->exists()) {
-            \Spatie\Permission\Models\Permission::findOrCreate('calendar.view', 'web');
-            \Spatie\Permission\Models\Permission::findOrCreate('calendar.manage', 'web');
+        if (!Permission::where('name', 'calendar.view')->exists()) {
+            Permission::findOrCreate('calendar.view', 'web');
+            Permission::findOrCreate('calendar.manage', 'web');
 
-            if ($adminRole = \Spatie\Permission\Models\Role::where('name', 'admin')->first()) {
+            if ($adminRole = Role::where('name', 'admin')->first()) {
                 $adminRole->givePermissionTo(['calendar.view', 'calendar.manage']);
             }
-            if ($pmRole = \Spatie\Permission\Models\Role::where('name', 'project_manager')->first()) {
+            if ($pmRole = Role::where('name', 'project_manager')->first()) {
                 $pmRole->givePermissionTo(['calendar.view', 'calendar.manage']);
             }
-            if ($writerRole = \Spatie\Permission\Models\Role::where('name', 'writer')->first()) {
+            if ($writerRole = Role::where('name', 'writer')->first()) {
                 $writerRole->givePermissionTo('calendar.view');
             }
-            if ($clientRole = \Spatie\Permission\Models\Role::where('name', 'client')->first()) {
+            if ($clientRole = Role::where('name', 'client')->first()) {
                 $clientRole->givePermissionTo('calendar.view');
             }
 
             // Forget Spatie permission cache to register immediately
-            app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+            app(PermissionRegistrar::class)->forgetCachedPermissions();
         }
 
         $this->authorize('viewAny', CalendarEvent::class);
@@ -83,7 +86,7 @@ final class CalendarEventController extends Controller
                     ->where('calendar_events.event_type', CalendarEventType::AssignmentDeadline->value);
             })->get();
 
-            $assignmentObserver = new AssignmentObserver();
+            $assignmentObserver = new AssignmentObserver;
             foreach ($missingAssignments as $assignment) {
                 $assignmentObserver->saved($assignment);
             }
@@ -107,7 +110,7 @@ final class CalendarEventController extends Controller
                         ->where('calendar_events.event_type', CalendarEventType::Custom->value);
                 })->get();
 
-            $taskObserver = new TaskObserver();
+            $taskObserver = new TaskObserver;
             foreach ($missingTasks as $task) {
                 $taskObserver->saved($task);
             }
@@ -153,7 +156,7 @@ final class CalendarEventController extends Controller
                 'task_id' => $taskId,
                 'user_id' => $userId,
                 'status' => is_string($filter['status'] ?? null) ? $filter['status'] : null,
-            ]
+            ],
         );
 
         return ApiResponse::resource(CalendarEventResource::collection($events));

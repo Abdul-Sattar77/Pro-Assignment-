@@ -13,6 +13,7 @@ final class UpdateComplaintRequest extends FormRequest
     {
         // Only PMs and Admins can update/resolve complaints.
         $user = $this->user();
+
         return $user !== null && ($user->hasRole('admin') || $user->hasRole('project_manager'));
     }
 

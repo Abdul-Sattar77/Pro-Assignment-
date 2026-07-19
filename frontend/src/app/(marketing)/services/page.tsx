@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { Cta, Disciplines, PageHero, Services } from "@/features/marketing";
 
 export const metadata: Metadata = {
-  title: "Services — Prossignment",
+  title: "Services",
+  alternates: { canonical: "/services" },
   description:
     "Essays, dissertations, programming, research and data analysis, presentations, typing and editing — academic support across every discipline.",
 };

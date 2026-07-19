@@ -9,9 +9,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { ROUTES } from "@/constants/routes";
+import { useCurrentUser } from "@/features/auth";
 import { PRIORITY_META } from "../constants";
 import { useAssignment } from "../hooks/use-assignments";
 import { AssignmentActions } from "./assignment-actions";
+import { ClientFeedback } from "./client-feedback";
 import { AssignmentTimeline } from "./assignment-timeline";
 import { ChatPanel } from "./chat-panel";
 import { FilesPanel } from "./files-panel";
@@ -44,6 +46,8 @@ function Meta({
  */
 export function AssignmentDetail({ id }: { id: string }) {
   const { data: assignment, isPending, isError, refetch } = useAssignment(id);
+  const { data: user } = useCurrentUser();
+  const isClient = Boolean(user?.roles.includes("client"));
 
   if (isPending) {
     return (
@@ -105,6 +109,15 @@ export function AssignmentDetail({ id }: { id: string }) {
 
       {/* Workflow actions for THIS viewer */}
       <AssignmentActions assignment={assignment} />
+
+      {/* Client feedback: review the writer / report an issue to admin */}
+      {isClient && (
+        <ClientFeedback
+          assignmentId={assignment.id}
+          writerId={assignment.writer?.id}
+          writerName={assignment.writer?.name}
+        />
+      )}
 
       <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
         {/* Left column: brief + files */}

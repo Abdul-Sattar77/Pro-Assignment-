@@ -14,7 +14,7 @@ use Illuminate\Http\Request;
 final class AuditLogController extends Controller
 {
     public function __construct(
-        private readonly ActivityRepositoryInterface $repository
+        private readonly ActivityRepositoryInterface $repository,
     ) {}
 
     public function index(Request $request): JsonResponse
@@ -33,12 +33,12 @@ final class AuditLogController extends Controller
         $perPage = $request->query('per_page', '30');
         $paginator = $this->repository->getFiltered(
             $filters,
-            is_numeric($perPage) ? (int) $perPage : 30
+            is_numeric($perPage) ? (int) $perPage : 30,
         );
 
         return ApiResponse::collection(
             ActivityResource::collection($paginator->getCollection()),
-            $paginator
+            $paginator,
         );
     }
 }

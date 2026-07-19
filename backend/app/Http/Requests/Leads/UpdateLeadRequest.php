@@ -41,6 +41,7 @@ final class UpdateLeadRequest extends FormRequest
                         $lead = $this->route('lead');
                         $status = $lead ? $lead->status->value : null;
                     }
+
                     return $status === LeadStatus::Lost->value;
                 }),
                 'nullable',

@@ -8,13 +8,14 @@ use App\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 
 #[Fillable([
-    'title', 'category', 'description', 
-    'file_id', 'uploaded_by'
+    'title', 'category', 'description',
+    'file_id', 'uploaded_by',
 ])]
 class DocumentTemplate extends Model
 {
@@ -23,12 +24,12 @@ class DocumentTemplate extends Model
     use LogsActivity;
     use SoftDeletes;
 
-    public function file(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function file(): BelongsTo
     {
         return $this->belongsTo(File::class, 'file_id');
     }
 
-    public function uploader(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function uploader(): BelongsTo
     {
         return $this->belongsTo(User::class, 'uploaded_by');
     }

@@ -79,10 +79,10 @@ final class ConversationRepository extends BaseRepository implements Conversatio
         if (is_string($search) && $search !== '') {
             $query->where(function ($q) use ($search): void {
                 $q->whereHas('assignment', function ($aq) use ($search): void {
-                    $aq->where('title', 'ilike', '%' . $search . '%')
-                      ->orWhere('subject', 'ilike', '%' . $search . '%');
+                    $aq->where('title', 'ilike', '%'.$search.'%')
+                        ->orWhere('subject', 'ilike', '%'.$search.'%');
                 })->orWhereHas('messages', function ($mq) use ($search): void {
-                    $mq->where('message', 'ilike', '%' . $search . '%');
+                    $mq->where('message', 'ilike', '%'.$search.'%');
                 });
             });
         }

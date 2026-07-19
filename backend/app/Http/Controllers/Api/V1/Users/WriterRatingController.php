@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1\Users;
 
+use App\Enums\Role;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Users\StoreWriterRatingRequest;
 use App\Http\Resources\WriterRatingResource;
@@ -17,13 +18,13 @@ use Illuminate\Http\Request;
 final class WriterRatingController extends Controller
 {
     public function __construct(
-        private readonly WriterRatingRepositoryInterface $repository
+        private readonly WriterRatingRepositoryInterface $repository,
     ) {}
 
     public function index(Request $request, User $user): JsonResponse
     {
         // Enforce that only writers can be queried for ratings
-        if (!$user->hasRole(\App\Enums\Role::Writer->value)) {
+        if (!$user->hasRole(Role::Writer->value)) {
             return ApiResponse::error('INVALID_USER_ROLE', 'Only writers can have performance ratings.', 400);
         }
 
@@ -34,7 +35,7 @@ final class WriterRatingController extends Controller
 
     public function store(StoreWriterRatingRequest $request, User $user): JsonResponse
     {
-        if (!$user->hasRole(\App\Enums\Role::Writer->value)) {
+        if (!$user->hasRole(Role::Writer->value)) {
             return ApiResponse::error('INVALID_USER_ROLE', 'Only writers can be rated.', 400);
         }
 

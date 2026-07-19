@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1\Chat;
 
+use App\Events\CallSignal;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Chat\SendChatMessageRequest;
 use App\Http\Requests\Chat\StartConversationRequest;
@@ -116,6 +117,36 @@ final class ChatController extends Controller
         }
 
         return response()->json(null, 204);
+    }
+
+    /** Relay a WebRTC signaling message to the other participant. */
+    public function signal(Request $request, ChatConversation $conversation): JsonResponse
+    {
+        $user = $this->actor($request);
+        abort_unless($this->chat->isParticipant($user, $conversation), 403);
+
+        /** @var array{type: string, media?: string|null, payload?: mixed} $data */
+        $data = $request->validate([
+            'type' => ['required', 'string', 'in:offer,answer,ice,hangup,reject'],
+            'media' => ['nullable', 'string', 'in:audio,video'],
+            'payload' => ['nullable'],
+        ]);
+
+        $other = $conversation->participants()
+            ->where('users.id', '!=', $user->getKey())
+            ->first();
+
+        if ($other !== null) {
+            broadcast(new CallSignal($other->uuid, [
+                'type' => $data['type'],
+                'conversationId' => $conversation->uuid,
+                'from' => ['id' => $user->uuid, 'name' => $user->name],
+                'media' => $data['media'] ?? 'video',
+                'payload' => $data['payload'] ?? null,
+            ]));
+        }
+
+        return response()->json(null, 202);
     }
 
     /** Stream an attachment (participant or admin). */

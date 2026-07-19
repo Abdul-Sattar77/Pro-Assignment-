@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { Cta, HowItWorks, PageHero } from "@/features/marketing";
 
 export const metadata: Metadata = {
-  title: "Process — Prossignment",
+  title: "Process",
+  alternates: { canonical: "/process" },
   description:
     "How Prossignment works: submit your assignment, get matched with a subject expert, track every step, and receive polished, grade-ready work.",
 };

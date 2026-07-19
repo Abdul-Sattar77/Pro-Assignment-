@@ -38,7 +38,7 @@ final class TaskObserver
                     'created_by_id' => $task->created_by_id,
                     'user_id' => $task->assigned_user_id,
                     'assignment_id' => $task->assignment_id,
-                ]
+                ],
             );
         } else {
             CalendarEvent::query()

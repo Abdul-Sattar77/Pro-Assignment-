@@ -19,15 +19,15 @@ final class AssignmentAttachmentResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'           => $this->uuid,
-            'type'         => $this->type,
+            'id' => $this->uuid,
+            'type' => $this->type,
             'originalName' => $this->original_name,
-            'mimeType'     => $this->mime_type,
-            'size'         => $this->size,
-            'humanSize'    => $this->human_size,
-            'url'          => $this->url,
-            'uploadedBy'   => $this->whenLoaded('uploader', fn () => [
-                'id'   => $this->uploader?->uuid,
+            'mimeType' => $this->mime_type,
+            'size' => $this->size,
+            'humanSize' => $this->human_size,
+            'url' => $this->url,
+            'uploadedBy' => $this->whenLoaded('uploader', fn () => [
+                'id' => $this->uploader?->uuid,
                 'name' => $this->uploader?->name,
             ]),
             'createdAt' => $this->created_at?->toIso8601String(),

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Services\Messages;
 
 use App\Models\Conversation;
-use App\Models\File;
 use App\Models\Message;
 use App\Models\User;
 use App\Notifications\NewMessageNotification;
@@ -98,7 +97,7 @@ final class MessageService
             [
                 'last_read_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
-            ]
+            ],
         );
     }
 

@@ -36,21 +36,21 @@ final class AttachmentService
 
             /** @var AssignmentAttachment $attachment */
             $attachment = $assignment->attachments()->create([
-                'uploaded_by'   => $actor->getKey(),
-                'type'          => $type,
-                'disk'          => $disk,
-                'path'          => $path,
+                'uploaded_by' => $actor->getKey(),
+                'type' => $type,
+                'disk' => $disk,
+                'path' => $path,
                 'original_name' => $file->getClientOriginalName(),
-                'mime_type'     => $file->getMimeType(),
-                'size'          => $file->getSize(),
+                'mime_type' => $file->getMimeType(),
+                'size' => $file->getSize(),
             ]);
 
             $attachment->load('uploader', 'assignment');
 
             $assignment->events()->create([
                 'actor_id' => $actor->getKey(),
-                'type'     => AssignmentEventType::AttachmentAdded,
-                'note'     => $file->getClientOriginalName(),
+                'type' => AssignmentEventType::AttachmentAdded,
+                'note' => $file->getClientOriginalName(),
             ]);
 
             return $attachment;

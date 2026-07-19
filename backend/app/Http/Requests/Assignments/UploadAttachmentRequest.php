@@ -41,7 +41,7 @@ final class UploadAttachmentRequest extends FormRequest
     {
         return [
             'file.mimes' => 'Only PDF, Office documents, images, archives, and audio files are allowed.',
-            'file.max'   => 'Files must be under 50 MB.',
+            'file.max' => 'Files must be under 50 MB.',
         ];
     }
 }

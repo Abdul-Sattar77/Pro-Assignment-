@@ -19,4 +19,5 @@ export { Footer } from "./components/footer";
 export { PageHero } from "./components/page-hero";
 export { AboutContent } from "./components/about-content";
 export { FaqContent } from "./components/faq-content";
+export { FAQS } from "./data/faq";
 export { ContactContent } from "./components/contact-content";

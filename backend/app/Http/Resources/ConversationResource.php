@@ -8,6 +8,7 @@ use App\Models\Conversation;
 use App\Repositories\Contracts\ConversationRepositoryInterface;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Conversation JSON resource.
@@ -28,15 +29,15 @@ final class ConversationResource extends JsonResource
             // Retrieve unread count via repository check
             $repo = app(ConversationRepositoryInterface::class);
             $unreadCount = $repo->getUnreadCountFor($actor);
-            
+
             // To get count specifically for this conversation, we query the unread logic:
-            $unreadCount = \Illuminate\Support\Facades\DB::table('messages')
+            $unreadCount = DB::table('messages')
                 ->where('conversation_id', $this->id)
                 ->where('sender_id', '!=', $actor->getKey())
                 ->where('is_deleted', false)
                 ->where(function ($query) use ($actor): void {
                     $query->whereNotExists(function ($subQuery) use ($actor): void {
-                        $subQuery->select(\Illuminate\Support\Facades\DB::raw(1))
+                        $subQuery->select(DB::raw(1))
                             ->from('conversation_participants')
                             ->whereColumn('conversation_participants.conversation_id', 'messages.conversation_id')
                             ->where('conversation_participants.user_id', $actor->getKey())

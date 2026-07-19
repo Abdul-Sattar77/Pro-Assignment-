@@ -8,14 +8,15 @@ use App\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 
 #[Fillable([
-    'client_id', 'assignment_id', 'project_manager_id', 
-    'subject', 'description', 'status', 
-    'resolution', 'resolved_at', 'resolved_by'
+    'client_id', 'assignment_id', 'project_manager_id',
+    'subject', 'description', 'status',
+    'resolution', 'resolved_at', 'resolved_by',
 ])]
 class Complaint extends Model
 {
@@ -31,22 +32,22 @@ class Complaint extends Model
         ];
     }
 
-    public function client(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function client(): BelongsTo
     {
         return $this->belongsTo(User::class, 'client_id');
     }
 
-    public function assignment(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function assignment(): BelongsTo
     {
         return $this->belongsTo(Assignment::class, 'assignment_id');
     }
 
-    public function projectManager(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function projectManager(): BelongsTo
     {
         return $this->belongsTo(User::class, 'project_manager_id');
     }
 
-    public function resolver(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function resolver(): BelongsTo
     {
         return $this->belongsTo(User::class, 'resolved_by');
     }

@@ -12,7 +12,6 @@ use App\Models\Assignment;
 use App\Models\Payment;
 use App\Models\User;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 
 final class ReportsService
 {
@@ -61,6 +60,7 @@ final class ReportsService
                 if (is_bool($val)) {
                     return $val ? 'Yes' : 'No';
                 }
+
                 return (string) ($val ?? '');
             }, array_values($row));
 
@@ -78,8 +78,12 @@ final class ReportsService
     {
         $query = Assignment::query()->with(['client', 'writer', 'projectManager']);
 
-        if ($from) $query->where('created_at', '>=', $from);
-        if ($to) $query->where('created_at', '<=', $to);
+        if ($from) {
+            $query->where('created_at', '>=', $from);
+        }
+        if ($to) {
+            $query->where('created_at', '<=', $to);
+        }
 
         $assignments = $query->orderBy('created_at', 'desc')->get();
 
@@ -94,10 +98,10 @@ final class ReportsService
         }
 
         $headers = [
-            'Assignment ID', 'Title', 'Subject', 'Client Name', 'PM Name', 
-            'Writer Name', 'Status', 'Priority', 'Word Count', 
-            'Client Price (PKR)', 'Writer Cost (PKR)', 'Net Profit (PKR)', 
-            'Deadline', 'Created At'
+            'Assignment ID', 'Title', 'Subject', 'Client Name', 'PM Name',
+            'Writer Name', 'Status', 'Priority', 'Word Count',
+            'Client Price (PKR)', 'Writer Cost (PKR)', 'Net Profit (PKR)',
+            'Deadline', 'Created At',
         ];
 
         $rows = [];
@@ -123,9 +127,9 @@ final class ReportsService
         return [
             'metrics' => [
                 ['label' => 'Total Assignments', 'value' => $totalCount],
-                ['label' => 'Total Value', 'value' => 'PKR ' . number_format($totalRevenue)],
-                ['label' => 'Total Cost', 'value' => 'PKR ' . number_format($totalCost)],
-                ['label' => 'Projected Net Profit', 'value' => 'PKR ' . number_format($totalProfit)],
+                ['label' => 'Total Value', 'value' => 'PKR '.number_format($totalRevenue)],
+                ['label' => 'Total Cost', 'value' => 'PKR '.number_format($totalCost)],
+                ['label' => 'Projected Net Profit', 'value' => 'PKR '.number_format($totalProfit)],
             ],
             'statusSummary' => $statusSummary,
             'headers' => $headers,
@@ -137,8 +141,12 @@ final class ReportsService
     {
         $query = User::role(Role::Client->value)->with(['roles']);
 
-        if ($from) $query->where('created_at', '>=', $from);
-        if ($to) $query->where('created_at', '<=', $to);
+        if ($from) {
+            $query->where('created_at', '>=', $from);
+        }
+        if ($to) {
+            $query->where('created_at', '<=', $to);
+        }
 
         $clients = $query->get();
 
@@ -186,15 +194,15 @@ final class ReportsService
         $totalRevenue = array_sum(array_column($rows, 'total_paid'));
 
         $headers = [
-            'Client ID', 'Client Name', 'Client Email', 'Total Orders', 
-            'Total Paid Inflow (PKR)', 'Active Orders', 'Registered At'
+            'Client ID', 'Client Name', 'Client Email', 'Total Orders',
+            'Total Paid Inflow (PKR)', 'Active Orders', 'Registered At',
         ];
 
         return [
             'metrics' => [
                 ['label' => 'Total Clients', 'value' => $totalClients],
                 ['label' => 'Clients with Active Orders', 'value' => $activeClients],
-                ['label' => 'Total Received Revenue', 'value' => 'PKR ' . number_format($totalRevenue)],
+                ['label' => 'Total Received Revenue', 'value' => 'PKR '.number_format($totalRevenue)],
             ],
             'headers' => $headers,
             'rows' => $rows,
@@ -205,8 +213,12 @@ final class ReportsService
     {
         $query = User::role(Role::Writer->value)->with(['roles']);
 
-        if ($from) $query->where('created_at', '>=', $from);
-        if ($to) $query->where('created_at', '<=', $to);
+        if ($from) {
+            $query->where('created_at', '>=', $from);
+        }
+        if ($to) {
+            $query->where('created_at', '<=', $to);
+        }
 
         $writers = $query->get();
 
@@ -246,15 +258,15 @@ final class ReportsService
         $totalPaid = array_sum(array_column($rows, 'total_earnings'));
 
         $headers = [
-            'Writer ID', 'Writer Name', 'Writer Email', 'Current Workload', 
-            'Completed Orders', 'Total Earnings (PKR)', 'Registered At'
+            'Writer ID', 'Writer Name', 'Writer Email', 'Current Workload',
+            'Completed Orders', 'Total Earnings (PKR)', 'Registered At',
         ];
 
         return [
             'metrics' => [
                 ['label' => 'Total Writers', 'value' => $totalWriters],
                 ['label' => 'Total Completed Assignments', 'value' => $totalCompleted],
-                ['label' => 'Total Writer Earnings Paid', 'value' => 'PKR ' . number_format($totalPaid)],
+                ['label' => 'Total Writer Earnings Paid', 'value' => 'PKR '.number_format($totalPaid)],
             ],
             'headers' => $headers,
             'rows' => $rows,
@@ -265,8 +277,12 @@ final class ReportsService
     {
         $query = User::role(Role::ProjectManager->value)->with(['roles']);
 
-        if ($from) $query->where('created_at', '>=', $from);
-        if ($to) $query->where('created_at', '<=', $to);
+        if ($from) {
+            $query->where('created_at', '>=', $from);
+        }
+        if ($to) {
+            $query->where('created_at', '<=', $to);
+        }
 
         $pms = $query->get();
 
@@ -300,8 +316,8 @@ final class ReportsService
         $totalManaged = array_sum(array_column($rows, 'total_managed'));
 
         $headers = [
-            'PM ID', 'PM Name', 'PM Email', 'Managed Orders', 
-            'Completed Orders', 'Active Workload', 'Registered At'
+            'PM ID', 'PM Name', 'PM Email', 'Managed Orders',
+            'Completed Orders', 'Active Workload', 'Registered At',
         ];
 
         return [
@@ -323,8 +339,12 @@ final class ReportsService
                 PaymentType::Balance->value,
             ]);
 
-        if ($from) $query->where('created_at', '>=', $from);
-        if ($to) $query->where('created_at', '<=', $to);
+        if ($from) {
+            $query->where('created_at', '>=', $from);
+        }
+        if ($to) {
+            $query->where('created_at', '<=', $to);
+        }
 
         $payments = $query->orderBy('created_at', 'desc')->get();
 
@@ -333,8 +353,8 @@ final class ReportsService
         $pendingSum = $payments->where('status', PaymentStatus::Pending)->sum('amount');
 
         $headers = [
-            'Transaction ID', 'Date', 'Client Name', 'Payment Method', 
-            'Payment Type', 'Amount (PKR)', 'Status', 'Notes'
+            'Transaction ID', 'Date', 'Client Name', 'Payment Method',
+            'Payment Type', 'Amount (PKR)', 'Status', 'Notes',
         ];
 
         $rows = [];
@@ -354,8 +374,8 @@ final class ReportsService
         return [
             'metrics' => [
                 ['label' => 'Total Revenue Payments', 'value' => $totalCount],
-                ['label' => 'Verified Inflow Revenue', 'value' => 'PKR ' . number_format($verifiedSum)],
-                ['label' => 'Pending Verification Inflow', 'value' => 'PKR ' . number_format($pendingSum)],
+                ['label' => 'Verified Inflow Revenue', 'value' => 'PKR '.number_format($verifiedSum)],
+                ['label' => 'Pending Verification Inflow', 'value' => 'PKR '.number_format($pendingSum)],
             ],
             'headers' => $headers,
             'rows' => $rows,
@@ -370,8 +390,12 @@ final class ReportsService
                 PaymentType::Expense->value,
             ]);
 
-        if ($from) $query->where('created_at', '>=', $from);
-        if ($to) $query->where('created_at', '<=', $to);
+        if ($from) {
+            $query->where('created_at', '>=', $from);
+        }
+        if ($to) {
+            $query->where('created_at', '<=', $to);
+        }
 
         $payments = $query->orderBy('created_at', 'desc')->get();
 
@@ -383,8 +407,8 @@ final class ReportsService
             ->where('status', PaymentStatus::Verified)->sum('amount');
 
         $headers = [
-            'Transaction ID', 'Date', 'Payee/Vendor', 'Payment Method', 
-            'Payment Type', 'Amount (PKR)', 'Status', 'Notes'
+            'Transaction ID', 'Date', 'Payee/Vendor', 'Payment Method',
+            'Payment Type', 'Amount (PKR)', 'Status', 'Notes',
         ];
 
         $rows = [];
@@ -404,9 +428,9 @@ final class ReportsService
         return [
             'metrics' => [
                 ['label' => 'Total Outflow Payments', 'value' => $totalCount],
-                ['label' => 'Verified Outflow Cost', 'value' => 'PKR ' . number_format($verifiedSum)],
-                ['label' => 'Writer Payouts (Verified)', 'value' => 'PKR ' . number_format($payoutsSum)],
-                ['label' => 'General Expenses (Verified)', 'value' => 'PKR ' . number_format($expensesSum)],
+                ['label' => 'Verified Outflow Cost', 'value' => 'PKR '.number_format($verifiedSum)],
+                ['label' => 'Writer Payouts (Verified)', 'value' => 'PKR '.number_format($payoutsSum)],
+                ['label' => 'General Expenses (Verified)', 'value' => 'PKR '.number_format($expensesSum)],
             ],
             'headers' => $headers,
             'rows' => $rows,
@@ -417,8 +441,12 @@ final class ReportsService
     {
         $query = User::role(Role::Writer->value)->with(['roles']);
 
-        if ($from) $query->where('created_at', '>=', $from);
-        if ($to) $query->where('created_at', '<=', $to);
+        if ($from) {
+            $query->where('created_at', '>=', $from);
+        }
+        if ($to) {
+            $query->where('created_at', '<=', $to);
+        }
 
         $writers = $query->get();
 
@@ -467,8 +495,8 @@ final class ReportsService
         $overallOnTimeRate = $overallCompleted > 0 ? round(($overallOnTime / $overallCompleted) * 100, 1) : 100;
 
         $headers = [
-            'Writer Name', 'Writer Email', 'Total Assignments', 'Workload (Active)', 
-            'Completed', 'Completed On Time', 'Completed Late', 'On-Time Rate (%)'
+            'Writer Name', 'Writer Email', 'Total Assignments', 'Workload (Active)',
+            'Completed', 'Completed On Time', 'Completed Late', 'On-Time Rate (%)',
         ];
 
         return [

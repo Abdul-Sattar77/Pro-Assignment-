@@ -83,15 +83,15 @@ final class FileRepository extends BaseRepository implements FileRepositoryInter
             if ($typeGroup === 'document') {
                 $query->where(function ($q): void {
                     $q->where('mime_type', 'like', 'application/%')
-                      ->orWhere('mime_type', 'like', 'text/%');
+                        ->orWhere('mime_type', 'like', 'text/%');
                 });
             } elseif ($typeGroup === 'image') {
                 $query->where('mime_type', 'like', 'image/%');
             } elseif ($typeGroup === 'archive') {
                 $query->where(function ($q): void {
                     $q->where('mime_type', 'like', '%zip%')
-                      ->orWhere('mime_type', 'like', '%rar%')
-                      ->orWhere('mime_type', 'like', '%tar%');
+                        ->orWhere('mime_type', 'like', '%rar%')
+                        ->orWhere('mime_type', 'like', '%tar%');
                 });
             }
         }
@@ -100,8 +100,8 @@ final class FileRepository extends BaseRepository implements FileRepositoryInter
         $search = $filters['search'] ?? null;
         if (is_string($search) && $search !== '') {
             $query->where(function ($q) use ($search): void {
-                $q->where('original_name', 'ilike', '%' . $search . '%')
-                  ->orWhere('filename', 'ilike', '%' . $search . '%');
+                $q->where('original_name', 'ilike', '%'.$search.'%')
+                    ->orWhere('filename', 'ilike', '%'.$search.'%');
             });
         }
 

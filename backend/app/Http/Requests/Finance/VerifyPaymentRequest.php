@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Requests\Finance;
 
 use App\Enums\PaymentStatus;
+use App\Models\Payment;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 

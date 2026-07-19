@@ -6,6 +6,7 @@ namespace App\Services\Chat;
 
 use App\Enums\ChatMessageType;
 use App\Enums\Role;
+use App\Events\ChatMessageSent;
 use App\Exceptions\DomainRuleException;
 use App\Models\ChatConversation;
 use App\Models\ChatMessage;
@@ -190,7 +191,19 @@ final class ChatService
                 'last_read_at' => now(),
             ]);
 
-            return $message->load('sender');
+            $message->setRelation('sender', $sender);
+            $message->setRelation('conversation', $conversation);
+
+            // Real-time: push to the other participant(s). Never let a
+            // broadcast failure (e.g. Reverb server down) break sending —
+            // polling is the fallback.
+            try {
+                broadcast(new ChatMessageSent($message))->toOthers();
+            } catch (\Throwable $e) {
+                report($e);
+            }
+
+            return $message;
         });
     }
 

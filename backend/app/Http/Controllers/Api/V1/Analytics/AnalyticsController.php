@@ -13,7 +13,7 @@ use Illuminate\Http\Request;
 final class AnalyticsController extends Controller
 {
     public function __construct(
-        private readonly AnalyticsService $service
+        private readonly AnalyticsService $service,
     ) {}
 
     public function index(Request $request): JsonResponse

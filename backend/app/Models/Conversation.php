@@ -13,11 +13,11 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 
 /**
- * @property int         $id
- * @property string      $uuid
- * @property int         $assignment_id
- * @property string      $type
- * @property int|null    $created_by
+ * @property int $id
+ * @property string $uuid
+ * @property int $assignment_id
+ * @property string $type
+ * @property int|null $created_by
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */

@@ -23,6 +23,7 @@ final class ComplaintRepository implements ComplaintRepositoryInterface
     public function update(Complaint $complaint, array $data): Complaint
     {
         $complaint->update($data);
+
         return $complaint;
     }
 
@@ -44,10 +45,10 @@ final class ComplaintRepository implements ComplaintRepositoryInterface
         }
 
         if (isset($filters['search']) && $filters['search'] !== '') {
-            $search = '%' . $filters['search'] . '%';
+            $search = '%'.$filters['search'].'%';
             $query->where(function ($q) use ($search): void {
                 $q->where('subject', 'like', $search)
-                  ->orWhere('description', 'like', $search);
+                    ->orWhere('description', 'like', $search);
             });
         }
 

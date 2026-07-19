@@ -24,7 +24,6 @@ interface PaymentRepositoryInterface extends RepositoryInterface
      * Paginated, filtered, sorted listing scoped by actor.
      *
      * @param  array{status?: string|null, payment_type?: string|null, assignment_id?: int|null, user_id?: int|null}  $filters
-     * @param  string  $sort
      * @return LengthAwarePaginator<int, Payment>
      */
     public function paginateFor(User $actor, array $filters, string $sort, int $perPage): LengthAwarePaginator;

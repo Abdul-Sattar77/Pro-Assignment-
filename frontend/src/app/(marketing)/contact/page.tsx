@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { ContactContent, PageHero } from "@/features/marketing";
 
 export const metadata: Metadata = {
-  title: "Contact — Prossignment",
+  title: "Contact",
+  alternates: { canonical: "/contact" },
   description:
     "Get in touch with Prossignment by email or WhatsApp, or send us a message. Support available 24/7 while you study.",
 };

@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { AboutContent, Cta, PageHero, Stats } from "@/features/marketing";
 
 export const metadata: Metadata = {
-  title: "About — Prossignment",
+  title: "About",
+  alternates: { canonical: "/about" },
   description:
     "Prossignment is an academic writing and assignment-support service that pairs students with subject-matter experts and manages every assignment end to end.",
 };
