@@ -8,7 +8,6 @@ namespace App\Enums;
 enum AssignmentPriority: string
 {
     case Standard = 'standard';
-    case Normal = 'normal';
     case Urgent = 'urgent';
     case Critical = 'critical';
 
@@ -16,7 +15,6 @@ enum AssignmentPriority: string
     {
         return match ($this) {
             self::Standard => 'Standard',
-            self::Normal => 'Normal',
             self::Urgent => 'Urgent',
             self::Critical => 'Critical',
         };
