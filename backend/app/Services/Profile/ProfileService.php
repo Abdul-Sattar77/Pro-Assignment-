@@ -17,13 +17,13 @@ final class ProfileService
      * a writer saving just their availability never wipes their university, and
      * the full profile form keeps working unchanged.
      *
-     * @param  array{name?: string, email?: string, university?: string|null, department?: string|null, study_year?: string|null, availability?: string, expertise?: string|null}  $data
+     * @param  array{name?: string, email?: string, university?: string|null, department?: string|null, study_year?: string|null, availability?: string, expertise?: string|null, writer_profile?: array<string, mixed>|null}  $data
      */
     public function updateProfile(User $user, array $data): User
     {
         $fields = [
             'name', 'email', 'university', 'department', 'study_year',
-            'availability', 'expertise',
+            'availability', 'expertise', 'writer_profile',
         ];
 
         $update = array_intersect_key($data, array_flip($fields));

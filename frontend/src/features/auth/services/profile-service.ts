@@ -1,5 +1,5 @@
 import { apiClient, ensureCsrfCookie } from "@/lib/api-client";
-import type { AuthUser } from "../types";
+import type { AuthUser, WriterProfile } from "../types";
 
 interface Envelope<T> {
   data: T;
@@ -13,6 +13,7 @@ export interface UpdateProfilePayload {
   studyYear?: string;
   availability?: "available" | "busy" | "away";
   expertise?: string | null;
+  writerProfile?: WriterProfile | null;
 }
 
 export interface ChangePasswordPayload {
@@ -41,6 +42,8 @@ export const profileService = {
       body.availability = payload.availability;
     if (payload.expertise !== undefined)
       body.expertise = payload.expertise || null;
+    if (payload.writerProfile !== undefined)
+      body.writer_profile = payload.writerProfile;
 
     const { data } = await apiClient.patch<Envelope<AuthUser>>(
       "/profile",

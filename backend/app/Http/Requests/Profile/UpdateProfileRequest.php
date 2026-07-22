@@ -33,6 +33,15 @@ final class UpdateProfileRequest extends FormRequest
             // Writer self-service fields (mirror the values the admin panel uses).
             'availability' => ['sometimes', 'string', 'in:available,busy,away'],
             'expertise' => ['sometimes', 'nullable', 'string', 'max:5000'],
+            // Structured writer profile (self-service; separate from `expertise`).
+            'writer_profile' => ['sometimes', 'nullable', 'array'],
+            'writer_profile.subjects' => ['nullable', 'string', 'max:500'],
+            'writer_profile.universities' => ['nullable', 'string', 'max:500'],
+            'writer_profile.codingLanguages' => ['nullable', 'string', 'max:500'],
+            'writer_profile.dissertationExperience' => ['nullable', 'boolean'],
+            'writer_profile.urgentCapable' => ['nullable', 'boolean'],
+            'writer_profile.maxWordCount' => ['nullable', 'integer', 'min:0', 'max:1000000'],
+            'writer_profile.maxWorkload' => ['nullable', 'integer', 'min:0', 'max:1000'],
         ];
     }
 }
