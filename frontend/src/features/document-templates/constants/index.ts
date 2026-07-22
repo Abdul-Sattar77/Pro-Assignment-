@@ -6,6 +6,10 @@ export const TEMPLATES_QUERY_KEYS = {
 };
 
 export const TEMPLATE_CATEGORIES = [
+  { value: "assignment_instructions", label: "Assignment Instructions" },
+  { value: "price_quotations", label: "Price Quotations" },
+  { value: "payment_instructions", label: "Payment Instructions" },
+  { value: "client_messages", label: "Client Messages" },
   { value: "outline", label: "Outline" },
   { value: "guideline", label: "Guideline / Criteria" },
   { value: "contract", label: "Writer Contract" },

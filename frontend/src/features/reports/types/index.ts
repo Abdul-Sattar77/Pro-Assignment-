@@ -9,6 +9,7 @@ export const REPORT_TYPE = {
   REVENUE: "revenue",
   EXPENSES: "expenses",
   PERFORMANCE: "performance",
+  PROFIT: "profit",
 } as const;
 
 export type ReportType = (typeof REPORT_TYPE)[keyof typeof REPORT_TYPE];

@@ -133,7 +133,7 @@ export function RolesList() {
                       {isCore ? (
                         <Badge
                           variant="secondary"
-                          className="dark:bg-slate-850 bg-slate-200 text-slate-700 dark:text-slate-300"
+                          className="bg-slate-150 text-slate-700 dark:bg-slate-800/85 dark:text-slate-300 border border-slate-200/40 dark:border-slate-700/40"
                         >
                           System Locked
                         </Badge>

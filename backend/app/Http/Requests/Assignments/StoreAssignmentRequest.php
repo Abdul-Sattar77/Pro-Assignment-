@@ -18,6 +18,17 @@ final class StoreAssignmentRequest extends FormRequest
         return $this->user()?->can('create', Assignment::class) ?? false;
     }
 
+    protected function prepareForValidation(): void
+    {
+        $pm = $this->input('projectManagerId') ?? $this->input('project_manager_id');
+        if ($pm === 'unassigned' || $pm === '') {
+            $this->merge([
+                'projectManagerId' => null,
+                'project_manager_id' => null,
+            ]);
+        }
+    }
+
     /**
      * @return array<string, array<int, mixed>>
      */
@@ -42,6 +53,8 @@ final class StoreAssignmentRequest extends FormRequest
 
             // Additional information
             'description' => ['required', 'string', 'max:10000'],
+            'projectManagerId' => ['nullable', 'uuid', Rule::exists('users', 'uuid')],
+            'project_manager_id' => ['nullable', 'uuid', Rule::exists('users', 'uuid')],
         ];
     }
 

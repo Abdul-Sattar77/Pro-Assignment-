@@ -180,6 +180,8 @@ export interface CreateAssignmentPayload {
   contact_whatsapp?: string | null;
   description: string;
   deadline: string;
+  projectManagerId?: string | null;
+  project_manager_id?: string | null;
 }
 
 export type FileCategory = "brief" | "submission" | "general";

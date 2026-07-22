@@ -65,9 +65,38 @@ final class InvoiceService
             throw new DomainRuleException('There is no payment awaiting verification.', 'NOTHING_TO_VERIFY', 409);
         }
 
-        $invoice->update(['status' => InvoiceStatus::Paid, 'paid_at' => now()]);
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($invoice) {
+            $totalPaid = \App\Models\Payment::query()
+                ->where('invoice_id', $invoice->id)
+                ->where('status', \App\Enums\PaymentStatus::Verified->value)
+                ->whereIn('payment_type', [
+                    \App\Enums\PaymentType::Advance->value,
+                    \App\Enums\PaymentType::Partial->value,
+                    \App\Enums\PaymentType::Balance->value,
+                ])
+                ->sum('amount');
+            $paidAmountCents = (int) round($totalPaid * 100);
+            $dueAmountCents = max(0, $invoice->amount_cents - $paidAmountCents);
 
-        return $invoice->refresh();
+            if ($dueAmountCents > 0) {
+                \App\Models\Payment::query()->create([
+                    'invoice_id' => $invoice->id,
+                    'assignment_id' => $invoice->assignment_id,
+                    'user_id' => $invoice->client_id,
+                    'amount' => $dueAmountCents / 100,
+                    'payment_method' => 'bank_transfer',
+                    'payment_type' => \App\Enums\PaymentType::Balance->value,
+                    'status' => \App\Enums\PaymentStatus::Verified->value,
+                    'verified_at' => now(),
+                    'verified_by' => auth()->id() ?? $invoice->client_id,
+                    'notes' => 'Auto-generated on invoice verification reference: ' . $invoice->payment_reference,
+                ]);
+            }
+
+            $invoice->update(['status' => InvoiceStatus::Paid, 'paid_at' => now()]);
+
+            return $invoice->refresh();
+        });
     }
 
     public function cancel(Invoice $invoice): Invoice

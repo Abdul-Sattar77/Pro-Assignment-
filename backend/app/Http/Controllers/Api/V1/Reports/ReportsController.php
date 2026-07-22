@@ -24,7 +24,7 @@ final class ReportsController extends Controller
         }
 
         $request->validate([
-            'type' => ['required', 'string', 'in:assignments,clients,writers,pms,revenue,expenses,performance'],
+            'type' => ['required', 'string', 'in:assignments,clients,writers,pms,revenue,expenses,performance,profit'],
             'from' => ['nullable', 'date'],
             'to' => ['nullable', 'date'],
         ]);
@@ -45,7 +45,7 @@ final class ReportsController extends Controller
         }
 
         $request->validate([
-            'type' => ['required', 'string', 'in:assignments,clients,writers,pms,revenue,expenses,performance'],
+            'type' => ['required', 'string', 'in:assignments,clients,writers,pms,revenue,expenses,performance,profit'],
             'from' => ['nullable', 'date'],
             'to' => ['nullable', 'date'],
         ]);

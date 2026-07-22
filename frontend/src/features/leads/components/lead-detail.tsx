@@ -14,6 +14,7 @@ import { useLead, useDeleteLead } from "../hooks/use-leads";
 import { StatusBadge } from "./status-badge";
 import { SourceBadge } from "./source-badge";
 import { EditLeadDialog } from "./edit-lead-dialog";
+import { QuoteHistory } from "./quote-history";
 import { LEAD_STATUS } from "../types";
 
 function Meta({ label, value }: { label: string; value: React.ReactNode }) {
@@ -179,29 +180,33 @@ export function LeadDetail({ id }: { id: string }) {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base font-semibold">
-              System Info
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4 text-sm">
-            <div>
-              <p className="text-muted-foreground text-xs">Lead ID (UUID)</p>
-              <p className="mt-0.5 font-mono text-xs break-all select-all">
-                {lead.id}
-              </p>
-            </div>
-            <div>
-              <p className="text-muted-foreground text-xs">Last Updated</p>
-              <p className="mt-0.5 text-xs">
-                {lead.updatedAt
-                  ? format(new Date(lead.updatedAt), "MMM d, yyyy HH:mm")
-                  : "—"}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="space-y-6">
+          <QuoteHistory leadId={lead.id} />
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base font-semibold">
+                System Info
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 text-sm">
+              <div>
+                <p className="text-muted-foreground text-xs">Lead ID (UUID)</p>
+                <p className="mt-0.5 font-mono text-xs break-all select-all">
+                  {lead.id}
+                </p>
+              </div>
+              <div>
+                <p className="text-muted-foreground text-xs">Last Updated</p>
+                <p className="mt-0.5 text-xs">
+                  {lead.updatedAt
+                    ? format(new Date(lead.updatedAt), "MMM d, yyyy HH:mm")
+                    : "—"}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
       {canManage && editOpen && (

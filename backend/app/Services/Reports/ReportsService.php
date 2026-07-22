@@ -31,6 +31,7 @@ final class ReportsService
             'revenue' => $this->revenueReport($startDate, $endDate),
             'expenses' => $this->expensesReport($startDate, $endDate),
             'performance' => $this->performanceReport($startDate, $endDate),
+            'profit' => $this->profitReport($startDate, $endDate),
             default => throw new \InvalidArgumentException("Invalid report type: {$type}"),
         };
     }
@@ -504,6 +505,61 @@ final class ReportsService
                 ['label' => 'Total Writers Evaluated', 'value' => $totalWriters],
                 ['label' => 'Total Assignments Completed', 'value' => $overallCompleted],
                 ['label' => 'Overall On-Time Completion Rate', 'value' => "{$overallOnTimeRate}%"],
+            ],
+            'headers' => $headers,
+            'rows' => $rows,
+        ];
+    }
+
+    private function profitReport(?Carbon $from, ?Carbon $to): array
+    {
+        $query = Assignment::query()->with(['client', 'writer', 'projectManager']);
+
+        if ($from) {
+            $query->where('created_at', '>=', $from);
+        }
+        if ($to) {
+            $query->where('created_at', '<=', $to);
+        }
+
+        $assignments = $query->orderBy('created_at', 'desc')->get();
+
+        $totalRevenue = $assignments->sum(fn ($a) => (float) $a->client_price - (float) $a->discount);
+        $totalCost = $assignments->sum(fn ($a) => (float) $a->writer_cost);
+        $totalProfit = $assignments->sum(fn ($a) => (float) $a->net_profit);
+        $averageMargin = $totalRevenue > 0 ? round(($totalProfit / $totalRevenue) * 100, 2) : 0.0;
+
+        $headers = [
+            'Assignment ID', 'Title', 'Client Name', 'Writer Name',
+            'Client Price (PKR)', 'Discount (PKR)', 'Writer Cost (PKR)',
+            'Net Profit (PKR)', 'Profit Margin (%)', 'Status', 'Created At',
+        ];
+
+        $rows = [];
+        foreach ($assignments as $a) {
+            $revenue = (float) $a->client_price - (float) $a->discount;
+            $margin = $revenue > 0 ? round(((float) $a->net_profit / $revenue) * 100, 2) : 0.0;
+            $rows[] = [
+                'id' => $a->uuid,
+                'title' => $a->title,
+                'client_name' => $a->client?->name,
+                'writer_name' => $a->writer?->name,
+                'client_price' => (float) $a->client_price,
+                'discount' => (float) $a->discount,
+                'writer_cost' => (float) $a->writer_cost,
+                'net_profit' => (float) $a->net_profit,
+                'profit_margin' => $margin,
+                'status' => $a->status->label(),
+                'created_at' => $a->created_at?->toIso8601String(),
+            ];
+        }
+
+        return [
+            'metrics' => [
+                ['label' => 'Total Gross Revenue', 'value' => 'PKR '.number_format($assignments->sum('client_price'))],
+                ['label' => 'Total Cost & Outflows', 'value' => 'PKR '.number_format($totalCost)],
+                ['label' => 'Total Net Profit', 'value' => 'PKR '.number_format($totalProfit)],
+                ['label' => 'Average Profit Margin', 'value' => $averageMargin.'%'],
             ],
             'headers' => $headers,
             'rows' => $rows,

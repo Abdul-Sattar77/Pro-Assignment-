@@ -22,6 +22,8 @@ final class UpdateComplaintRequest extends FormRequest
         return [
             'status' => ['required', 'string', Rule::in(['pending', 'in_progress', 'resolved', 'dismissed'])],
             'resolution' => ['required_if:status,resolved,dismissed', 'nullable', 'string', 'max:10000'],
+            'projectManagerId' => ['nullable', 'string', 'exists:users,uuid'],
+            'writerId' => ['nullable', 'string', 'exists:users,uuid'],
         ];
     }
 }

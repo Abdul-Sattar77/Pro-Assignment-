@@ -79,3 +79,28 @@ export function useDeleteLead() {
     onError: (error) => toast.error(error.message || "Failed to delete lead."),
   });
 }
+
+export function useLeadQuotes(leadId: string) {
+  return useQuery<import("../types").LeadQuote[], ApiError>({
+    queryKey: [...LEADS_QUERY_KEYS.detail(leadId), "quotes"],
+    queryFn: () => leadsService.listQuotes(leadId),
+  });
+}
+
+export function useCreateLeadQuote(leadId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation<import("../types").LeadQuote, ApiError, import("../types").CreateLeadQuotePayload>({
+    mutationFn: (payload) => leadsService.createQuote(leadId, payload),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: [...LEADS_QUERY_KEYS.detail(leadId), "quotes"],
+      });
+      void queryClient.invalidateQueries({
+        queryKey: LEADS_QUERY_KEYS.all,
+      });
+      toast.success("Quote added to history.");
+    },
+    onError: (error) => toast.error(error.message || "Failed to add quote."),
+  });
+}

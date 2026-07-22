@@ -46,7 +46,7 @@ final class AssignmentResource extends JsonResource
             'contactWhatsapp' => $this->contact_whatsapp,
             'description' => $this->description,
             'status' => $this->status->value,
-            'statusLabel' => $this->status->label(),
+            'statusLabel' => $this->businessStageLabel(),
             'deadline' => $this->deadline->toIso8601String(),
             'client' => $this->whenLoaded('client', fn () => [
                 'id' => $this->client?->uuid,
@@ -72,5 +72,25 @@ final class AssignmentResource extends JsonResource
                 : app(AssignmentService::class)->allowedActionsFor($viewer, $this->resource),
             'createdAt' => $this->created_at?->toIso8601String(),
         ];
+    }
+
+    private function businessStageLabel(): string
+    {
+        if ($this->status === \App\Enums\AssignmentStatus::PendingAssignment) {
+            return $this->project_manager_id === null
+                ? 'Awaiting Project Manager'
+                : 'Awaiting Writer';
+        }
+
+        return match ($this->status) {
+            \App\Enums\AssignmentStatus::Assigned => 'Writer Assigned',
+            \App\Enums\AssignmentStatus::InProgress => 'In Progress',
+            \App\Enums\AssignmentStatus::Submitted => 'PM Review',
+            \App\Enums\AssignmentStatus::Delivered => 'Delivered to Client',
+            \App\Enums\AssignmentStatus::RevisionRequested => 'Revision Requested',
+            \App\Enums\AssignmentStatus::Completed => 'Completed',
+            \App\Enums\AssignmentStatus::Cancelled => 'Cancelled',
+            default => $this->status->label(),
+        };
     }
 }

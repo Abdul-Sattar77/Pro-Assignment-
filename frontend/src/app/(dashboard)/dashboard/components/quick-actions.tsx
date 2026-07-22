@@ -64,9 +64,10 @@ export function QuickActions() {
         {ACTIONS.map((action) => {
           const Icon = action.icon;
           return (
-            <div
+            <Link
               key={action.title}
-              className="border-border hover:bg-sidebar-accent/50 flex flex-col justify-between rounded-xl border p-5 transition-colors"
+              href={action.href}
+              className="border-border hover:bg-sidebar-accent/50 focus-visible:ring-ring focus-visible:outline-hidden flex flex-col justify-between rounded-xl border p-5 transition-all hover:shadow-xs focus-visible:ring-2"
             >
               <div className="space-y-2">
                 <div className="bg-primary/10 text-primary flex size-9 items-center justify-center rounded-lg">
@@ -80,17 +81,15 @@ export function QuickActions() {
                 </p>
               </div>
               <Button
-                asChild
                 variant="outline"
                 size="sm"
-                className="group mt-4 w-full"
+                className="group mt-4 w-full pointer-events-none"
+                tabIndex={-1}
               >
-                <Link href={action.href}>
-                  {action.cta}
-                  <ArrowRight className="ml-1 size-3.5 transition-transform group-hover:translate-x-0.5" />
-                </Link>
+                <span>{action.cta}</span>
+                <ArrowRight className="ml-1 size-3.5 transition-transform group-hover:translate-x-0.5" />
               </Button>
-            </div>
+            </Link>
           );
         })}
       </CardContent>

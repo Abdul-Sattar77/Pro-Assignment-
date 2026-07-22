@@ -64,7 +64,12 @@ export function ReportViewer() {
         headerLower.includes("price") ||
         headerLower.includes("cost") ||
         headerLower.includes("earnings") ||
-        headerLower.includes("paid")) &&
+        headerLower.includes("paid") ||
+        headerLower.includes("profit") ||
+        headerLower.includes("discount") ||
+        headerLower.includes("revenue") ||
+        headerLower.includes("inflow") ||
+        headerLower.includes("outflow")) &&
       typeof val === "number"
     ) {
       return `PKR ${val.toLocaleString()}`;
@@ -82,7 +87,10 @@ export function ReportViewer() {
       }
     }
 
-    if (headerLower.includes("rate") && typeof val === "number") {
+    if (
+      (headerLower.includes("rate") || headerLower.includes("margin")) &&
+      typeof val === "number"
+    ) {
       return `${val}%`;
     }
 
@@ -178,7 +186,7 @@ export function ReportViewer() {
               />
             </div>
 
-            <div className="flex gap-2 sm:ml-auto">
+            <div className="flex flex-wrap gap-2 sm:ml-auto">
               <Button
                 variant="outline"
                 className="gap-2"
@@ -188,7 +196,9 @@ export function ReportViewer() {
                 <Printer className="h-4 w-4" />
                 Print / PDF
               </Button>
+
               <Button
+                variant="outline"
                 className="gap-2"
                 onClick={handleExport}
                 disabled={isLoading || !data || exportReport.isPending}
@@ -199,6 +209,32 @@ export function ReportViewer() {
                   <Download className="h-4 w-4" />
                 )}
                 Export CSV
+              </Button>
+
+              <Button
+                className="gap-2"
+                onClick={() => {
+                  if (!data) return;
+                  const keys = Object.keys(data.rows[0] || {});
+                  const csvRows = [
+                    keys.join("\t"),
+                    ...data.rows.map((row: any) =>
+                      keys.map((k) => `"${row[k] ?? ""}"`).join("\t")
+                    ),
+                  ].join("\n");
+                  const blob = new Blob([csvRows], {
+                    type: "application/vnd.ms-excel;charset=utf-8",
+                  });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = `${type}-report-${Date.now()}.xls`;
+                  a.click();
+                }}
+                disabled={isLoading || !data}
+              >
+                <Download className="h-4 w-4" />
+                Export Excel
               </Button>
             </div>
           </div>

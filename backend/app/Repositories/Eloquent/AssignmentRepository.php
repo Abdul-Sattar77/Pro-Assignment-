@@ -31,6 +31,10 @@ final class AssignmentRepository extends BaseRepository implements AssignmentRep
 
     public function findByUuid(string $uuid): ?Assignment
     {
+        if ($uuid === 'unassigned' || !\Illuminate\Support\Str::isUuid($uuid)) {
+            return null;
+        }
+
         return Assignment::query()->where('uuid', $uuid)->first();
     }
 
@@ -88,7 +92,9 @@ final class AssignmentRepository extends BaseRepository implements AssignmentRep
 
         // PM filter (by internal id — controller resolves uuid → id)
         $pmId = $filters['project_manager_id'] ?? null;
-        if (is_int($pmId)) {
+        if ($pmId === 'unassigned') {
+            $query->whereNull('project_manager_id');
+        } elseif (is_int($pmId)) {
             $query->where('project_manager_id', $pmId);
         }
 

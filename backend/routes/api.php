@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\V1\Finance\FinanceController;
 use App\Http\Controllers\Api\V1\Finance\InvoiceController;
 use App\Http\Controllers\Api\V1\Finance\PaymentController;
 use App\Http\Controllers\Api\V1\Leads\LeadController;
+use App\Http\Controllers\Api\V1\Leads\LeadQuoteController;
 use App\Http\Controllers\Api\V1\Messages\MessageController;
 use App\Http\Controllers\Api\V1\Notifications\NotificationController;
 use App\Http\Controllers\Api\V1\Profile\ProfileController;
@@ -99,6 +100,8 @@ Route::prefix('v1')->group(function (): void {
 
     // ---- Lead Management ----
     Route::middleware('auth:sanctum')->group(function (): void {
+        Route::get('leads/{lead}/quotes', [LeadQuoteController::class, 'index'])->name('leads.quotes.index');
+        Route::post('leads/{lead}/quotes', [LeadQuoteController::class, 'store'])->name('leads.quotes.store');
         Route::apiResource('leads', LeadController::class)
             ->parameters(['leads' => 'lead'])
             ->names('leads');

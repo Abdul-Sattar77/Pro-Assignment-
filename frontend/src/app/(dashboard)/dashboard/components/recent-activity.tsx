@@ -85,9 +85,12 @@ export function RecentActivity() {
                 </div>
                 <div className="flex flex-col gap-0.5">
                   <p className="text-foreground text-sm leading-relaxed font-medium">
+                    <span className="text-primary font-semibold capitalize mr-1.5">
+                      [{act.type.replace("_", " ")}]
+                    </span>
                     {act.message}
                   </p>
-                  <span className="text-muted-foreground font-mono text-xs">
+                  <span className="text-muted-foreground font-mono text-[10px] uppercase tracking-wider">
                     {act.timestamp}
                   </span>
                 </div>
@@ -96,7 +99,7 @@ export function RecentActivity() {
           })}
           {activities.length === 0 && (
             <p className="text-muted-foreground py-6 text-center text-sm">
-              No recent activity recorded.
+              No data available yet.
             </p>
           )}
         </div>

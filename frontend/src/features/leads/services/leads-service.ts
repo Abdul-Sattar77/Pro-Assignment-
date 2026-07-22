@@ -1,8 +1,10 @@
 import { apiClient } from "@/lib/api-client";
 import type {
   CreateLeadPayload,
+  CreateLeadQuotePayload,
   Lead,
   LeadFilters,
+  LeadQuote,
   LeadsPage,
   PaginationMeta,
   UpdateLeadPayload,
@@ -53,5 +55,23 @@ export const leadsService = {
 
   async delete(id: string): Promise<void> {
     await apiClient.delete(`/leads/${id}`);
+  },
+
+  async listQuotes(leadId: string): Promise<LeadQuote[]> {
+    const { data } = await apiClient.get<{ data: LeadQuote[] }>(
+      `/leads/${leadId}/quotes`,
+    );
+    return data.data;
+  },
+
+  async createQuote(
+    leadId: string,
+    payload: CreateLeadQuotePayload,
+  ): Promise<LeadQuote> {
+    const { data } = await apiClient.post<{ data: LeadQuote }>(
+      `/leads/${leadId}/quotes`,
+      payload,
+    );
+    return data.data;
   },
 };

@@ -202,7 +202,7 @@ final class FinanceService
             ->sum('amount');
 
         $newStatus = InvoiceStatus::Pending;
-        if ($totalPaid >= $invoice->amount) {
+        if ((int) round($totalPaid * 100) >= $invoice->amount_cents) {
             $newStatus = InvoiceStatus::Paid;
         }
 

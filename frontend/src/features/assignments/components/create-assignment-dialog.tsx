@@ -29,11 +29,10 @@ const createAssignmentSchema = z.object({
     (val) => {
       if (!val) return false;
       const d = new Date(val);
-      // Must be at least 2 hours in the future
       return (
         !isNaN(d.getTime()) &&
         d.getTime() > Date.now() + 2 * 60 * 60 * 1000 - 60000
-      ); // 1 min buffer
+      );
     },
     {
       message: "Deadline must be at least 2 hours in the future.",
@@ -142,8 +141,8 @@ export function CreateAssignmentDialog({
             </Label>
             <textarea
               id="create-description"
-              rows={5}
-              placeholder="Provide a detailed brief. Mention key topics, structure guidelines, formatting style (e.g. APA, Harvard), and any specific research resources to utilize..."
+              rows={4}
+              placeholder="Provide a detailed brief. Mention key topics, structure guidelines, formatting style (e.g. APA, Harvard)..."
               className="border-input focus-visible:ring-ring/50 w-full rounded-md border bg-transparent px-3 py-2 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-2"
               aria-invalid={Boolean(errors.description)}
               {...form.register("description")}

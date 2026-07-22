@@ -29,11 +29,21 @@ use Illuminate\Support\Carbon;
     'word_count', 'referencing_style', 'priority', 'contact_phone',
     'contact_whatsapp', 'description', 'deadline', 'status', 'client_id',
     'project_manager_id', 'writer_id',
+    'client_price', 'writer_cost', 'discount', 'net_profit',
 ])]
 class Assignment extends Model
 {
     use HasUuid;
     use SoftDeletes;
+
+    protected static function booted(): void
+    {
+        static::saving(function (Assignment $assignment) {
+            $assignment->net_profit = ((float) ($assignment->client_price ?? 0.0))
+                - ((float) ($assignment->writer_cost ?? 0.0))
+                - ((float) ($assignment->discount ?? 0.0));
+        });
+    }
 
     /**
      * @return array<string, string>

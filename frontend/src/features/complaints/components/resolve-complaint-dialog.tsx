@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -21,16 +22,32 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useResolveComplaint } from "../hooks/use-complaints";
+import { useResolveComplaint, useComplaint } from "../hooks/use-complaints";
+import { useUsers } from "@/features/users/hooks/use-users";
 import { applyFieldErrors } from "@/lib/apply-field-errors";
 
-const resolveComplaintSchema = z.object({
-  status: z.enum(["in_progress", "resolved", "dismissed"]),
-  resolution: z
-    .string()
-    .min(5, "Resolution details must be at least 5 characters.")
-    .max(10000),
-});
+const resolveComplaintSchema = z
+  .object({
+    status: z.enum(["in_progress", "resolved", "dismissed"]),
+    resolution: z.string().max(10000).optional().or(z.literal("")),
+    projectManagerId: z.string().nullable().optional(),
+    writerId: z.string().nullable().optional(),
+  })
+  .refine(
+    (data) => {
+      if (
+        (data.status === "resolved" || data.status === "dismissed") &&
+        (!data.resolution || data.resolution.trim().length < 5)
+      ) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: "Resolution details must be at least 5 characters for resolved/dismissed states.",
+      path: ["resolution"],
+    }
+  );
 
 type ResolveComplaintFormValues = z.infer<typeof resolveComplaintSchema>;
 
@@ -46,20 +63,51 @@ export function ResolveComplaintDialog({
   onOpenChange,
 }: ResolveComplaintDialogProps) {
   const resolveComplaint = useResolveComplaint(complaintId);
+  const { data: complaint } = useComplaint(complaintId);
+
+  const { data: pmData } = useUsers({
+    role: "project_manager",
+    status: "active",
+    perPage: 100,
+  });
+
+  const { data: writerData } = useUsers({
+    role: "writer",
+    status: "active",
+    perPage: 100,
+  });
+
+  const managers = pmData?.users ?? [];
+  const writers = writerData?.users ?? [];
 
   const form = useForm<ResolveComplaintFormValues>({
     resolver: zodResolver(resolveComplaintSchema),
     defaultValues: {
       status: "resolved",
       resolution: "",
+      projectManagerId: "none",
+      writerId: "none",
     },
   });
+
+  useEffect(() => {
+    if (complaint) {
+      form.reset({
+        status: complaint.status === "pending" ? "in_progress" : (complaint.status as any),
+        resolution: complaint.resolution || "",
+        projectManagerId: complaint.projectManager?.id || "none",
+        writerId: complaint.writer?.id || "none",
+      });
+    }
+  }, [complaint, form]);
 
   const onSubmit = form.handleSubmit((values) => {
     resolveComplaint.mutate(
       {
         status: values.status,
-        resolution: values.resolution,
+        resolution: values.resolution || undefined,
+        projectManagerId: values.projectManagerId === "none" ? null : values.projectManagerId,
+        writerId: values.writerId === "none" ? null : values.writerId,
       },
       {
         onSuccess: () => {
@@ -93,20 +141,68 @@ export function ResolveComplaintDialog({
         </DialogHeader>
 
         <form onSubmit={onSubmit} className="space-y-4" noValidate>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="resolve-status">Resolution State</Label>
+              <Controller
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger id="resolve-status" className="w-full">
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="in_progress">In Progress</SelectItem>
+                      <SelectItem value="resolved">Mark Resolved</SelectItem>
+                      <SelectItem value="dismissed">Dismiss Complaint</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="assign-pm">Assign Project Manager</Label>
+              <Controller
+                control={form.control}
+                name="projectManagerId"
+                render={({ field }) => (
+                  <Select onValueChange={field.onChange} value={field.value || "none"}>
+                    <SelectTrigger id="assign-pm" className="w-full">
+                      <SelectValue placeholder="Unassigned" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">Unassigned / None</SelectItem>
+                      {managers.map((m) => (
+                        <SelectItem key={m.id} value={m.id}>
+                          {m.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+            </div>
+          </div>
+
           <div className="space-y-2">
-            <Label htmlFor="resolve-status">Resolution State</Label>
+            <Label htmlFor="assign-writer">Assign Writer</Label>
             <Controller
               control={form.control}
-              name="status"
+              name="writerId"
               render={({ field }) => (
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <SelectTrigger id="resolve-status" className="w-full">
-                    <SelectValue placeholder="Select status" />
+                <Select onValueChange={field.onChange} value={field.value || "none"}>
+                  <SelectTrigger id="assign-writer" className="w-full">
+                    <SelectValue placeholder="Unassigned" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="in_progress">In Progress</SelectItem>
-                    <SelectItem value="resolved">Mark Resolved</SelectItem>
-                    <SelectItem value="dismissed">Dismiss Complaint</SelectItem>
+                    <SelectItem value="none">Unassigned / None</SelectItem>
+                    {writers.map((w) => (
+                      <SelectItem key={w.id} value={w.id}>
+                        {w.name}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               )}

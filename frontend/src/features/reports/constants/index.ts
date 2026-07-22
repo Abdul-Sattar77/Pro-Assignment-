@@ -46,6 +46,11 @@ export const REPORT_META: Record<ReportType, ReportMeta> = {
     description:
       "Workload distribution and writer timeliness (on-time completion ratios).",
   },
+  [REPORT_TYPE.PROFIT]: {
+    label: "Profit Report",
+    description:
+      "Detailed analysis of gross revenue, writer costs, discounts, and net profit margins per assignment.",
+  },
 };
 
 export const REPORT_OPTIONS = Object.entries(REPORT_META).map(

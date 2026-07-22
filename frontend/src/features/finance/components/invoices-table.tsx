@@ -86,7 +86,9 @@ export function InvoicesTable() {
             <TableRow>
               <TableHead>Invoice</TableHead>
               <TableHead>Assignment</TableHead>
-              <TableHead>Amount</TableHead>
+              <TableHead>Total Amount</TableHead>
+              <TableHead>Paid Amount</TableHead>
+              <TableHead>Due Amount</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
@@ -95,7 +97,7 @@ export function InvoicesTable() {
             {isPending &&
               Array.from({ length: 4 }, (_, row) => (
                 <TableRow key={row}>
-                  {Array.from({ length: 5 }, (_, cell) => (
+                  {Array.from({ length: 7 }, (_, cell) => (
                     <TableCell key={cell}>
                       <Skeleton className="h-4 w-full max-w-32" />
                     </TableCell>
@@ -105,7 +107,7 @@ export function InvoicesTable() {
 
             {isError && (
               <TableRow>
-                <TableCell colSpan={5} className="py-12 text-center">
+                <TableCell colSpan={7} className="py-12 text-center">
                   <p className="text-muted-foreground mb-3 text-sm">
                     Couldn&apos;t load invoices.
                   </p>
@@ -118,7 +120,7 @@ export function InvoicesTable() {
 
             {data && data.invoices.length === 0 && (
               <TableRow>
-                <TableCell colSpan={5} className="py-12 text-center">
+                <TableCell colSpan={7} className="py-12 text-center">
                   <p className="text-sm font-medium">No invoices yet</p>
                   <p className="text-muted-foreground mt-1 text-sm">
                     Invoices raised against assignments appear here.
@@ -149,6 +151,12 @@ export function InvoicesTable() {
                 </TableCell>
                 <TableCell className="font-medium tabular-nums">
                   {formatMoney(invoice.amountCents, invoice.currency)}
+                </TableCell>
+                <TableCell className="text-muted-foreground tabular-nums text-sm">
+                  {formatMoney(invoice.paidAmountCents ?? 0, invoice.currency)}
+                </TableCell>
+                <TableCell className="font-semibold text-rose-600 dark:text-rose-400 tabular-nums text-sm">
+                  {formatMoney(invoice.dueAmountCents ?? invoice.amountCents, invoice.currency)}
                 </TableCell>
                 <TableCell>
                   <Badge
