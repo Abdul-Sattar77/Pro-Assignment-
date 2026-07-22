@@ -47,4 +47,15 @@ export const filesService = {
     anchor.remove();
     URL.revokeObjectURL(url);
   },
+
+  /**
+   * Fetch the binary (authorized) and return an object URL for in-portal
+   * preview. Caller is responsible for revoking the URL when done.
+   */
+  async previewUrl(fileId: string): Promise<string> {
+    const response = await apiClient.get<Blob>(`/files/${fileId}/download`, {
+      responseType: "blob",
+    });
+    return URL.createObjectURL(response.data);
+  },
 };

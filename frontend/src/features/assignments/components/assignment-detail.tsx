@@ -11,13 +11,17 @@ import { cn } from "@/lib/utils";
 import { ROUTES } from "@/constants/routes";
 import { useCurrentUser } from "@/features/auth";
 import { PRIORITY_META } from "../constants";
-import { useAssignment } from "../hooks/use-assignments";
+import {
+  useAssignment,
+  useAssignmentAttachments,
+} from "../hooks/use-assignments";
 import { AssignmentActions } from "./assignment-actions";
 import { ClientFeedback } from "./client-feedback";
 import { AssignmentTimeline } from "./assignment-timeline";
 import { ChatPanel } from "./chat-panel";
 import { FilesPanel } from "./files-panel";
 import { StatusBadge } from "./status-badge";
+import { VoiceNotesList } from "./voice-notes-list";
 
 /** Label/value pair in the meta grid. Renders nothing when value is empty. */
 function Meta({
@@ -47,7 +51,10 @@ function Meta({
 export function AssignmentDetail({ id }: { id: string }) {
   const { data: assignment, isPending, isError, refetch } = useAssignment(id);
   const { data: user } = useCurrentUser();
+  const { data: attachments = [], isPending: attachmentsLoading } =
+    useAssignmentAttachments(id);
   const isClient = Boolean(user?.roles.includes("client"));
+  const isAdmin = Boolean(user?.roles.includes("admin"));
 
   if (isPending) {
     return (
@@ -183,6 +190,21 @@ export function AssignmentDetail({ id }: { id: string }) {
           </Card>
 
           <FilesPanel assignmentId={assignment.id} />
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Voice instructions</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <VoiceNotesList
+                assignmentId={assignment.id}
+                attachments={attachments}
+                loading={attachmentsLoading}
+                canUpload
+                canDelete={isClient || isAdmin}
+              />
+            </CardContent>
+          </Card>
         </div>
 
         {/* Right column: chat + activity */}

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Api\V1/Leads;
+namespace App\Http\Controllers\Api\V1\Leads;
 
 use App\Enums\LeadStatus;
 use App\Http\Controllers\Controller;
