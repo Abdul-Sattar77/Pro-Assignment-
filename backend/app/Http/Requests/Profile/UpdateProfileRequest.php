@@ -22,9 +22,12 @@ final class UpdateProfileRequest extends FormRequest
         $userId = $this->user()?->getKey();
 
         return [
-            'name' => ['required', 'string', 'max:255'],
+            // Partial update: only validate fields that are actually sent, so a
+            // writer saving just availability/writer_profile isn't forced to
+            // re-send name+email (ProfileService only writes the keys present).
+            'name' => ['sometimes', 'required', 'string', 'max:255'],
             'email' => [
-                'required', 'string', 'email', 'max:255',
+                'sometimes', 'required', 'string', 'email', 'max:255',
                 Rule::unique('users', 'email')->ignore($userId),
             ],
             'university' => ['sometimes', 'nullable', 'string', 'max:160'],

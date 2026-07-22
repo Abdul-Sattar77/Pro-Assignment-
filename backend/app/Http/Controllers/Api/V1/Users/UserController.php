@@ -27,7 +27,11 @@ final class UserController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        if (!$request->user()->can('users.view') && !$request->user()->can('tasks.manage') && !$request->user()->can('assignments.assign')) {
+        // Directory access is limited to users.view (admin) and assignments.assign
+        // (admin/PM assignee pickers). tasks.manage was removed here because a
+        // writer holds it for personal tasks and must NOT read the full user
+        // directory. Admin/PM are unaffected (they hold users.view/assignments.assign).
+        if (!$request->user()->can('users.view') && !$request->user()->can('assignments.assign')) {
             $this->authorize('viewAny', User::class);
         }
 

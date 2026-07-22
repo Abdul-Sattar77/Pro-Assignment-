@@ -3,5 +3,6 @@
  */
 export { ClientHome } from "./components/client-home";
 export { StaffOverview } from "./components/staff-overview";
+export { WriterOverview } from "./components/writer-overview";
 export { usePortalRole } from "./hooks/use-portal-role";
 export { useDashboardStats } from "./hooks/use-dashboard";
