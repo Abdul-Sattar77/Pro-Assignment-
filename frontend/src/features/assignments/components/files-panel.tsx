@@ -81,7 +81,7 @@ export function FilesPanel({ assignmentId }: { assignmentId: string }) {
 
   const onPick = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) upload.mutate(file);
+    if (file) upload.mutate({ file });
     event.target.value = ""; // allow re-selecting the same file
   };
 
@@ -142,9 +142,9 @@ export function FilesPanel({ assignmentId }: { assignmentId: string }) {
         {files?.map((file) => (
           <div
             key={file.id}
-            className="flex items-center gap-3 rounded-lg border px-3 py-2.5"
+            className="flex items-start gap-3 rounded-lg border px-3 py-2.5"
           >
-            <FileText className="text-muted-foreground size-5 shrink-0" />
+            <FileText className="text-muted-foreground mt-0.5 size-5 shrink-0" />
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-medium">{file.name}</p>
               <p className="text-muted-foreground flex items-center gap-2 text-xs">
@@ -160,6 +160,11 @@ export function FilesPanel({ assignmentId }: { assignmentId: string }) {
                   </>
                 )}
               </p>
+              {file.note && (
+                <p className="text-muted-foreground mt-1 text-xs italic">
+                  “{file.note}”
+                </p>
+              )}
             </div>
             {isPreviewable(file.mime) && (
               <Button

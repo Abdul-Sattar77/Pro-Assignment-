@@ -189,6 +189,7 @@ export type FileCategory = "brief" | "submission" | "general";
 export interface AssignmentFile {
   id: string;
   name: string;
+  note: string | null;
   category: FileCategory;
   categoryLabel: string;
   mime: string;

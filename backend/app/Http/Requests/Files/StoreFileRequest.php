@@ -33,6 +33,8 @@ final class StoreFileRequest extends FormRequest
                 'file',
                 'max:102400', // 100 MB (accommodates video)
             ],
+            // Optional per-file note ("Add Notes Per File").
+            'note' => ['sometimes', 'nullable', 'string', 'max:2000'],
         ];
     }
 

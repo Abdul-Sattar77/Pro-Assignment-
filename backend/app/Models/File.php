@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property FileCategory $category
  * @property int $size
  */
-#[Fillable(['assignment_id', 'uploader_id', 'category', 'original_name', 'disk', 'path', 'mime', 'size'])]
+#[Fillable(['assignment_id', 'uploader_id', 'category', 'original_name', 'note', 'disk', 'path', 'mime', 'size'])]
 class File extends Model
 {
     use HasUuid;

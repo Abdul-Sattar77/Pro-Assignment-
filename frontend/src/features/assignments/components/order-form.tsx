@@ -123,7 +123,7 @@ export function OrderForm() {
 
   const { errors } = form.formState;
 
-  const [files, setFiles] = useState<File[]>([]);
+  const [files, setFiles] = useState<{ file: File; note: string }[]>([]);
   const [uploading, setUploading] = useState(false);
 
   const addFiles = (list: FileList | null) => {
@@ -132,10 +132,12 @@ export function OrderForm() {
     const tooBig = incoming.filter((f) => f.size > MAX_FILE_BYTES);
     const valid = incoming.filter((f) => f.size <= MAX_FILE_BYTES);
     setFiles((current) => {
-      const seen = new Set(current.map((f) => `${f.name}:${f.size}`));
+      const seen = new Set(current.map((e) => `${e.file.name}:${e.file.size}`));
       return [
         ...current,
-        ...valid.filter((f) => !seen.has(`${f.name}:${f.size}`)),
+        ...valid
+          .filter((f) => !seen.has(`${f.name}:${f.size}`))
+          .map((file) => ({ file, note: "" })),
       ];
     });
     if (tooBig.length > 0) {
@@ -147,6 +149,11 @@ export function OrderForm() {
 
   const removeFile = (index: number) =>
     setFiles((current) => current.filter((_, i) => i !== index));
+
+  const setFileNote = (index: number, note: string) =>
+    setFiles((current) =>
+      current.map((entry, i) => (i === index ? { ...entry, note } : entry)),
+    );
 
   const onSubmit = form.handleSubmit((values) => {
     const trimmedWords = values.word_count?.trim();
@@ -175,9 +182,9 @@ export function OrderForm() {
           // Upload any attached files to the new assignment, then land on it.
           if (files.length > 0) {
             setUploading(true);
-            for (const file of files) {
+            for (const { file, note } of files) {
               try {
-                await filesService.upload(assignment.id, file);
+                await filesService.upload(assignment.id, file, note);
               } catch {
                 // A failed upload can be retried from the assignment page.
               }
@@ -505,24 +512,36 @@ export function OrderForm() {
 
             {files.length > 0 && (
               <ul className="space-y-2">
-                {files.map((file, index) => (
+                {files.map((entry, index) => (
                   <li
-                    key={`${file.name}:${file.size}:${index}`}
-                    className="bg-muted/40 flex items-center gap-3 rounded-md border px-3 py-2"
+                    key={`${entry.file.name}:${entry.file.size}:${index}`}
+                    className="bg-muted/40 space-y-2 rounded-md border px-3 py-2"
                   >
-                    <Paperclip className="text-muted-foreground size-4 shrink-0" />
-                    <span className="flex-1 truncate text-sm">{file.name}</span>
-                    <span className="text-muted-foreground shrink-0 text-xs tabular-nums">
-                      {formatBytes(file.size)}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => removeFile(index)}
-                      aria-label={`Remove ${file.name}`}
-                      className="text-muted-foreground hover:text-destructive shrink-0"
-                    >
-                      <X className="size-4" />
-                    </button>
+                    <div className="flex items-center gap-3">
+                      <Paperclip className="text-muted-foreground size-4 shrink-0" />
+                      <span className="flex-1 truncate text-sm">
+                        {entry.file.name}
+                      </span>
+                      <span className="text-muted-foreground shrink-0 text-xs tabular-nums">
+                        {formatBytes(entry.file.size)}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => removeFile(index)}
+                        aria-label={`Remove ${entry.file.name}`}
+                        className="text-muted-foreground hover:text-destructive shrink-0"
+                      >
+                        <X className="size-4" />
+                      </button>
+                    </div>
+                    <input
+                      type="text"
+                      value={entry.note}
+                      onChange={(e) => setFileNote(index, e.target.value)}
+                      placeholder="Add a note for this file (optional)…"
+                      maxLength={2000}
+                      className="border-input focus-visible:ring-ring/50 w-full rounded-md border bg-transparent px-2.5 py-1.5 text-xs outline-none focus-visible:ring-2"
+                    />
                   </li>
                 ))}
               </ul>

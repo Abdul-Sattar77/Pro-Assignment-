@@ -22,7 +22,7 @@ final class ProfileController extends Controller
 
     public function update(UpdateProfileRequest $request): JsonResponse
     {
-        /** @var array{name: string, email: string, university?: string|null, department?: string|null, study_year?: string|null} $data */
+        /** @var array{name?: string, email?: string, university?: string|null, department?: string|null, study_year?: string|null, availability?: string, expertise?: string|null} $data */
         $data = $request->validated();
 
         /** @var User $user */

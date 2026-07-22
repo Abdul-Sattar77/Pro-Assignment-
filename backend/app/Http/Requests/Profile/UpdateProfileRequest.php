@@ -30,6 +30,9 @@ final class UpdateProfileRequest extends FormRequest
             'university' => ['sometimes', 'nullable', 'string', 'max:160'],
             'department' => ['sometimes', 'nullable', 'string', 'max:120'],
             'study_year' => ['sometimes', 'nullable', 'string', 'max:40'],
+            // Writer self-service fields (mirror the values the admin panel uses).
+            'availability' => ['sometimes', 'string', 'in:available,busy,away'],
+            'expertise' => ['sometimes', 'nullable', 'string', 'max:5000'],
         ];
     }
 }

@@ -17,10 +17,15 @@ export const filesService = {
     return data.data;
   },
 
-  async upload(assignmentId: string, file: File): Promise<AssignmentFile> {
+  async upload(
+    assignmentId: string,
+    file: File,
+    note?: string | null,
+  ): Promise<AssignmentFile> {
     await ensureCsrfCookie();
     const form = new FormData();
     form.append("file", file);
+    if (note && note.trim()) form.append("note", note.trim());
     const { data } = await apiClient.post<ItemEnvelope>(
       `/assignments/${assignmentId}/files`,
       form,

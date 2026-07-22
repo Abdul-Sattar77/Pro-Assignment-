@@ -20,8 +20,9 @@ export function useFiles(assignmentId: string) {
 export function useUploadFile(assignmentId: string) {
   const queryClient = useQueryClient();
 
-  return useMutation<AssignmentFile, ApiError, File>({
-    mutationFn: (file) => filesService.upload(assignmentId, file),
+  return useMutation<AssignmentFile, ApiError, { file: File; note?: string }>({
+    mutationFn: ({ file, note }) =>
+      filesService.upload(assignmentId, file, note),
     onSuccess: (file) => {
       void queryClient.invalidateQueries({ queryKey: filesKey(assignmentId) });
       toast.success(`${file.name} uploaded.`);

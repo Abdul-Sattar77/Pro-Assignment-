@@ -29,6 +29,7 @@ final class FileResource extends JsonResource
         return [
             'id' => $this->uuid,
             'name' => $this->original_name,
+            'note' => $this->note,
             'category' => $this->category->value,
             'categoryLabel' => $this->category->label(),
             'mime' => $this->mime,

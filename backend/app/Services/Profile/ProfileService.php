@@ -13,17 +13,24 @@ use App\Models\User;
 final class ProfileService
 {
     /**
-     * @param  array{name: string, email: string, university?: string|null, department?: string|null, study_year?: string|null}  $data
+     * Partial update — only the keys the request actually sent are written, so
+     * a writer saving just their availability never wipes their university, and
+     * the full profile form keeps working unchanged.
+     *
+     * @param  array{name?: string, email?: string, university?: string|null, department?: string|null, study_year?: string|null, availability?: string, expertise?: string|null}  $data
      */
     public function updateProfile(User $user, array $data): User
     {
-        $user->update([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'university' => $data['university'] ?? null,
-            'department' => $data['department'] ?? null,
-            'study_year' => $data['study_year'] ?? null,
-        ]);
+        $fields = [
+            'name', 'email', 'university', 'department', 'study_year',
+            'availability', 'expertise',
+        ];
+
+        $update = array_intersect_key($data, array_flip($fields));
+
+        if ($update !== []) {
+            $user->update($update);
+        }
 
         return $user->refresh();
     }

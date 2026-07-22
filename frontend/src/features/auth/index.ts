@@ -5,6 +5,7 @@
 export { AuthProvider, useAuth } from "./components/auth-provider";
 export { AuthGuard } from "./components/auth-guard";
 export { Can } from "./components/can";
+export { WriterProfileCard } from "./components/writer-profile-card";
 export { LoginForm } from "./components/login-form";
 export { RegisterForm } from "./components/register-form";
 export {

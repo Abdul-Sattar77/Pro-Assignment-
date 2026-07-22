@@ -2,6 +2,8 @@
  * Auth domain types — mirror the backend UserResource contract
  * (backend/app/Http/Resources/UserResource.php).
  */
+export type WriterAvailability = "available" | "busy" | "away";
+
 export interface AuthUser {
   id: string;
   name: string;
@@ -10,6 +12,11 @@ export interface AuthUser {
   university: string | null;
   department: string | null;
   studyYear: string | null;
+  /** Writer self-service fields (present for all users; meaningful for writers). */
+  availability: WriterAvailability | null;
+  expertise: string | null;
+  averageRating: number | null;
+  totalEarnings: number;
   roles: string[];
   permissions: string[];
   createdAt: string | null;

@@ -40,7 +40,7 @@ final class FileService
      * the uploader's role: client → brief, writer → submission, staff →
      * general.
      */
-    public function upload(Assignment $assignment, User $uploader, UploadedFile $file): FileModel
+    public function upload(Assignment $assignment, User $uploader, UploadedFile $file, ?string $note = null): FileModel
     {
         $disk = $this->disk();
         $path = $file->store($this->directory($assignment), $disk);
@@ -49,6 +49,7 @@ final class FileService
             'uploader_id' => $uploader->getKey(),
             'category' => $this->categoryFor($uploader, $assignment)->value,
             'original_name' => $file->getClientOriginalName(),
+            'note' => $note,
             'disk' => $disk,
             'path' => (string) $path,
             'mime' => $file->getClientMimeType(),

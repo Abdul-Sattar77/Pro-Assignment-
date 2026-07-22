@@ -45,7 +45,10 @@ final class FileController extends Controller
         /** @var User $actor */
         $actor = $request->user();
 
-        $file = $this->files->upload($assignment, $actor, $upload);
+        /** @var string|null $note */
+        $note = $request->validated('note');
+
+        $file = $this->files->upload($assignment, $actor, $upload, $note);
 
         return ApiResponse::resource(FileResource::make($file->load('uploader')), 201);
     }
