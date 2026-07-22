@@ -39,6 +39,11 @@ export function Navbar() {
   const isActive = (href: string) =>
     href === ROUTES.home ? pathname === href : pathname.startsWith(href);
 
+  // The home hero is light; when we're on it and not yet scrolled, the floating
+  // navbar sits over a light background and needs dark text. Everywhere else
+  // (and once scrolled into the dark pill) it uses light text.
+  const onLight = pathname === ROUTES.home && !scrolled;
+
   return (
     <header className="fixed inset-x-0 top-4 z-40 px-4">
       <nav
@@ -51,9 +56,17 @@ export function Navbar() {
       >
         <Link
           href={ROUTES.home}
-          className="font-display flex items-center gap-2 text-lg font-bold tracking-tight"
+          className={cn(
+            "font-display flex items-center gap-2 text-lg font-bold tracking-tight",
+            onLight ? "text-slate-900" : "text-foreground",
+          )}
         >
-          <BrandMark className="text-foreground size-7" />
+          <BrandMark
+            className={cn(
+              "size-7",
+              onLight ? "text-slate-900" : "text-foreground",
+            )}
+          />
           prossignment
         </Link>
 
@@ -64,10 +77,15 @@ export function Navbar() {
               key={link.href}
               href={link.href}
               className={cn(
-                "rounded-full px-4 py-2 text-sm transition-colors hover:bg-white/5",
+                "rounded-full px-4 py-2 text-sm transition-colors",
+                onLight ? "hover:bg-slate-900/5" : "hover:bg-white/5",
                 isActive(link.href)
-                  ? "text-foreground"
-                  : "text-muted-foreground hover:text-foreground",
+                  ? onLight
+                    ? "text-slate-900"
+                    : "text-foreground"
+                  : onLight
+                    ? "text-slate-600 hover:text-slate-900"
+                    : "text-muted-foreground hover:text-foreground",
               )}
             >
               {link.label}
@@ -88,7 +106,12 @@ export function Navbar() {
             <>
               <Link
                 href={ROUTES.login}
-                className="text-muted-foreground hover:text-foreground px-3 text-sm transition-colors"
+                className={cn(
+                  "px-3 text-sm transition-colors",
+                  onLight
+                    ? "text-slate-600 hover:text-slate-900"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
               >
                 Sign in
               </Link>
@@ -110,7 +133,7 @@ export function Navbar() {
           aria-label={menuOpen ? "Close menu" : "Open menu"}
           aria-expanded={menuOpen}
           onClick={() => setMenuOpen((open) => !open)}
-          className="rounded-full md:hidden"
+          className={cn("rounded-full md:hidden", onLight && "text-slate-900")}
         >
           {menuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
         </Button>

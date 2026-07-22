@@ -140,7 +140,10 @@ export function Services() {
   const href = orderHref(Boolean(user));
 
   return (
-    <section id="services" className="scroll-mt-24 py-20 lg:py-28">
+    <section
+      id="services"
+      className="scroll-mt-24 bg-white py-20 text-slate-900 lg:py-28"
+    >
       <div className="mx-auto max-w-6xl px-6">
         <motion.div
           initial={{ opacity: 0, y: 18 }}
@@ -149,14 +152,16 @@ export function Services() {
           transition={{ duration: 0.55, ease: easeOut }}
           className="max-w-2xl"
         >
-          <p className="text-muted-foreground font-mono text-xs tracking-[0.3em] uppercase">
+          <p className="font-mono text-xs tracking-[0.3em] text-sky-600 uppercase">
             01 / Services
           </p>
-          <h2 className="font-display mt-4 text-4xl font-bold tracking-tight text-balance sm:text-5xl">
+          <h2 className="font-display mt-4 text-4xl font-bold tracking-tight text-balance text-slate-900 sm:text-5xl">
             Written, typed, or coded —{" "}
-            <span className="aurora-text">we handle it all.</span>
+            <span className="bg-linear-to-r from-sky-500 to-indigo-600 bg-clip-text text-transparent">
+              we handle it all.
+            </span>
           </h2>
-          <p className="text-muted-foreground mt-4 text-pretty">
+          <p className="mt-4 text-pretty text-slate-600">
             Whatever the format and whatever the subject, your work is matched
             to a specialist and delivered to spec.
           </p>
@@ -174,7 +179,7 @@ export function Services() {
                 ease: easeOut,
                 delay: (index % 3) * 0.08,
               }}
-              className="aurora-border group flex flex-col overflow-hidden rounded-2xl transition-colors duration-300 hover:border-white/25"
+              className="group flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-xl hover:shadow-blue-500/10"
             >
               {/* Photo */}
               <div className="relative h-44 overflow-hidden">
@@ -187,23 +192,23 @@ export function Services() {
                 />
                 <div
                   aria-hidden
-                  className="absolute inset-0 bg-linear-to-t from-[#070b18] via-[#070b18]/30 to-transparent"
+                  className="absolute inset-0 bg-linear-to-t from-white/70 to-transparent"
                 />
               </div>
 
               {/* Content */}
               <div className="flex flex-1 flex-col p-5">
-                <h3 className="font-display text-xl font-bold tracking-tight">
+                <h3 className="font-display text-xl font-bold tracking-tight text-slate-900">
                   {service.title}
                 </h3>
-                <p className="text-muted-foreground mt-2 text-sm leading-relaxed">
+                <p className="mt-2 text-sm leading-relaxed text-slate-600">
                   {service.blurb}
                 </p>
                 <div className="mt-4 flex flex-wrap gap-1.5">
                   {service.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="rounded-full border border-white/10 bg-white/3 px-2.5 py-0.5 font-mono text-[10px] tracking-wide"
+                      className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 font-mono text-[10px] tracking-wide text-slate-500"
                     >
                       {tag}
                     </span>
@@ -211,10 +216,10 @@ export function Services() {
                 </div>
                 <Link
                   href={href}
-                  className="aurora-text mt-5 inline-flex items-center gap-1 text-sm font-semibold"
+                  className="mt-5 inline-flex items-center gap-1 bg-linear-to-r from-sky-500 to-indigo-600 bg-clip-text text-sm font-semibold text-transparent"
                 >
                   Get help with this
-                  <ArrowUpRight className="size-4 text-fuchsia-400 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  <ArrowUpRight className="size-4 text-indigo-500 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </Link>
               </div>
             </motion.article>
@@ -230,13 +235,16 @@ export function Services() {
           className="mt-20"
         >
           <div className="max-w-2xl">
-            <p className="text-muted-foreground font-mono text-xs tracking-[0.3em] uppercase">
+            <p className="font-mono text-xs tracking-[0.3em] text-sky-600 uppercase">
               Full coverage
             </p>
-            <h3 className="font-display mt-4 text-3xl font-bold tracking-tight text-balance sm:text-4xl">
-              Every format. <span className="aurora-text">Every subject.</span>
+            <h3 className="font-display mt-4 text-3xl font-bold tracking-tight text-balance text-slate-900 sm:text-4xl">
+              Every format.{" "}
+              <span className="bg-linear-to-r from-sky-500 to-indigo-600 bg-clip-text text-transparent">
+                Every subject.
+              </span>
             </h3>
-            <p className="text-muted-foreground mt-4 text-pretty">
+            <p className="mt-4 text-pretty text-slate-600">
               If it&apos;s academic, we do it. From a one-page summary to a full
               dissertation — any brief, any citation style, any deadline.
             </p>
@@ -254,26 +262,28 @@ export function Services() {
                   ease: easeOut,
                   delay: (index % 4) * 0.05,
                 }}
-                className="group flex items-center gap-3 rounded-xl border border-white/8 bg-white/2 px-4 py-3 transition-all duration-300 hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/5"
+                className="group flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 transition-all duration-300 hover:-translate-y-0.5 hover:border-slate-300 hover:bg-white hover:shadow-md hover:shadow-blue-500/5"
               >
-                <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-linear-to-br from-violet-500/20 to-blue-500/20 text-blue-300 transition-transform duration-300 group-hover:scale-110">
+                <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-linear-to-br from-sky-500/15 to-indigo-500/15 text-blue-600 transition-transform duration-300 group-hover:scale-110">
                   <item.icon className="size-4.5" />
                 </span>
-                <span className="text-sm font-medium">{item.label}</span>
+                <span className="text-sm font-medium text-slate-700">
+                  {item.label}
+                </span>
               </motion.div>
             ))}
           </div>
 
           {/* Subjects strip */}
           <div className="mt-10">
-            <p className="text-muted-foreground mb-4 text-center text-xs tracking-wide">
+            <p className="mb-4 text-center text-xs tracking-wide text-slate-500">
               Popular subjects our specialists cover
             </p>
             <div className="flex flex-wrap justify-center gap-2">
               {SUBJECTS.map((subject) => (
                 <span
                   key={subject}
-                  className="rounded-full border border-white/10 bg-white/3 px-3.5 py-1.5 text-xs text-white/75 transition-colors hover:border-white/25 hover:text-white"
+                  className="rounded-full border border-slate-200 bg-slate-50 px-3.5 py-1.5 text-xs text-slate-600 transition-colors hover:border-sky-300 hover:bg-sky-50 hover:text-sky-700"
                 >
                   {subject}
                 </span>
