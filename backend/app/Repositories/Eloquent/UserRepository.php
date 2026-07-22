@@ -29,6 +29,10 @@ final class UserRepository extends BaseRepository implements UserRepositoryInter
 
     public function findByUuid(string $uuid): ?User
     {
+        if ($uuid === 'unassigned' || !\Illuminate\Support\Str::isUuid($uuid)) {
+            return null;
+        }
+
         return User::query()->where('uuid', $uuid)->first();
     }
 

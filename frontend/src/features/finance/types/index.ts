@@ -15,6 +15,8 @@ export interface Invoice {
   id: string;
   number: string;
   amountCents: number;
+  paidAmountCents?: number;
+  dueAmountCents?: number;
   currency: string;
   status: InvoiceStatus;
   statusLabel: string;

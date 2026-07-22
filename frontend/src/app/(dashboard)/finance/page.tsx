@@ -7,16 +7,17 @@ import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/layout/page-header";
 import { fadeIn, staggerContainer } from "@/animations/variants";
 import { Can } from "@/features/auth";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   CreateInvoiceDialog,
   FinanceSummaryTiles,
   InvoicesTable,
+  PaymentsList,
 } from "@/features/finance";
 
 /**
- * Finance page — money summary + invoices. Scoped by the API: clients see
- * their own totals & invoices (and can pay); staff see everything (and can
- * raise/verify/cancel).
+ * Finance page — money summary + invoices & payments/transactions. Scoped by
+ * the API: clients see their own totals & invoices; staff see everything.
  */
 export default function FinancePage() {
   const [createOpen, setCreateOpen] = useState(false);
@@ -45,8 +46,20 @@ export default function FinancePage() {
       <motion.div variants={fadeIn}>
         <FinanceSummaryTiles />
       </motion.div>
+
       <motion.div variants={fadeIn}>
-        <InvoicesTable />
+        <Tabs defaultValue="invoices" className="w-full">
+          <TabsList className="mb-4">
+            <TabsTrigger value="invoices">Invoices</TabsTrigger>
+            <TabsTrigger value="payments">Payments & Transactions</TabsTrigger>
+          </TabsList>
+          <TabsContent value="invoices" className="space-y-4">
+            <InvoicesTable />
+          </TabsContent>
+          <TabsContent value="payments" className="space-y-4">
+            <PaymentsList />
+          </TabsContent>
+        </Tabs>
       </motion.div>
 
       <CreateInvoiceDialog open={createOpen} onOpenChange={setCreateOpen} />

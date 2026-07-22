@@ -9,6 +9,9 @@ import {
   Search,
   SlidersHorizontal,
   Plus,
+  Edit,
+  Trash2,
+  Eye,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -36,11 +39,12 @@ import {
   SOURCE_FILTER_OPTIONS,
   STATUS_FILTER_OPTIONS,
 } from "../constants";
-import { useLeads } from "../hooks/use-leads";
-import type { LeadFilters, LeadStatus, LeadSource } from "../types";
+import { useLeads, useDeleteLead } from "../hooks/use-leads";
+import type { LeadFilters, LeadStatus, LeadSource, Lead } from "../types";
 import { StatusBadge } from "./status-badge";
 import { SourceBadge } from "./source-badge";
 import { CreateLeadDialog } from "./create-lead-dialog";
+import { EditLeadDialog } from "./edit-lead-dialog";
 
 const ALL = "all";
 
@@ -55,7 +59,9 @@ export function LeadsTable() {
   const [page, setPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
+  const [editingLead, setEditingLead] = useState<Lead | null>(null);
 
+  const deleteLead = useDeleteLead();
   const { hasPermission } = useAuth();
   const canManage = hasPermission("leads.manage");
 
@@ -80,6 +86,16 @@ export function LeadsTable() {
     setSource(ALL);
     setSearch("");
     setPage(1);
+  };
+
+  const handleDelete = (lead: Lead) => {
+    if (
+      window.confirm(
+        `Are you sure you want to delete lead: "${lead.name}"? This action cannot be undone.`,
+      )
+    ) {
+      deleteLead.mutate(lead.id);
+    }
   };
 
   return (
@@ -205,13 +221,14 @@ export function LeadsTable() {
               <TableHead>Source</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Created At</TableHead>
+              <TableHead className="text-right whitespace-nowrap">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isPending &&
               Array.from({ length: 6 }, (_, row) => (
                 <TableRow key={row}>
-                  {Array.from({ length: 6 }, (_, cell) => (
+                  {Array.from({ length: 7 }, (_, cell) => (
                     <TableCell key={cell}>
                       <Skeleton className="h-4 w-full max-w-36" />
                     </TableCell>
@@ -221,7 +238,7 @@ export function LeadsTable() {
 
             {isError && (
               <TableRow>
-                <TableCell colSpan={6} className="py-12 text-center">
+                <TableCell colSpan={7} className="py-12 text-center">
                   <p className="text-muted-foreground mb-3 text-sm">
                     Couldn&apos;t load leads. Please try again.
                   </p>
@@ -234,7 +251,7 @@ export function LeadsTable() {
 
             {data && data.leads.length === 0 && (
               <TableRow>
-                <TableCell colSpan={6} className="py-12 text-center">
+                <TableCell colSpan={7} className="py-12 text-center">
                   <p className="text-sm font-medium">No leads found</p>
                   <p className="text-muted-foreground mt-1 text-sm">
                     Try adjusting your search or filters.
@@ -268,6 +285,44 @@ export function LeadsTable() {
                   {lead.createdAt
                     ? format(new Date(lead.createdAt), "MMM d, yyyy")
                     : "—"}
+                </TableCell>
+                <TableCell className="text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+                  <div className="flex items-center justify-end gap-1">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="size-8 p-0"
+                      title="View Lead"
+                      onClick={() => router.push(`/leads/${lead.id}`)}
+                    >
+                      <Eye className="size-4" />
+                      <span className="sr-only">View</span>
+                    </Button>
+                    {canManage && (
+                      <>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="size-8 p-0"
+                          title="Edit Lead"
+                          onClick={() => setEditingLead(lead)}
+                        >
+                          <Edit className="size-4" />
+                          <span className="sr-only">Edit</span>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-destructive hover:text-destructive size-8 p-0"
+                          title="Delete Lead"
+                          onClick={() => handleDelete(lead)}
+                        >
+                          <Trash2 className="size-4" />
+                          <span className="sr-only">Delete</span>
+                        </Button>
+                      </>
+                    )}
+                  </div>
                 </TableCell>
               </TableRow>
             ))}
@@ -306,6 +361,16 @@ export function LeadsTable() {
 
       {canManage && (
         <CreateLeadDialog open={createOpen} onOpenChange={setCreateOpen} />
+      )}
+
+      {canManage && editingLead && (
+        <EditLeadDialog
+          lead={editingLead}
+          open={Boolean(editingLead)}
+          onOpenChange={(open) => {
+            if (!open) setEditingLead(null);
+          }}
+        />
       )}
     </div>
   );

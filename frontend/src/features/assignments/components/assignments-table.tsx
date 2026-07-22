@@ -3,10 +3,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { format, isPast } from "date-fns";
-import { ChevronLeft, ChevronRight, Search } from "lucide-react";
+import { ChevronLeft, ChevronRight, Search, Download, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -24,29 +25,45 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
-import { STATUS_FILTER_OPTIONS } from "../constants";
+import { Badge } from "@/components/ui/badge";
+import { PRIORITY_META, STATUS_FILTER_OPTIONS } from "../constants";
 import { useAssignments } from "../hooks/use-assignments";
 import type { Assignment, AssignmentStatus } from "../types";
 import { StatusBadge } from "./status-badge";
 
 const ALL = "all";
 
-/** Deadline cell — highlights overdue, non-terminal orders. */
+/** Deadline cell — highlights overdue, due today, and days remaining. */
 function DeadlineCell({ assignment }: { assignment: Assignment }) {
   const date = new Date(assignment.deadline);
-  const overdue =
-    isPast(date) && !["completed", "cancelled"].includes(assignment.status);
+  const now = new Date();
+  const isTerminal = ["completed", "cancelled"].includes(assignment.status);
+
+  const diffMs = date.getTime() - now.getTime();
+  const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+  let indicatorBadge = null;
+  if (!isTerminal) {
+    if (diffMs < 0) {
+      indicatorBadge = (
+        <span className="ml-2 inline-flex items-center rounded-md bg-red-500/10 px-1.5 py-0.5 text-[11px] font-semibold text-red-600 dark:text-red-400">
+          Overdue
+        </span>
+      );
+    } else if (diffDays <= 1) {
+      indicatorBadge = (
+        <span className="ml-2 inline-flex items-center rounded-md bg-amber-500/10 px-1.5 py-0.5 text-[11px] font-semibold text-amber-600 dark:text-amber-400">
+          Due today
+        </span>
+      );
+    }
+  }
 
   return (
-    <span
-      className={cn(
-        "tabular-nums",
-        overdue ? "text-destructive font-medium" : "text-muted-foreground",
-      )}
-    >
-      {format(date, "MMM d, yyyy HH:mm")}
-      {overdue && " · overdue"}
-    </span>
+    <div className="text-sm">
+      <span className="font-mono text-xs">{format(date, "MMM d, yyyy")}</span>
+      {indicatorBadge}
+    </div>
   );
 }
 
@@ -59,6 +76,7 @@ export function AssignmentsTable() {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState(ALL);
   const [page, setPage] = useState(1);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const debouncedSearch = useDebouncedValue(search);
 
@@ -70,6 +88,23 @@ export function AssignmentsTable() {
   });
 
   const pagination = data?.pagination;
+
+  const handleExportSelected = () => {
+    if (selectedIds.length === 0) return;
+    const jsonStr = JSON.stringify(selectedIds, null, 2);
+    const blob = new Blob([jsonStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `selected-assignments-${Date.now()}.json`;
+    a.click();
+  };
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
+    );
+  };
 
   return (
     <div className="space-y-4">
@@ -112,25 +147,55 @@ export function AssignmentsTable() {
         </Select>
       </div>
 
+      {/* Bulk Action Bar */}
+      {selectedIds.length > 0 && (
+        <div className="flex items-center justify-between rounded-lg border bg-primary/5 p-3 text-sm">
+          <div className="flex items-center gap-2 font-medium">
+            <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs text-primary font-mono font-semibold">
+              {selectedIds.length} selected
+            </span>
+            <span>Bulk Actions</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={handleExportSelected}>
+              <Download className="mr-1.5 size-3.5" /> Export Selected
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setSelectedIds([])}
+            >
+              <X className="mr-1 size-3.5" /> Clear
+            </Button>
+          </div>
+        </div>
+      )}
+
       {/* Table */}
       <div className="overflow-x-auto rounded-lg border">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Assignment</TableHead>
-              <TableHead>Client</TableHead>
-              <TableHead>Writer</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Deadline</TableHead>
+              <TableHead className="w-10 px-3"></TableHead>
+              <TableHead className="whitespace-nowrap">ID</TableHead>
+              <TableHead className="whitespace-nowrap">Title</TableHead>
+              <TableHead className="whitespace-nowrap">Subject</TableHead>
+              <TableHead className="whitespace-nowrap">Client</TableHead>
+              <TableHead className="whitespace-nowrap">Project Manager</TableHead>
+              <TableHead className="whitespace-nowrap">Writer</TableHead>
+              <TableHead className="whitespace-nowrap">Priority</TableHead>
+              <TableHead className="whitespace-nowrap">Status</TableHead>
+              <TableHead className="whitespace-nowrap">Deadline</TableHead>
+              <TableHead className="text-right whitespace-nowrap">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isPending &&
               Array.from({ length: 5 }, (_, row) => (
                 <TableRow key={row}>
-                  {Array.from({ length: 5 }, (_, cell) => (
+                  {Array.from({ length: 11 }, (_, cell) => (
                     <TableCell key={cell}>
-                      <Skeleton className="h-4 w-full max-w-44" />
+                      <Skeleton className="h-4 w-full max-w-24" />
                     </TableCell>
                   ))}
                 </TableRow>
@@ -138,7 +203,7 @@ export function AssignmentsTable() {
 
             {isError && (
               <TableRow>
-                <TableCell colSpan={5} className="py-12 text-center">
+                <TableCell colSpan={11} className="py-12 text-center">
                   <p className="text-muted-foreground mb-3 text-sm">
                     Couldn&apos;t load orders. Please try again.
                   </p>
@@ -151,7 +216,7 @@ export function AssignmentsTable() {
 
             {data && data.assignments.length === 0 && (
               <TableRow>
-                <TableCell colSpan={5} className="py-12 text-center">
+                <TableCell colSpan={11} className="py-12 text-center">
                   <p className="text-sm font-medium">No assignments found</p>
                   <p className="text-muted-foreground mt-1 text-sm">
                     New student assignments appear here the moment they are
@@ -167,27 +232,65 @@ export function AssignmentsTable() {
                 onClick={() => router.push(`/assignments/${assignment.id}`)}
                 className="cursor-pointer"
               >
-                <TableCell>
-                  <p className="font-medium">{assignment.title}</p>
-                  <p className="text-muted-foreground text-xs">
-                    {assignment.subject}
-                  </p>
+                <TableCell className="px-3" onClick={(e) => e.stopPropagation()}>
+                  <Checkbox
+                    checked={selectedIds.includes(assignment.id)}
+                    onCheckedChange={() => toggleSelect(assignment.id)}
+                    aria-label={`Select ${assignment.title}`}
+                  />
                 </TableCell>
-                <TableCell className="text-muted-foreground">
+                <TableCell className="font-mono text-xs text-muted-foreground whitespace-nowrap">
+                  #{assignment.id.slice(0, 8)}
+                </TableCell>
+                <TableCell className="font-medium max-w-[200px] truncate">
+                  {assignment.title}
+                </TableCell>
+                <TableCell className="text-muted-foreground whitespace-nowrap">
+                  {assignment.subject}
+                </TableCell>
+                <TableCell className="text-muted-foreground whitespace-nowrap">
                   {assignment.client?.name ?? "—"}
                 </TableCell>
-                <TableCell className="text-muted-foreground">
-                  {assignment.writer?.name ?? (
-                    <span className="text-amber-600 dark:text-amber-400">
+                <TableCell className="whitespace-nowrap">
+                  {assignment.projectManager?.name ? (
+                    <span className="font-medium">{assignment.projectManager.name}</span>
+                  ) : (
+                    <span className="text-amber-600 dark:text-amber-400 font-medium">
                       Unassigned
                     </span>
                   )}
                 </TableCell>
-                <TableCell>
-                  <StatusBadge status={assignment.status} />
+                <TableCell className="whitespace-nowrap">
+                  {assignment.writer?.name ? (
+                    <span className="font-medium">{assignment.writer.name}</span>
+                  ) : (
+                    <span className="text-amber-600 dark:text-amber-400 font-medium">
+                      Unassigned
+                    </span>
+                  )}
                 </TableCell>
-                <TableCell>
+                <TableCell className="whitespace-nowrap">
+                  <Badge
+                    variant="outline"
+                    className={cn(PRIORITY_META[assignment.priority]?.className ?? "")}
+                  >
+                    {assignment.priorityLabel}
+                  </Badge>
+                </TableCell>
+                <TableCell className="whitespace-nowrap">
+                  <StatusBadge assignment={assignment} status={assignment.status} />
+                </TableCell>
+                <TableCell className="whitespace-nowrap">
                   <DeadlineCell assignment={assignment} />
+                </TableCell>
+                <TableCell className="text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => router.push(`/assignments/${assignment.id}`)}
+                  >
+                    View
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}

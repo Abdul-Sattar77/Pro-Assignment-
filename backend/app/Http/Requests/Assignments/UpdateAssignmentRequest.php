@@ -7,6 +7,7 @@ namespace App\Http\Requests\Assignments;
 use App\Enums\AssignmentPriority;
 use App\Models\Assignment;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\In;
 
 final class UpdateAssignmentRequest extends FormRequest
@@ -18,6 +19,17 @@ final class UpdateAssignmentRequest extends FormRequest
 
         return $assignment !== null
             && ($this->user()?->can('update', $assignment) ?? false);
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $pm = $this->input('projectManagerId') ?? $this->input('project_manager_id');
+        if ($pm === 'unassigned' || $pm === '') {
+            $this->merge([
+                'projectManagerId' => null,
+                'project_manager_id' => null,
+            ]);
+        }
     }
 
     /**
@@ -37,6 +49,8 @@ final class UpdateAssignmentRequest extends FormRequest
             'writer_cost' => ['sometimes', 'numeric', 'min:0'],
             'discount' => ['sometimes', 'numeric', 'min:0'],
             'net_profit' => ['sometimes', 'numeric'],
+            'projectManagerId' => ['sometimes', 'nullable', 'uuid', Rule::exists('users', 'uuid')],
+            'project_manager_id' => ['sometimes', 'nullable', 'uuid', Rule::exists('users', 'uuid')],
         ];
     }
 }

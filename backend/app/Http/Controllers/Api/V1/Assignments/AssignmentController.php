@@ -59,10 +59,15 @@ final class AssignmentController extends Controller
             $writerId = $writer?->getKey();
         }
 
+        $pmFilter = $filter['project_manager'] ?? null;
         $pmId = null;
-        if (is_string($filter['project_manager'] ?? null) && $filter['project_manager'] !== '') {
-            $pm = $this->users->findByUuid($filter['project_manager']);
-            $pmId = $pm?->getKey();
+        if (is_string($pmFilter) && $pmFilter !== '') {
+            if ($pmFilter === 'unassigned') {
+                $pmId = 'unassigned';
+            } elseif (\Illuminate\Support\Str::isUuid($pmFilter)) {
+                $pm = $this->users->findByUuid($pmFilter);
+                $pmId = $pm?->getKey();
+            }
         }
 
         $paginator = $this->assignments->paginateFor(

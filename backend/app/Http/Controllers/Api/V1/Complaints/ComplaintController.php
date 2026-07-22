@@ -122,8 +122,28 @@ final class ComplaintController extends Controller
             $updateData['resolved_by'] = $actor?->id;
         }
 
+        // Handle assignment to PM
+        if (array_key_exists('projectManagerId', $data)) {
+            if ($data['projectManagerId'] === null) {
+                $updateData['project_manager_id'] = null;
+            } else {
+                $pm = \App\Models\User::query()->where('uuid', $data['projectManagerId'])->first();
+                $updateData['project_manager_id'] = $pm?->id;
+            }
+        }
+
+        // Handle assignment to Writer
+        if (array_key_exists('writerId', $data)) {
+            if ($data['writerId'] === null) {
+                $updateData['writer_id'] = null;
+            } else {
+                $writer = \App\Models\User::query()->where('uuid', $data['writerId'])->first();
+                $updateData['writer_id'] = $writer?->id;
+            }
+        }
+
         $updated = $this->repository->update($complaint, $updateData);
 
-        return ApiResponse::resource(ComplaintResource::make($updated->load(['client', 'assignment', 'projectManager', 'resolver'])));
+        return ApiResponse::resource(ComplaintResource::make($updated->load(['client', 'assignment', 'projectManager', 'writer', 'resolver'])));
     }
 }

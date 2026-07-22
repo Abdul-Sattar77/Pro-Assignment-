@@ -41,10 +41,29 @@ final class InvoiceResource extends JsonResource
             }
         }
 
+        $totalPaid = $this->payments()
+            ->where('status', \App\Enums\PaymentStatus::Verified->value)
+            ->whereIn('payment_type', [
+                \App\Enums\PaymentType::Advance->value,
+                \App\Enums\PaymentType::Partial->value,
+                \App\Enums\PaymentType::Balance->value,
+            ])
+            ->sum('amount');
+        $paidAmountCents = (int) round($totalPaid * 100);
+
+        // Fallback for legacy invoices marked as paid in the database without separate payment log records
+        if ($this->status->value === 'paid' && $paidAmountCents === 0) {
+            $paidAmountCents = $this->amount_cents;
+        }
+
+        $dueAmountCents = max(0, $this->amount_cents - $paidAmountCents);
+
         return [
             'id' => $this->uuid,
             'number' => $this->number,
             'amountCents' => $this->amount_cents,
+            'paidAmountCents' => $paidAmountCents,
+            'dueAmountCents' => $dueAmountCents,
             'currency' => $this->currency,
             'status' => $this->status->value,
             'statusLabel' => $this->status->label(),

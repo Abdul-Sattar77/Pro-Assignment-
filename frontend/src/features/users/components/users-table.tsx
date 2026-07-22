@@ -12,6 +12,7 @@ import {
   Trash2,
   UserPlus,
   Award,
+  Eye,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -46,6 +47,7 @@ import type { UserListItem } from "../types";
 import { DeleteUserDialog } from "./delete-user-dialog";
 import { UserFormDialog } from "./user-form-dialog";
 import { WriterRatingsDialog } from "./writer-ratings-dialog";
+import { UserDetailDrawer } from "./user-detail-drawer";
 
 const ALL = "all";
 
@@ -79,6 +81,7 @@ export function UsersTable() {
   const [editing, setEditing] = useState<UserListItem | null>(null);
   const [deleting, setDeleting] = useState<UserListItem | null>(null);
   const [ratingWriter, setRatingWriter] = useState<UserListItem | null>(null);
+  const [detailUser, setDetailUser] = useState<UserListItem | null>(null);
 
   const pagination = data?.pagination;
 
@@ -315,6 +318,10 @@ export function UsersTable() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
+                        <DropdownMenuItem onSelect={() => setDetailUser(user)}>
+                          <Eye className="size-4" />
+                          View Profile & Details
+                        </DropdownMenuItem>
                         <Can permission="users.update">
                           <DropdownMenuItem onSelect={() => openEdit(user)}>
                             <Pencil className="size-4" />
@@ -398,6 +405,11 @@ export function UsersTable() {
           onClose={() => setRatingWriter(null)}
         />
       )}
+      <UserDetailDrawer
+        user={detailUser}
+        open={Boolean(detailUser)}
+        onOpenChange={(open) => !open && setDetailUser(null)}
+      />
     </div>
   );
 }

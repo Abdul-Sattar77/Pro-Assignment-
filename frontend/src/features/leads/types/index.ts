@@ -75,3 +75,16 @@ export interface UpdateLeadPayload {
   notes?: string | null;
   lostReason?: string | null;
 }
+
+export interface LeadQuote {
+  id: string;
+  amount: number;
+  notes: string | null;
+  createdBy: string | null;
+  createdAt: string | null;
+}
+
+export interface CreateLeadQuotePayload {
+  amount: number;
+  notes?: string | null;
+}

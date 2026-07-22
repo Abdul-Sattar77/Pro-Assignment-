@@ -29,7 +29,7 @@ final class ComplaintRepository implements ComplaintRepositoryInterface
 
     public function getFiltered(array $filters, int $perPage = 15): LengthAwarePaginator
     {
-        $query = Complaint::query()->with(['client', 'assignment', 'projectManager', 'resolver']);
+        $query = Complaint::query()->with(['client', 'assignment', 'projectManager', 'writer', 'resolver']);
 
         // Role-based scoping (Clients only see their own complaints)
         if (isset($filters['client_id'])) {
@@ -38,6 +38,10 @@ final class ComplaintRepository implements ComplaintRepositoryInterface
 
         if (isset($filters['project_manager_id'])) {
             $query->where('project_manager_id', $filters['project_manager_id']);
+        }
+
+        if (isset($filters['writer_id'])) {
+            $query->where('writer_id', $filters['writer_id']);
         }
 
         if (isset($filters['status']) && $filters['status'] !== '') {

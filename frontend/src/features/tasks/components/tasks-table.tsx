@@ -9,6 +9,9 @@ import {
   Search,
   SlidersHorizontal,
   Plus,
+  Edit,
+  Trash2,
+  Eye,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -36,11 +39,12 @@ import {
   PRIORITY_FILTER_OPTIONS,
   STATUS_FILTER_OPTIONS,
 } from "../constants";
-import { useTasks } from "../hooks/use-tasks";
+import { useTasks, useDeleteTask } from "../hooks/use-tasks";
 import type { TaskFilters, TaskStatus, TaskPriority, Task } from "../types";
 import { StatusBadge } from "./status-badge";
 import { PriorityBadge } from "./priority-badge";
 import { CreateTaskDialog } from "./create-task-dialog";
+import { EditTaskDialog } from "./edit-task-dialog";
 
 const ALL = "all";
 
@@ -76,7 +80,9 @@ export function TasksTable() {
   const [page, setPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
 
+  const deleteTask = useDeleteTask();
   const { hasPermission } = useAuth();
   const canManage = hasPermission("tasks.manage");
 
@@ -101,6 +107,16 @@ export function TasksTable() {
     setPriority(ALL);
     setSearch("");
     setPage(1);
+  };
+
+  const handleDelete = (task: Task) => {
+    if (
+      window.confirm(
+        `Are you sure you want to delete task: "${task.title}"? This action cannot be undone.`,
+      )
+    ) {
+      deleteTask.mutate(task.id);
+    }
   };
 
   return (
@@ -226,13 +242,14 @@ export function TasksTable() {
               <TableHead>Priority</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Due Date</TableHead>
+              <TableHead className="text-right whitespace-nowrap">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isPending &&
               Array.from({ length: 6 }, (_, row) => (
                 <TableRow key={row}>
-                  {Array.from({ length: 6 }, (_, cell) => (
+                  {Array.from({ length: 7 }, (_, cell) => (
                     <TableCell key={cell}>
                       <Skeleton className="h-4 w-full max-w-36" />
                     </TableCell>
@@ -242,7 +259,7 @@ export function TasksTable() {
 
             {isError && (
               <TableRow>
-                <TableCell colSpan={6} className="py-12 text-center">
+                <TableCell colSpan={7} className="py-12 text-center">
                   <p className="text-muted-foreground mb-3 text-sm">
                     Couldn&apos;t load tasks. Please try again.
                   </p>
@@ -255,7 +272,7 @@ export function TasksTable() {
 
             {data && data.tasks.length === 0 && (
               <TableRow>
-                <TableCell colSpan={6} className="py-12 text-center">
+                <TableCell colSpan={7} className="py-12 text-center">
                   <p className="text-sm font-medium">No tasks found</p>
                   <p className="text-muted-foreground mt-1 text-sm">
                     Try adjusting your search or filters.
@@ -297,6 +314,44 @@ export function TasksTable() {
                 <TableCell>
                   <DueDateCell task={task} />
                 </TableCell>
+                <TableCell className="text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+                  <div className="flex items-center justify-end gap-1">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="size-8 p-0"
+                      title="View Task"
+                      onClick={() => router.push(`/tasks/${task.id}`)}
+                    >
+                      <Eye className="size-4" />
+                      <span className="sr-only">View</span>
+                    </Button>
+                    {canManage && (
+                      <>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="size-8 p-0"
+                          title="Edit Task"
+                          onClick={() => setEditingTask(task)}
+                        >
+                          <Edit className="size-4" />
+                          <span className="sr-only">Edit</span>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-destructive hover:text-destructive size-8 p-0"
+                          title="Delete Task"
+                          onClick={() => handleDelete(task)}
+                        >
+                          <Trash2 className="size-4" />
+                          <span className="sr-only">Delete</span>
+                        </Button>
+                      </>
+                    )}
+                  </div>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -334,6 +389,16 @@ export function TasksTable() {
 
       {canManage && (
         <CreateTaskDialog open={createOpen} onOpenChange={setCreateOpen} />
+      )}
+
+      {canManage && editingTask && (
+        <EditTaskDialog
+          task={editingTask}
+          open={Boolean(editingTask)}
+          onOpenChange={(open) => {
+            if (!open) setEditingTask(null);
+          }}
+        />
       )}
     </div>
   );

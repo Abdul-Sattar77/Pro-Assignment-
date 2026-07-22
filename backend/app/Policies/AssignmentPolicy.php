@@ -36,7 +36,12 @@ final class AssignmentPolicy
 
     public function assign(User $actor, Assignment $assignment): bool
     {
-        return $actor->can('assignments.assign');
+        return $actor->hasRole(Role::ProjectManager->value) && $actor->can('assignments.assign');
+    }
+
+    public function assignManager(User $actor, Assignment $assignment): bool
+    {
+        return $actor->hasRole(Role::Admin->value) || $actor->hasRole(Role::ProjectManager->value);
     }
 
     public function submit(User $actor, Assignment $assignment): bool

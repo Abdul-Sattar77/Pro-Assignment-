@@ -9,6 +9,7 @@ import {
   RotateCcw,
   Upload,
   UserCheck,
+  UserCog,
   X,
   type LucideIcon,
 } from "lucide-react";
@@ -16,37 +17,41 @@ import { Button } from "@/components/ui/button";
 import type { Assignment, AssignmentAction } from "../types";
 import { ActionNoteDialog, type NoteActionConfig } from "./action-note-dialog";
 import { AssignWriterDialog } from "./assign-writer-dialog";
+import { AssignManagerDialog } from "./assign-manager-dialog";
 
 interface ActionButton {
   label: string;
   icon: LucideIcon;
   variant: "default" | "outline" | "destructive";
-  /** null → opens the AssignWriterDialog instead of the note dialog. */
-  dialog: NoteActionConfig | null;
+  /** null → opens the AssignWriterDialog or AssignManagerDialog. */
+  dialogType: "writer" | "manager" | NoteActionConfig;
 }
 
 /**
  * ═══════════════════ ACTION REGISTRY (extension point) ═══════════════════
  * One entry per workflow action. The backend decides WHO sees WHAT via the
  * `actions` array on each assignment — this map only defines how a button
- * looks and which dialog it opens. To add a future action: one entry here,
- * nothing else (bar, dialog, mutation, toasts, timeline all generic).
+ * looks and which dialog it opens.
  * ══════════════════════════════════════════════════════════════════════════
  */
 const ACTION_CONFIG: Partial<Record<AssignmentAction, ActionButton>> = {
-  // ── PM ────────────────────────────────────────────────────────────────
+  assign_manager: {
+    label: "Assign PM",
+    icon: UserCog,
+    variant: "outline",
+    dialogType: "manager",
+  },
   assign: {
     label: "Assign writer",
     icon: UserCheck,
     variant: "default",
-    dialog: null, // opens AssignWriterDialog
+    dialogType: "writer",
   },
-  // ── Writer ────────────────────────────────────────────────────────────
   accept: {
     label: "Accept assignment",
     icon: Check,
     variant: "default",
-    dialog: {
+    dialogType: {
       action: "accept",
       title: "Accept this assignment?",
       description:
@@ -59,7 +64,7 @@ const ACTION_CONFIG: Partial<Record<AssignmentAction, ActionButton>> = {
     label: "Decline",
     icon: X,
     variant: "outline",
-    dialog: {
+    dialogType: {
       action: "reject",
       title: "Decline this assignment?",
       description:
@@ -72,7 +77,7 @@ const ACTION_CONFIG: Partial<Record<AssignmentAction, ActionButton>> = {
     label: "Submit work",
     icon: Upload,
     variant: "default",
-    dialog: {
+    dialogType: {
       action: "submit",
       title: "Submit for review",
       description:
@@ -81,12 +86,11 @@ const ACTION_CONFIG: Partial<Record<AssignmentAction, ActionButton>> = {
       note: "optional",
     },
   },
-  // ── PM review ─────────────────────────────────────────────────────────
   deliver: {
     label: "Deliver to client",
     icon: PackageCheck,
     variant: "default",
-    dialog: {
+    dialogType: {
       action: "deliver",
       title: "Deliver to client?",
       description:
@@ -99,7 +103,7 @@ const ACTION_CONFIG: Partial<Record<AssignmentAction, ActionButton>> = {
     label: "Return to writer",
     icon: RotateCcw,
     variant: "outline",
-    dialog: {
+    dialogType: {
       action: "return",
       title: "Return to writer",
       description: "Send the submission back with feedback for the writer.",
@@ -107,12 +111,11 @@ const ACTION_CONFIG: Partial<Record<AssignmentAction, ActionButton>> = {
       note: "optional",
     },
   },
-  // ── Client ────────────────────────────────────────────────────────────
   complete: {
     label: "Approve & complete",
     icon: CheckCircle2,
     variant: "default",
-    dialog: {
+    dialogType: {
       action: "complete",
       title: "Approve this delivery?",
       description: "This closes the order. You can no longer request changes.",
@@ -124,7 +127,7 @@ const ACTION_CONFIG: Partial<Record<AssignmentAction, ActionButton>> = {
     label: "Request revision",
     icon: RotateCcw,
     variant: "outline",
-    dialog: {
+    dialogType: {
       action: "request_revision",
       title: "Request a revision",
       description: "Tell the team exactly what should change.",
@@ -132,12 +135,11 @@ const ACTION_CONFIG: Partial<Record<AssignmentAction, ActionButton>> = {
       note: "required",
     },
   },
-  // ── Shared (client pre-work window; staff any non-terminal) ──────────
   cancel: {
     label: "Cancel order",
     icon: Ban,
     variant: "destructive",
-    dialog: {
+    dialogType: {
       action: "cancel",
       title: "Cancel this order?",
       description:
@@ -150,15 +152,18 @@ const ACTION_CONFIG: Partial<Record<AssignmentAction, ActionButton>> = {
 };
 
 /**
- * The workflow action bar. Renders ONLY the buttons the backend granted this
- * viewer (assignment.actions) AND that have UI config above — so unfinished
- * role UIs never show broken buttons.
+ * The workflow action bar.
  */
 export function AssignmentActions({ assignment }: { assignment: Assignment }) {
   const [assignOpen, setAssignOpen] = useState(false);
+  const [managerOpen, setManagerOpen] = useState(false);
   const [noteConfig, setNoteConfig] = useState<NoteActionConfig | null>(null);
 
-  const buttons = assignment.actions
+  const actionsToRender: AssignmentAction[] = Array.from(
+    new Set(assignment.actions),
+  );
+
+  const buttons = actionsToRender
     .map((action) => ({ action, config: ACTION_CONFIG[action] }))
     .filter(
       (entry): entry is { action: AssignmentAction; config: ActionButton } =>
@@ -174,11 +179,15 @@ export function AssignmentActions({ assignment }: { assignment: Assignment }) {
           <Button
             key={action}
             variant={config.variant}
-            onClick={() =>
-              config.dialog === null
-                ? setAssignOpen(true)
-                : setNoteConfig(config.dialog)
-            }
+            onClick={() => {
+              if (config.dialogType === "writer") {
+                setAssignOpen(true);
+              } else if (config.dialogType === "manager") {
+                setManagerOpen(true);
+              } else {
+                setNoteConfig(config.dialogType);
+              }
+            }}
           >
             <config.icon className="size-4" />
             {config.label}
@@ -190,6 +199,11 @@ export function AssignmentActions({ assignment }: { assignment: Assignment }) {
         assignmentId={assignment.id}
         open={assignOpen}
         onOpenChange={setAssignOpen}
+      />
+      <AssignManagerDialog
+        assignmentId={assignment.id}
+        open={managerOpen}
+        onOpenChange={setManagerOpen}
       />
       <ActionNoteDialog
         assignmentId={assignment.id}

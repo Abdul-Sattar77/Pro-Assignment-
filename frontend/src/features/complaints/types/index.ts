@@ -13,6 +13,10 @@ export interface Complaint {
     id: string;
     name: string;
   } | null;
+  writer?: {
+    id: string;
+    name: string;
+  } | null;
   subject: string;
   description: string;
   status: "pending" | "in_progress" | "resolved" | "dismissed";
@@ -39,4 +43,6 @@ export interface SubmitComplaintPayload {
 export interface ResolveComplaintPayload {
   status: "resolved" | "dismissed" | "in_progress";
   resolution?: string;
+  projectManagerId?: string | null;
+  writerId?: string | null;
 }

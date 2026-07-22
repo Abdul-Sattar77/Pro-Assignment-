@@ -14,6 +14,11 @@ import { FileText, Download, Star, TrendingUp, Loader2 } from "lucide-react";
 import { useDashboardStats } from "@/features/dashboard";
 import { apiClient } from "@/lib/api-client";
 import { toast } from "sonner";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const PERFORMANCE_REPORTS = [
   {
@@ -200,17 +205,24 @@ export function AnalyticsPreview() {
                       />
                     )}
                     {/* Points */}
-                    {linePoints.map((p, idx) => (
-                      <circle
-                        key={idx}
-                        cx={p.x}
-                        cy={p.y}
-                        r="3.5"
-                        fill="var(--background)"
-                        stroke="var(--primary)"
-                        strokeWidth="2"
-                      />
-                    ))}
+                    {linePoints.map((p, idx) => {
+                      const val = trends.volumes[idx];
+                      return (
+                        <Tooltip key={idx}>
+                          <TooltipTrigger asChild>
+                            <circle
+                              cx={p.x}
+                              cy={p.y}
+                              r="5"
+                              className="cursor-pointer fill-background stroke-primary stroke-2 hover:r-[6.5] transition-all"
+                            />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <span className="font-semibold">{val} assignments</span>
+                          </TooltipContent>
+                        </Tooltip>
+                      );
+                    })}
                   </svg>
                 </div>
                 <div className="text-muted-foreground flex justify-between px-2 font-mono text-[10px] uppercase">
@@ -272,16 +284,23 @@ export function AnalyticsPreview() {
                       const height = (inf / maxInflow) * 95;
                       const y = 110 - height;
                       return (
-                        <rect
-                          key={i}
-                          x={x}
-                          y={y}
-                          width="22"
-                          height={height}
-                          rx="3"
-                          fill="var(--primary)"
-                          fillOpacity={0.4 + i * 0.1}
-                        />
+                        <Tooltip key={i}>
+                          <TooltipTrigger asChild>
+                            <rect
+                              x={x}
+                              y={y}
+                              width="22"
+                              height={height}
+                              rx="3"
+                              className="cursor-pointer transition-opacity hover:opacity-85"
+                              fill="var(--primary)"
+                              fillOpacity={0.4 + i * 0.1}
+                            />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <span className="font-semibold">PKR {inf.toLocaleString()}</span>
+                          </TooltipContent>
+                        </Tooltip>
                       );
                     })}
                   </svg>
@@ -358,7 +377,7 @@ export function AnalyticsPreview() {
                         colSpan={4}
                         className="text-muted-foreground px-4 py-8 text-center"
                       >
-                        No active writers tracked.
+                        No data available yet.
                       </td>
                     </tr>
                   )}
@@ -416,7 +435,7 @@ export function AnalyticsPreview() {
                         colSpan={4}
                         className="text-muted-foreground px-4 py-8 text-center"
                       >
-                        No client records found.
+                        No data available yet.
                       </td>
                     </tr>
                   )}

@@ -308,6 +308,24 @@ export function ComplaintsList() {
                       </div>
                     )}
 
+                    {active.projectManager && (
+                      <div className="text-muted-foreground flex items-center gap-1.5 text-xs">
+                        <User className="size-3.5" />
+                        <span>
+                          Assigned PM: <strong>{active.projectManager.name}</strong>
+                        </span>
+                      </div>
+                    )}
+
+                    {active.writer && (
+                      <div className="text-muted-foreground flex items-center gap-1.5 text-xs">
+                        <User className="size-3.5" />
+                        <span>
+                          Assigned Writer: <strong>{active.writer.name}</strong>
+                        </span>
+                      </div>
+                    )}
+
                     {active.resolution ? (
                       <div className="space-y-1 rounded-lg border border-emerald-500/25 bg-emerald-50/50 p-3 dark:bg-emerald-950/20">
                         <p className="flex items-center gap-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400">

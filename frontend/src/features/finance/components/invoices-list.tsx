@@ -145,7 +145,9 @@ export function InvoicesList() {
               <TableHead>Invoice Number</TableHead>
               <TableHead>Client</TableHead>
               <TableHead>Assignment</TableHead>
-              <TableHead>Amount</TableHead>
+              <TableHead>Total Amount</TableHead>
+              <TableHead>Paid Amount</TableHead>
+              <TableHead>Due Amount</TableHead>
               <TableHead>Due Date</TableHead>
               <TableHead>Status</TableHead>
               {isAdmin && (
@@ -157,7 +159,7 @@ export function InvoicesList() {
             {isLoading ? (
               <TableRow>
                 <TableCell
-                  colSpan={isAdmin ? 7 : 6}
+                  colSpan={isAdmin ? 9 : 8}
                   className="h-24 text-center"
                 >
                   <div className="flex items-center justify-center gap-2">
@@ -171,7 +173,7 @@ export function InvoicesList() {
             ) : invoices.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={isAdmin ? 7 : 6}
+                  colSpan={isAdmin ? 9 : 8}
                   className="text-muted-foreground h-24 text-center"
                 >
                   No invoices found.
@@ -189,6 +191,12 @@ export function InvoicesList() {
                   </TableCell>
                   <TableCell className="font-semibold text-slate-900 dark:text-slate-100">
                     {formatMoney(invoice.amountCents, invoice.currency)}
+                  </TableCell>
+                  <TableCell className="text-muted-foreground text-sm">
+                    {formatMoney(invoice.paidAmountCents ?? 0, invoice.currency)}
+                  </TableCell>
+                  <TableCell className="font-medium text-rose-600 dark:text-rose-400 text-sm">
+                    {formatMoney(invoice.dueAmountCents ?? invoice.amountCents, invoice.currency)}
                   </TableCell>
                   <TableCell>
                     {invoice.createdAt ? (

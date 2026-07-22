@@ -8,6 +8,7 @@ use App\Repositories\Contracts\RepositoryInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 /**
  * Shared Eloquent implementation of common data-access operations. Concrete
@@ -39,6 +40,10 @@ abstract class BaseRepository implements RepositoryInterface
 
     public function findByUuid(string $uuid): ?Model
     {
+        if ($uuid === 'unassigned' || !Str::isUuid($uuid)) {
+            return null;
+        }
+
         return $this->query()->where('uuid', $uuid)->first();
     }
 

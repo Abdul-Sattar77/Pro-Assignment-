@@ -39,6 +39,16 @@ final class AssignmentService
     public function create(User $client, array $data): Assignment
     {
         return DB::transaction(function () use ($client, $data): Assignment {
+            $pmId = null;
+            $pm = null;
+            $pmUuid = $data['projectManagerId'] ?? $data['project_manager_id'] ?? null;
+            if (is_string($pmUuid) && $pmUuid !== '' && $pmUuid !== 'unassigned') {
+                $pm = $this->users->findByUuid($pmUuid);
+                if ($pm && $pm->hasRole(Role::ProjectManager->value)) {
+                    $pmId = $pm->getKey();
+                }
+            }
+
             $assignment = $this->assignments->create([
                 'title' => $data['title'],
                 'subject' => $data['subject'],
@@ -55,9 +65,13 @@ final class AssignmentService
                 'deadline' => $data['deadline'],
                 'status' => AssignmentStatus::PendingAssignment,
                 'client_id' => $client->getKey(),
+                'project_manager_id' => $pmId,
             ]);
 
             $this->record($assignment, $client, AssignmentEventType::Created);
+            if ($pm) {
+                $this->record($assignment, $client, AssignmentEventType::Updated, "PM assigned to {$pm->name}");
+            }
 
             return $assignment;
         });
@@ -85,19 +99,43 @@ final class AssignmentService
      * Admin/PM sets the project manager on an assignment.
      * The manager must hold the project_manager role.
      */
-    public function assignManager(User $actor, Assignment $assignment, string $managerUuid): Assignment
+    public function assignManager(User $actor, Assignment $assignment, ?string $managerUuid): Assignment
     {
+        if ($managerUuid === null || $managerUuid === '' || $managerUuid === 'unassigned') {
+            $oldManager = $assignment->projectManager;
+
+            return DB::transaction(function () use ($actor, $assignment, $oldManager): Assignment {
+                $assignment->fill(['project_manager_id' => null]);
+                $assignment->save();
+
+                $note = $oldManager !== null ? "PM unassigned (was {$oldManager->name})" : "PM unassigned";
+                $this->record($assignment, $actor, AssignmentEventType::Updated, $note);
+
+                return $assignment->refresh();
+            });
+        }
+
         $manager = $this->users->findByUuid($managerUuid);
 
         if ($manager === null || !$manager->hasRole(Role::ProjectManager->value)) {
             throw new DomainRuleException('The selected user is not an active project manager.', 'MANAGER_INVALID', 422);
         }
 
-        return DB::transaction(function () use ($actor, $assignment, $manager): Assignment {
+        if (!$manager->is_active) {
+            throw new DomainRuleException('This project manager account is inactive.', 'MANAGER_INACTIVE', 422);
+        }
+
+        $oldManager = $assignment->projectManager;
+
+        return DB::transaction(function () use ($actor, $assignment, $manager, $oldManager): Assignment {
             $assignment->fill(['project_manager_id' => $manager->getKey()]);
             $assignment->save();
 
-            $this->record($assignment, $actor, AssignmentEventType::Updated, "Project manager set to {$manager->name}");
+            $note = $oldManager !== null
+                ? "PM changed from {$oldManager->name} to {$manager->name}"
+                : "PM assigned to {$manager->name}";
+
+            $this->record($assignment, $actor, AssignmentEventType::Updated, $note);
 
             return $assignment->refresh();
         });
@@ -221,15 +259,20 @@ final class AssignmentService
     {
         $status = $assignment->status;
         $isAdmin = $actor->hasRole(Role::Admin->value);
-        $isPm = $actor->hasRole(Role::ProjectManager->value) || $isAdmin;
+        $isPm = $actor->hasRole(Role::ProjectManager->value);
         $isAssignedWriter = $assignment->writer_id !== null && $actor->getKey() === $assignment->writer_id;
         $isOwnerClient = $actor->getKey() === $assignment->client_id;
 
         $actions = [];
 
-        if ($isPm && $status === AssignmentStatus::PendingAssignment) {
+        if ($isAdmin && !$status->isTerminal()) {
+            $actions[] = 'assign_manager';
+        }
+
+        if ($isPm && in_array($status, [AssignmentStatus::PendingAssignment, AssignmentStatus::Assigned], true) && $assignment->project_manager_id !== null) {
             $actions[] = 'assign';
         }
+
         if ($isAssignedWriter && $status === AssignmentStatus::Assigned) {
             $actions[] = 'accept';
             $actions[] = 'reject';
@@ -248,11 +291,11 @@ final class AssignmentService
 
         $clientCanCancel = $isOwnerClient
             && in_array($status, [AssignmentStatus::PendingAssignment, AssignmentStatus::Assigned], true);
-        if (($isPm && !$status->isTerminal()) || $clientCanCancel) {
+        if ((($isAdmin || $isPm) && !$status->isTerminal()) || $clientCanCancel) {
             $actions[] = 'cancel';
         }
 
-        return $actions;
+        return array_values(array_unique($actions));
     }
 
     /**

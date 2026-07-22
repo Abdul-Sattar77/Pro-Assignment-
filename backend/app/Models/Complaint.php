@@ -14,7 +14,7 @@ use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 
 #[Fillable([
-    'client_id', 'assignment_id', 'project_manager_id',
+    'client_id', 'assignment_id', 'project_manager_id', 'writer_id',
     'subject', 'description', 'status',
     'resolution', 'resolved_at', 'resolved_by',
 ])]
@@ -45,6 +45,11 @@ class Complaint extends Model
     public function projectManager(): BelongsTo
     {
         return $this->belongsTo(User::class, 'project_manager_id');
+    }
+
+    public function writer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'writer_id');
     }
 
     public function resolver(): BelongsTo

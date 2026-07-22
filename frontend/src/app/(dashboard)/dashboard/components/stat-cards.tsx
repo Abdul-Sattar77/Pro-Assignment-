@@ -17,6 +17,9 @@ import {
   AlertTriangle,
 } from "lucide-react";
 
+import Link from "next/link";
+import { ROUTES } from "@/constants/routes";
+
 interface StatCardProps {
   title: string;
   value: string | number;
@@ -27,6 +30,7 @@ interface StatCardProps {
   };
   description?: string;
   className?: string;
+  href?: string;
 }
 
 export function StatCard({
@@ -36,9 +40,10 @@ export function StatCard({
   trend,
   description,
   className,
+  href,
 }: StatCardProps) {
-  return (
-    <Card className={className}>
+  const CardContentWrapper = () => (
+    <>
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <span className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
           {title}
@@ -73,6 +78,25 @@ export function StatCard({
           </div>
         )}
       </CardContent>
+    </>
+  );
+
+  if (href) {
+    return (
+      <Link
+        href={href}
+        className="block focus-visible:outline-hidden focus-visible:ring-ring rounded-xl focus-visible:ring-2"
+      >
+        <Card className={`${className} hover:bg-muted/30 transition-all cursor-pointer`}>
+          <CardContentWrapper />
+        </Card>
+      </Link>
+    );
+  }
+
+  return (
+    <Card className={className}>
+      <CardContentWrapper />
     </Card>
   );
 }
@@ -100,6 +124,7 @@ export function StatCards() {
       trend: { value: "+8.2%", positive: true },
       description: "all-time verified",
       className: "border-primary/20 bg-primary/5",
+      href: ROUTES.finance,
     },
     {
       title: "Net Profit Balance",
@@ -107,6 +132,7 @@ export function StatCards() {
       icon: TrendingUp,
       trend: { value: "Net Earnings", positive: true },
       description: "revenue minus payout",
+      href: ROUTES.finance,
     },
     {
       title: "Active Assignments",
@@ -114,6 +140,7 @@ export function StatCards() {
       icon: FileText,
       trend: { value: "Active", positive: true },
       description: "current workload",
+      href: `${ROUTES.assignments}?status=in_progress`,
     },
     {
       title: "Completed Assignments",
@@ -121,6 +148,7 @@ export function StatCards() {
       icon: CheckCircle2,
       trend: { value: "Done", positive: true },
       description: "all-time complete",
+      href: `${ROUTES.assignments}?status=completed`,
     },
     {
       title: "Pending Assignments",
@@ -128,6 +156,7 @@ export function StatCards() {
       icon: Clock,
       trend: { value: "Awaiting Action", positive: true },
       description: "needs review",
+      href: `${ROUTES.assignments}?status=pending`,
     },
     {
       title: "Due This Week",
@@ -135,6 +164,7 @@ export function StatCards() {
       icon: Calendar,
       trend: { value: "Timeline Alerts", positive: true },
       description: "due in 7 days",
+      href: ROUTES.assignments,
     },
     {
       title: "Overdue Assignments",
@@ -143,6 +173,7 @@ export function StatCards() {
       trend: { value: "Action Required", positive: false },
       description: "past deadline",
       className: "border-destructive/20 bg-destructive/5 text-destructive",
+      href: `${ROUTES.assignments}?status=overdue`,
     },
     {
       title: "Total Clients",
@@ -150,6 +181,7 @@ export function StatCards() {
       icon: Users,
       trend: { value: "Onboarded", positive: true },
       description: "registered clients",
+      href: `${ROUTES.users}?role=client`,
     },
     {
       title: "Total Writers",
@@ -157,6 +189,7 @@ export function StatCards() {
       icon: UserRound,
       trend: { value: "Vetted", positive: true },
       description: "vetted writers",
+      href: `${ROUTES.users}?role=writer`,
     },
     {
       title: "Project Managers",
@@ -164,6 +197,7 @@ export function StatCards() {
       icon: ShieldCheck,
       trend: { value: "Active", positive: true },
       description: "operational staff",
+      href: `${ROUTES.users}?role=project_manager`,
     },
   ];
 

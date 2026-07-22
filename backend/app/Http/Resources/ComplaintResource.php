@@ -32,6 +32,10 @@ final class ComplaintResource extends JsonResource
                 'id' => $this->projectManager->uuid,
                 'name' => $this->projectManager->name,
             ],
+            'writer' => $this->writer === null ? null : [
+                'id' => $this->writer->uuid,
+                'name' => $this->writer->name,
+            ],
             'subject' => $this->subject,
             'description' => $this->description,
             'status' => $this->status,

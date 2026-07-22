@@ -86,12 +86,12 @@ export function AssignManagerDialog({
             <SelectContent>
               {managers.length === 0 && !loadingManagers && (
                 <p className="text-muted-foreground px-3 py-2 text-sm">
-                  No active project managers found.
+                  No Project Managers Available
                 </p>
               )}
               {managers.map((manager) => (
                 <SelectItem key={manager.id} value={manager.id}>
-                  {manager.name}
+                  {manager.name} ({manager.email})
                 </SelectItem>
               ))}
             </SelectContent>

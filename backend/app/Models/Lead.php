@@ -49,4 +49,10 @@ class Lead extends Model
             ->dontLogEmptyChanges()
             ->useLogName('lead');
     }
+
+    /** @return \Illuminate\Database\Eloquent\Relations\HasMany<LeadQuote, $this> */
+    public function quotes(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(LeadQuote::class)->latest();
+    }
 }

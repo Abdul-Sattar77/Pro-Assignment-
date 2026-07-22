@@ -25,6 +25,12 @@ import {
   Loader2,
 } from "lucide-react";
 
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
 type AssignmentStatus = "in_progress" | "completed" | "pending" | "overdue";
 type AssignmentPriority = "standard" | "urgent" | "critical";
 
@@ -138,8 +144,13 @@ export function RecentAssignments() {
                   <TableCell className="text-muted-foreground text-sm">
                     {asg.client}
                   </TableCell>
-                  <TableCell className="text-muted-foreground text-sm">
-                    {asg.subject}
+                  <TableCell className="text-muted-foreground max-w-[120px] truncate text-sm">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="cursor-help block truncate">{asg.subject}</span>
+                      </TooltipTrigger>
+                      <TooltipContent>{asg.subject}</TooltipContent>
+                    </Tooltip>
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline" className={priorityCfg.className}>
@@ -164,7 +175,7 @@ export function RecentAssignments() {
                   colSpan={6}
                   className="text-muted-foreground h-24 text-center text-sm"
                 >
-                  No assignments registered yet.
+                  No data available yet.
                 </TableCell>
               </TableRow>
             )}
