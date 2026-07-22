@@ -25,6 +25,12 @@ import {
 import { useCurrentUser } from "@/features/auth";
 import { orderHref } from "../constants";
 import { CountUp } from "./count-up";
+import {
+  BookProp,
+  GraduateMascot,
+  PencilProp,
+  StudentMascot,
+} from "./hero-characters";
 import { Magnetic } from "./magnetic";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
@@ -94,8 +100,8 @@ export function Hero() {
         transition={{ duration: 9, ease: "linear", repeat: Infinity }}
       />
 
-      {/* Floating academic doodles in the side gutters */}
-      <HeroDoodles mx={mx} my={my} />
+      {/* Floating cartoon characters in the side gutters */}
+      <HeroCharacters mx={mx} my={my} />
 
       {/* ── Centered headline ── */}
       <div className="relative z-10 mx-auto max-w-3xl text-center">
@@ -386,112 +392,7 @@ function Tile({
 
 /* ── Floating cartoon academic doodles (side gutters) ────────────────────── */
 
-interface Doodle {
-  emoji: string;
-  className: string;
-  depth: number;
-  size: string;
-  glow: string;
-  delay: number;
-  rotate: number;
-}
-
-const DOODLES: Doodle[] = [
-  // left gutter
-  {
-    emoji: "📚",
-    className: "top-[19%] left-[6%]",
-    depth: 32,
-    size: "text-5xl",
-    glow: "bg-blue-500/40",
-    delay: 0,
-    rotate: 8,
-  },
-  {
-    emoji: "✏️",
-    className: "top-[37%] left-[13%]",
-    depth: 46,
-    size: "text-4xl",
-    glow: "bg-amber-500/40",
-    delay: 0.8,
-    rotate: 12,
-  },
-  {
-    emoji: "🎓",
-    className: "top-[55%] left-[3%]",
-    depth: 24,
-    size: "text-5xl",
-    glow: "bg-violet-500/40",
-    delay: 1.4,
-    rotate: 6,
-  },
-  {
-    emoji: "💡",
-    className: "top-[71%] left-[11%]",
-    depth: 40,
-    size: "text-4xl",
-    glow: "bg-yellow-400/40",
-    delay: 0.4,
-    rotate: 10,
-  },
-  {
-    emoji: "📐",
-    className: "top-[27%] left-[18%]",
-    depth: 36,
-    size: "text-3xl",
-    glow: "bg-sky-500/40",
-    delay: 1.1,
-    rotate: 14,
-  },
-  // right gutter
-  {
-    emoji: "📝",
-    className: "top-[21%] right-[6%]",
-    depth: 34,
-    size: "text-5xl",
-    glow: "bg-emerald-500/40",
-    delay: 0.3,
-    rotate: 9,
-  },
-  {
-    emoji: "🔬",
-    className: "top-[39%] right-[13%]",
-    depth: 46,
-    size: "text-4xl",
-    glow: "bg-indigo-500/40",
-    delay: 1.2,
-    rotate: 12,
-  },
-  {
-    emoji: "📊",
-    className: "top-[57%] right-[3%]",
-    depth: 26,
-    size: "text-5xl",
-    glow: "bg-pink-500/40",
-    delay: 0.6,
-    rotate: 7,
-  },
-  {
-    emoji: "✅",
-    className: "top-[72%] right-[11%]",
-    depth: 40,
-    size: "text-4xl",
-    glow: "bg-emerald-400/40",
-    delay: 1.6,
-    rotate: 11,
-  },
-  {
-    emoji: "🖊️",
-    className: "top-[29%] right-[19%]",
-    depth: 36,
-    size: "text-3xl",
-    glow: "bg-blue-400/40",
-    delay: 0.9,
-    rotate: 13,
-  },
-];
-
-function HeroDoodles({
+function HeroCharacters({
   mx,
   my,
 }: {
@@ -501,50 +402,81 @@ function HeroDoodles({
   return (
     <div
       aria-hidden
-      className="pointer-events-none absolute inset-0 z-[5] hidden lg:block"
+      className="pointer-events-none absolute inset-0 z-5 hidden xl:block"
     >
-      {DOODLES.map((d, i) => (
-        <FloatingDoodle key={i} doodle={d} mx={mx} my={my} />
-      ))}
+      {/* Left gutter */}
+      <Parallax
+        mx={mx}
+        my={my}
+        depth={26}
+        glow="bg-blue-500/20"
+        className="top-[20%] left-[2%] w-44"
+      >
+        <StudentMascot className="h-auto w-full" />
+      </Parallax>
+      <Parallax mx={mx} my={my} depth={44} className="top-[62%] left-[9%] w-14">
+        <BookProp className="h-auto w-full" />
+      </Parallax>
+      <Parallax mx={mx} my={my} depth={36} className="top-[15%] left-[16%] w-9">
+        <PencilProp className="h-auto w-full" />
+      </Parallax>
+
+      {/* Right gutter */}
+      <Parallax
+        mx={mx}
+        my={my}
+        depth={26}
+        glow="bg-violet-500/20"
+        className="top-[20%] right-[2%] w-44"
+      >
+        <GraduateMascot className="h-auto w-full" />
+      </Parallax>
+      <Parallax
+        mx={mx}
+        my={my}
+        depth={44}
+        className="top-[62%] right-[9%] w-11"
+      >
+        <PencilProp className="h-auto w-full" />
+      </Parallax>
+      <Parallax
+        mx={mx}
+        my={my}
+        depth={36}
+        className="top-[15%] right-[16%] w-14"
+      >
+        <BookProp className="h-auto w-full" />
+      </Parallax>
     </div>
   );
 }
 
-function FloatingDoodle({
-  doodle,
+/** Positions a child in the gutter and parallaxes it to the cursor. */
+function Parallax({
   mx,
   my,
+  depth,
+  glow,
+  className,
+  children,
 }: {
-  doodle: Doodle;
   mx: MotionValue<number>;
   my: MotionValue<number>;
+  depth: number;
+  glow?: string;
+  className: string;
+  children: React.ReactNode;
 }) {
-  const x = useTransform(mx, [-0.5, 0.5], [-doodle.depth, doodle.depth]);
-  const y = useTransform(my, [-0.5, 0.5], [-doodle.depth, doodle.depth]);
+  const x = useTransform(mx, [-0.5, 0.5], [-depth, depth]);
+  const y = useTransform(my, [-0.5, 0.5], [-depth, depth]);
   return (
-    <motion.div style={{ x, y }} className={`absolute ${doodle.className}`}>
-      <motion.div
-        animate={{
-          y: [0, -16, 0],
-          rotate: [-doodle.rotate, doodle.rotate, -doodle.rotate],
-        }}
-        transition={{
-          duration: 5 + doodle.delay * 1.5,
-          ease: "easeInOut",
-          repeat: Infinity,
-          delay: doodle.delay,
-        }}
-        className="relative"
-      >
+    <motion.div style={{ x, y }} className={`absolute ${className}`}>
+      {glow && (
         <span
-          className={`absolute -inset-3 -z-10 rounded-full ${doodle.glow} blur-xl`}
+          className={`absolute inset-4 -z-10 rounded-full ${glow} blur-2xl`}
         />
-        <span
-          className={`block ${doodle.size} drop-shadow-[0_8px_18px_rgba(0,0,0,0.45)] select-none`}
-        >
-          {doodle.emoji}
-        </span>
-      </motion.div>
+      )}
+      {children}
     </motion.div>
   );
 }
