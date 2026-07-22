@@ -3,6 +3,8 @@
  */
 export { Navbar } from "./components/navbar";
 export { SplashScreen } from "./components/splash-screen";
+export { SmoothScroll } from "./components/smooth-scroll";
+export { ScrollProgress } from "./components/scroll-progress";
 export { BrandMark } from "./components/brand-mark";
 export { Hero } from "./components/hero";
 export { Marquee } from "./components/marquee";

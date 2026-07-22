@@ -3,10 +3,70 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowUpRight } from "lucide-react";
+import {
+  ArrowUpRight,
+  BookOpenCheck,
+  Briefcase,
+  Calculator,
+  ClipboardCheck,
+  FileSignature,
+  FlaskConical,
+  GraduationCap,
+  Languages,
+  LineChart,
+  Microscope,
+  NotebookPen,
+  Presentation,
+  Quote,
+  Scale,
+  SpellCheck,
+  Table2,
+} from "lucide-react";
 import { useCurrentUser } from "@/features/auth";
 import { easeOut } from "@/animations/variants";
 import { orderHref } from "../constants";
+
+/** Everything else we cover — the "we do it all" grid under the hero cards. */
+const MORE_SERVICES: { icon: typeof SpellCheck; label: string }[] = [
+  { icon: SpellCheck, label: "Editing & proofreading" },
+  { icon: NotebookPen, label: "Coursework & homework" },
+  { icon: FlaskConical, label: "Lab reports & experiments" },
+  { icon: Microscope, label: "Case studies" },
+  { icon: Briefcase, label: "Business plans & reports" },
+  { icon: FileSignature, label: "CVs & personal statements" },
+  { icon: Quote, label: "Annotated bibliographies" },
+  { icon: BookOpenCheck, label: "Reflective & critical writing" },
+  { icon: Calculator, label: "Maths, stats & finance" },
+  { icon: Table2, label: "Excel, SPSS & R analysis" },
+  { icon: Presentation, label: "PowerPoint & posters" },
+  { icon: GraduationCap, label: "Exam revision & tutoring" },
+  { icon: ClipboardCheck, label: "Assignment reviews & rewrites" },
+  { icon: Languages, label: "Translation & summarising" },
+  { icon: Scale, label: "Law & policy essays" },
+  { icon: LineChart, label: "Data visualisation" },
+];
+
+/** Subjects we take on — the breadth strip. */
+const SUBJECTS = [
+  "Business",
+  "Nursing & Healthcare",
+  "Law",
+  "Engineering",
+  "Computer Science",
+  "Psychology",
+  "Economics",
+  "Finance & Accounting",
+  "Marketing",
+  "Sociology",
+  "Education",
+  "Medicine",
+  "Management",
+  "Biology & Chemistry",
+  "Mathematics",
+  "English & Literature",
+  "History",
+  "Political Science",
+];
 
 interface Service {
   title: string;
@@ -160,6 +220,67 @@ export function Services() {
             </motion.article>
           ))}
         </div>
+
+        {/* Everything else we cover */}
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.55, ease: easeOut }}
+          className="mt-20"
+        >
+          <div className="max-w-2xl">
+            <p className="text-muted-foreground font-mono text-xs tracking-[0.3em] uppercase">
+              Full coverage
+            </p>
+            <h3 className="font-display mt-4 text-3xl font-bold tracking-tight text-balance sm:text-4xl">
+              Every format. <span className="aurora-text">Every subject.</span>
+            </h3>
+            <p className="text-muted-foreground mt-4 text-pretty">
+              If it&apos;s academic, we do it. From a one-page summary to a full
+              dissertation — any brief, any citation style, any deadline.
+            </p>
+          </div>
+
+          <div className="mt-10 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {MORE_SERVICES.map((item, index) => (
+              <motion.div
+                key={item.label}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-40px" }}
+                transition={{
+                  duration: 0.4,
+                  ease: easeOut,
+                  delay: (index % 4) * 0.05,
+                }}
+                className="group flex items-center gap-3 rounded-xl border border-white/8 bg-white/2 px-4 py-3 transition-all duration-300 hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/5"
+              >
+                <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-linear-to-br from-violet-500/20 to-blue-500/20 text-blue-300 transition-transform duration-300 group-hover:scale-110">
+                  <item.icon className="size-4.5" />
+                </span>
+                <span className="text-sm font-medium">{item.label}</span>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Subjects strip */}
+          <div className="mt-10">
+            <p className="text-muted-foreground mb-4 text-center text-xs tracking-wide">
+              Popular subjects our specialists cover
+            </p>
+            <div className="flex flex-wrap justify-center gap-2">
+              {SUBJECTS.map((subject) => (
+                <span
+                  key={subject}
+                  className="rounded-full border border-white/10 bg-white/3 px-3.5 py-1.5 text-xs text-white/75 transition-colors hover:border-white/25 hover:text-white"
+                >
+                  {subject}
+                </span>
+              ))}
+            </div>
+          </div>
+        </motion.div>
       </div>
     </section>
   );
