@@ -1,7 +1,14 @@
 "use client";
 
+import { useRef } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import {
+  motion,
+  useMotionValue,
+  useSpring,
+  useTransform,
+  type MotionValue,
+} from "framer-motion";
 import {
   ArrowRight,
   BadgeCheck,
@@ -36,9 +43,31 @@ const SUBJECTS = ["Business", "Nursing", "Law", "CS", "Finance", "+15"];
 export function Hero() {
   const { data: user } = useCurrentUser();
   const href = orderHref(Boolean(user));
+  const sectionRef = useRef<HTMLElement>(null);
+
+  const rawX = useMotionValue(0);
+  const rawY = useMotionValue(0);
+  const mx = useSpring(rawX, { stiffness: 50, damping: 18 });
+  const my = useSpring(rawY, { stiffness: 50, damping: 18 });
+
+  const onPointerMove = (event: React.PointerEvent) => {
+    const rect = sectionRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    rawX.set((event.clientX - rect.left) / rect.width - 0.5);
+    rawY.set((event.clientY - rect.top) / rect.height - 0.5);
+  };
+  const onPointerLeave = () => {
+    rawX.set(0);
+    rawY.set(0);
+  };
 
   return (
-    <section className="relative isolate flex min-h-dvh flex-col items-center justify-center overflow-hidden bg-linear-to-b from-[#0a1226] via-[#0a1020] to-[#080b18] px-6 pt-32 pb-16">
+    <section
+      ref={sectionRef}
+      onPointerMove={onPointerMove}
+      onPointerLeave={onPointerLeave}
+      className="relative isolate flex min-h-dvh flex-col items-center justify-center overflow-hidden bg-linear-to-b from-[#0a1226] via-[#0a1020] to-[#080b18] px-6 pt-32 pb-16"
+    >
       {/* Ambient glows */}
       <motion.div
         aria-hidden
@@ -64,6 +93,9 @@ export function Hero() {
         animate={{ backgroundPosition: ["0px 0px", "0px 54px"] }}
         transition={{ duration: 9, ease: "linear", repeat: Infinity }}
       />
+
+      {/* Floating academic doodles in the side gutters */}
+      <HeroDoodles mx={mx} my={my} />
 
       {/* ── Centered headline ── */}
       <div className="relative z-10 mx-auto max-w-3xl text-center">
@@ -348,6 +380,171 @@ function Tile({
         <Sparkles className="absolute top-0 right-0 size-3.5 text-white/10" />
         {children}
       </div>
+    </motion.div>
+  );
+}
+
+/* ── Floating cartoon academic doodles (side gutters) ────────────────────── */
+
+interface Doodle {
+  emoji: string;
+  className: string;
+  depth: number;
+  size: string;
+  glow: string;
+  delay: number;
+  rotate: number;
+}
+
+const DOODLES: Doodle[] = [
+  // left gutter
+  {
+    emoji: "📚",
+    className: "top-[19%] left-[6%]",
+    depth: 32,
+    size: "text-5xl",
+    glow: "bg-blue-500/40",
+    delay: 0,
+    rotate: 8,
+  },
+  {
+    emoji: "✏️",
+    className: "top-[37%] left-[13%]",
+    depth: 46,
+    size: "text-4xl",
+    glow: "bg-amber-500/40",
+    delay: 0.8,
+    rotate: 12,
+  },
+  {
+    emoji: "🎓",
+    className: "top-[55%] left-[3%]",
+    depth: 24,
+    size: "text-5xl",
+    glow: "bg-violet-500/40",
+    delay: 1.4,
+    rotate: 6,
+  },
+  {
+    emoji: "💡",
+    className: "top-[71%] left-[11%]",
+    depth: 40,
+    size: "text-4xl",
+    glow: "bg-yellow-400/40",
+    delay: 0.4,
+    rotate: 10,
+  },
+  {
+    emoji: "📐",
+    className: "top-[27%] left-[18%]",
+    depth: 36,
+    size: "text-3xl",
+    glow: "bg-sky-500/40",
+    delay: 1.1,
+    rotate: 14,
+  },
+  // right gutter
+  {
+    emoji: "📝",
+    className: "top-[21%] right-[6%]",
+    depth: 34,
+    size: "text-5xl",
+    glow: "bg-emerald-500/40",
+    delay: 0.3,
+    rotate: 9,
+  },
+  {
+    emoji: "🔬",
+    className: "top-[39%] right-[13%]",
+    depth: 46,
+    size: "text-4xl",
+    glow: "bg-indigo-500/40",
+    delay: 1.2,
+    rotate: 12,
+  },
+  {
+    emoji: "📊",
+    className: "top-[57%] right-[3%]",
+    depth: 26,
+    size: "text-5xl",
+    glow: "bg-pink-500/40",
+    delay: 0.6,
+    rotate: 7,
+  },
+  {
+    emoji: "✅",
+    className: "top-[72%] right-[11%]",
+    depth: 40,
+    size: "text-4xl",
+    glow: "bg-emerald-400/40",
+    delay: 1.6,
+    rotate: 11,
+  },
+  {
+    emoji: "🖊️",
+    className: "top-[29%] right-[19%]",
+    depth: 36,
+    size: "text-3xl",
+    glow: "bg-blue-400/40",
+    delay: 0.9,
+    rotate: 13,
+  },
+];
+
+function HeroDoodles({
+  mx,
+  my,
+}: {
+  mx: MotionValue<number>;
+  my: MotionValue<number>;
+}) {
+  return (
+    <div
+      aria-hidden
+      className="pointer-events-none absolute inset-0 z-[5] hidden lg:block"
+    >
+      {DOODLES.map((d, i) => (
+        <FloatingDoodle key={i} doodle={d} mx={mx} my={my} />
+      ))}
+    </div>
+  );
+}
+
+function FloatingDoodle({
+  doodle,
+  mx,
+  my,
+}: {
+  doodle: Doodle;
+  mx: MotionValue<number>;
+  my: MotionValue<number>;
+}) {
+  const x = useTransform(mx, [-0.5, 0.5], [-doodle.depth, doodle.depth]);
+  const y = useTransform(my, [-0.5, 0.5], [-doodle.depth, doodle.depth]);
+  return (
+    <motion.div style={{ x, y }} className={`absolute ${doodle.className}`}>
+      <motion.div
+        animate={{
+          y: [0, -16, 0],
+          rotate: [-doodle.rotate, doodle.rotate, -doodle.rotate],
+        }}
+        transition={{
+          duration: 5 + doodle.delay * 1.5,
+          ease: "easeInOut",
+          repeat: Infinity,
+          delay: doodle.delay,
+        }}
+        className="relative"
+      >
+        <span
+          className={`absolute -inset-3 -z-10 rounded-full ${doodle.glow} blur-xl`}
+        />
+        <span
+          className={`block ${doodle.size} drop-shadow-[0_8px_18px_rgba(0,0,0,0.45)] select-none`}
+        >
+          {doodle.emoji}
+        </span>
+      </motion.div>
     </motion.div>
   );
 }
