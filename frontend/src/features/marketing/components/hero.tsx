@@ -25,12 +25,6 @@ import {
 import { useCurrentUser } from "@/features/auth";
 import { orderHref } from "../constants";
 import { CountUp } from "./count-up";
-import {
-  BookProp,
-  GraduateMascot,
-  PencilProp,
-  StudentMascot,
-} from "./hero-characters";
 import { Magnetic } from "./magnetic";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
@@ -390,7 +384,7 @@ function Tile({
   );
 }
 
-/* ── Floating cartoon academic doodles (side gutters) ────────────────────── */
+/* ── Animated student illustrations (side gutters) ───────────────────────── */
 
 function HeroCharacters({
   mx,
@@ -404,50 +398,36 @@ function HeroCharacters({
       aria-hidden
       className="pointer-events-none absolute inset-0 z-5 hidden xl:block"
     >
-      {/* Left gutter */}
       <Parallax
         mx={mx}
         my={my}
-        depth={26}
-        glow="bg-blue-500/20"
-        className="top-[20%] left-[2%] w-44"
+        depth={22}
+        className="top-1/2 left-[0.5%] w-72 -translate-y-1/2 2xl:w-80"
       >
-        <StudentMascot className="h-auto w-full" />
-      </Parallax>
-      <Parallax mx={mx} my={my} depth={44} className="top-[62%] left-[9%] w-14">
-        <BookProp className="h-auto w-full" />
-      </Parallax>
-      <Parallax mx={mx} my={my} depth={36} className="top-[15%] left-[16%] w-9">
-        <PencilProp className="h-auto w-full" />
-      </Parallax>
-
-      {/* Right gutter */}
-      <Parallax
-        mx={mx}
-        my={my}
-        depth={26}
-        glow="bg-violet-500/20"
-        className="top-[20%] right-[2%] w-44"
-      >
-        <GraduateMascot className="h-auto w-full" />
+        <FloatImg src="/animations/student-1.svg" />
       </Parallax>
       <Parallax
         mx={mx}
         my={my}
-        depth={44}
-        className="top-[62%] right-[9%] w-11"
+        depth={22}
+        className="top-1/2 right-[0.5%] w-72 -translate-y-1/2 2xl:w-80"
       >
-        <PencilProp className="h-auto w-full" />
-      </Parallax>
-      <Parallax
-        mx={mx}
-        my={my}
-        depth={36}
-        className="top-[15%] right-[16%] w-14"
-      >
-        <BookProp className="h-auto w-full" />
+        <FloatImg src="/animations/student-2.svg" />
       </Parallax>
     </div>
+  );
+}
+
+/** Self-animating SVG illustration with a gentle idle float. */
+function FloatImg({ src }: { src: string }) {
+  return (
+    <motion.img
+      src={src}
+      alt=""
+      className="h-auto w-full"
+      animate={{ y: [0, -12, 0] }}
+      transition={{ duration: 6, ease: "easeInOut", repeat: Infinity }}
+    />
   );
 }
 
