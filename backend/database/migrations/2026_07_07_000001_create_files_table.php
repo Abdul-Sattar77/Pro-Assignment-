@@ -21,7 +21,7 @@ return new class extends Migration
         Schema::create('files', function (Blueprint $table): void {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->foreignId('assignment_id')->constrained('assignments')->cascadeOnDelete();
+            $table->foreignId('assignment_id')->nullable()->constrained('assignments')->cascadeOnDelete();
             $table->foreignId('uploader_id')->constrained('users')->restrictOnDelete();
             $table->string('category')->default(FileCategory::General->value);
             $table->string('original_name');

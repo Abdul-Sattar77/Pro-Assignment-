@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Services\Profile\ProfileService;
 use App\Support\ApiResponse;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 /**
  * The authenticated user's own account — profile + password. Thin.
@@ -19,6 +20,14 @@ use Illuminate\Http\JsonResponse;
 final class ProfileController extends Controller
 {
     public function __construct(private readonly ProfileService $service) {}
+
+    public function stats(Request $request): JsonResponse
+    {
+        /** @var User $user */
+        $user = $request->user();
+
+        return ApiResponse::item($this->service->getStats($user));
+    }
 
     public function update(UpdateProfileRequest $request): JsonResponse
     {

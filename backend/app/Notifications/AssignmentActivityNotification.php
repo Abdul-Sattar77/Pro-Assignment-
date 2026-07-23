@@ -13,8 +13,11 @@ use Illuminate\Notifications\Notification;
 /**
  * Notification for a workflow event on an assignment. Delivered in-app (database
  * channel) AND by email, so recipients are alerted even when they're away.
- * Sent synchronously (no queue worker required); for real delivery configure
- * SMTP via MAIL_* env (MAIL_MAILER=log captures them to storage/logs in dev).
+ *
+ * Sent synchronously (NOT ShouldQueue) so both the in-app record and the email
+ * deliver immediately without requiring a queue worker. For real email delivery
+ * configure SMTP via the MAIL_* env; MAIL_MAILER=log captures them to
+ * storage/logs in dev.
  */
 final class AssignmentActivityNotification extends Notification
 {

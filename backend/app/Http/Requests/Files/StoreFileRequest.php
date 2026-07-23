@@ -12,12 +12,16 @@ final class StoreFileRequest extends FormRequest
     public function authorize(): bool
     {
         $user = $this->user();
-        $assignment = $this->route('assignment');
+        if ($user === null) {
+            return false;
+        }
 
-        return $user !== null
-            && $assignment instanceof Assignment
-            && $user->can('view', $assignment)
-            && $user->can('files.upload');
+        $assignment = $this->route('assignment');
+        if ($assignment instanceof Assignment) {
+            return $user->can('view', $assignment) && $user->can('files.upload');
+        }
+
+        return true;
     }
 
     /**

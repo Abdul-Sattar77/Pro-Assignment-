@@ -20,6 +20,12 @@ final class DocumentTemplateRepository implements DocumentTemplateRepositoryInte
         return DocumentTemplate::query()->create($data);
     }
 
+    public function update(DocumentTemplate $template, array $data): DocumentTemplate
+    {
+        $template->update($data);
+        return $template->refresh();
+    }
+
     public function delete(DocumentTemplate $template): void
     {
         $template->delete();

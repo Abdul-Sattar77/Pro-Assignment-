@@ -45,6 +45,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { useAuth } from "@/features/auth";
+import { formatCurrency } from "@/config/currency";
 
 export function PaymentsList() {
   const { hasRole } = useAuth();
@@ -217,7 +218,7 @@ export function PaymentsList() {
                     </Badge>
                   </TableCell>
                   <TableCell className="font-semibold text-slate-900 dark:text-slate-100">
-                    PKR {payment.amount.toLocaleString()}
+                    {formatCurrency(payment.amount)}
                   </TableCell>
                   <TableCell>{payment.user?.name || "N/A"}</TableCell>
                   <TableCell className="font-mono text-xs capitalize">

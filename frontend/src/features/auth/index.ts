@@ -14,7 +14,11 @@ export {
   useLogout,
   useRegister,
 } from "./hooks/use-auth-queries";
-export { useUpdateProfile, useChangePassword } from "./hooks/use-profile";
+export {
+  useUpdateProfile,
+  useChangePassword,
+  useProfileStats,
+} from "./hooks/use-profile";
 export {
   useForgotPassword,
   useResetPassword,

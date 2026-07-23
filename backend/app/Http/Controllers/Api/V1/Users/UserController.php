@@ -27,13 +27,9 @@ final class UserController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        // Directory access is limited to users.view (admin) and assignments.assign
-        // (admin/PM assignee pickers). tasks.manage was removed here because a
-        // writer holds it for personal tasks and must NOT read the full user
-        // directory. Admin/PM are unaffected (they hold users.view/assignments.assign).
-        if (!$request->user()->can('users.view') && !$request->user()->can('assignments.assign')) {
-            $this->authorize('viewAny', User::class);
-        }
+        // Directory listing is limited to users.view (held by admin + PM). Writers
+        // and clients don't hold it, so they can't enumerate the full user list.
+        $this->authorize('viewAny', User::class);
 
         /** @var array<string, mixed> $filter */
         $filter = (array) $request->query('filter', []);
@@ -61,6 +57,8 @@ final class UserController extends Controller
 
     public function store(StoreUserRequest $request): JsonResponse
     {
+        $this->authorize('create', User::class);
+
         /** @var array{name: string, email: string, password: string, roles: array<int, string>, is_active?: bool} $data */
         $data = $request->validated();
 
@@ -78,6 +76,8 @@ final class UserController extends Controller
 
     public function update(UpdateUserRequest $request, User $user): JsonResponse
     {
+        $this->authorize('update', $user);
+
         /** @var array{name?: string, email?: string, password?: string|null, roles?: array<int, string>, is_active?: bool} $data */
         $data = $request->validated();
 

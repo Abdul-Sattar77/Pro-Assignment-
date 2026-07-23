@@ -16,10 +16,13 @@ final class FilePolicy
 {
     public function view(User $actor, File $file): bool
     {
-        $assignment = $file->assignment;
-
         if ($actor->hasRole(Role::Admin->value) || $actor->hasRole(Role::ProjectManager->value)) {
-            return $actor->can('files.view');
+            return true;
+        }
+
+        $assignment = $file->assignment;
+        if ($assignment === null) {
+            return $actor->getKey() === $file->uploader_id;
         }
 
         return $actor->getKey() === $assignment->client_id

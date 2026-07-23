@@ -46,75 +46,7 @@ final class CalendarEventController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        // Self-healing check: Ensure calendar permissions are seeded in the database
-        if (!Permission::where('name', 'calendar.view')->exists()) {
-            Permission::findOrCreate('calendar.view', 'web');
-            Permission::findOrCreate('calendar.manage', 'web');
-
-            if ($adminRole = Role::where('name', 'admin')->first()) {
-                $adminRole->givePermissionTo(['calendar.view', 'calendar.manage']);
-            }
-            if ($pmRole = Role::where('name', 'project_manager')->first()) {
-                $pmRole->givePermissionTo(['calendar.view', 'calendar.manage']);
-            }
-            if ($writerRole = Role::where('name', 'writer')->first()) {
-                $writerRole->givePermissionTo('calendar.view');
-            }
-            if ($clientRole = Role::where('name', 'client')->first()) {
-                $clientRole->givePermissionTo('calendar.view');
-            }
-
-            // Forget Spatie permission cache to register immediately
-            app(PermissionRegistrar::class)->forgetCachedPermissions();
-        }
-
         $this->authorize('viewAny', CalendarEvent::class);
-
-        // Self-healing check: Sync missing assignment deadlines & payment due events
-        $hasMissingAssignments = Assignment::whereNotExists(function ($query): void {
-            $query->select(DB::raw(1))
-                ->from('calendar_events')
-                ->whereColumn('calendar_events.assignment_id', 'assignments.id')
-                ->where('calendar_events.event_type', CalendarEventType::AssignmentDeadline->value);
-        })->exists();
-
-        if ($hasMissingAssignments) {
-            $missingAssignments = Assignment::whereNotExists(function ($query): void {
-                $query->select(DB::raw(1))
-                    ->from('calendar_events')
-                    ->whereColumn('calendar_events.assignment_id', 'assignments.id')
-                    ->where('calendar_events.event_type', CalendarEventType::AssignmentDeadline->value);
-            })->get();
-
-            $assignmentObserver = new AssignmentObserver;
-            foreach ($missingAssignments as $assignment) {
-                $assignmentObserver->saved($assignment);
-            }
-        }
-
-        // Self-healing check: Sync missing task due events
-        $hasMissingTasks = Task::whereNotNull('due_date')
-            ->whereNotExists(function ($query): void {
-                $query->select(DB::raw(1))
-                    ->from('calendar_events')
-                    ->whereColumn('calendar_events.task_id', 'tasks.id')
-                    ->where('calendar_events.event_type', CalendarEventType::Custom->value);
-            })->exists();
-
-        if ($hasMissingTasks) {
-            $missingTasks = Task::whereNotNull('due_date')
-                ->whereNotExists(function ($query): void {
-                    $query->select(DB::raw(1))
-                        ->from('calendar_events')
-                        ->whereColumn('calendar_events.task_id', 'tasks.id')
-                        ->where('calendar_events.event_type', CalendarEventType::Custom->value);
-                })->get();
-
-            $taskObserver = new TaskObserver;
-            foreach ($missingTasks as $task) {
-                $taskObserver->saved($task);
-            }
-        }
 
         /** @var array<string, mixed> $filter */
         $filter = (array) $request->query('filter', []);

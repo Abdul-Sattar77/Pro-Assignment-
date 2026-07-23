@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useReport, useExportReport } from "../hooks/use-reports";
+import { reportsService } from "../services/reports-service";
 import { REPORT_OPTIONS, REPORT_META } from "../constants";
 import { REPORT_TYPE, type ReportType } from "../types";
 import { Button } from "@/components/ui/button";
@@ -30,6 +31,7 @@ import {
 } from "@/components/ui/table";
 import { Loader2, Download, Printer, FileText, Calendar } from "lucide-react";
 import { format } from "date-fns";
+import { formatCurrency } from "@/config/currency";
 
 export function ReportViewer() {
   const [type, setType] = useState<ReportType>(REPORT_TYPE.ASSIGNMENTS);
@@ -72,7 +74,7 @@ export function ReportViewer() {
         headerLower.includes("outflow")) &&
       typeof val === "number"
     ) {
-      return `PKR ${val.toLocaleString()}`;
+      return formatCurrency(val);
     }
 
     if (
@@ -214,22 +216,7 @@ export function ReportViewer() {
               <Button
                 className="gap-2"
                 onClick={() => {
-                  if (!data) return;
-                  const keys = Object.keys(data.rows[0] || {});
-                  const csvRows = [
-                    keys.join("\t"),
-                    ...data.rows.map((row: any) =>
-                      keys.map((k) => `"${row[k] ?? ""}"`).join("\t")
-                    ),
-                  ].join("\n");
-                  const blob = new Blob([csvRows], {
-                    type: "application/vnd.ms-excel;charset=utf-8",
-                  });
-                  const url = URL.createObjectURL(blob);
-                  const a = document.createElement("a");
-                  a.href = url;
-                  a.download = `${type}-report-${Date.now()}.xls`;
-                  a.click();
+                  void reportsService.downloadExcel(filters);
                 }}
                 disabled={isLoading || !data}
               >

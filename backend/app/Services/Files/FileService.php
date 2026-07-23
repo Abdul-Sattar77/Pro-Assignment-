@@ -57,6 +57,24 @@ final class FileService
         ]);
     }
 
+    /** Store a standalone file (e.g. template document, general attachment). */
+    public function uploadGeneral(User $uploader, UploadedFile $file): FileModel
+    {
+        $disk = $this->disk();
+        $path = $file->store('general', $disk);
+
+        return FileModel::create([
+            'assignment_id' => null,
+            'uploader_id' => $uploader->getKey(),
+            'category' => FileCategory::General->value,
+            'original_name' => $file->getClientOriginalName(),
+            'disk' => $disk,
+            'path' => (string) $path,
+            'mime' => $file->getClientMimeType(),
+            'size' => $file->getSize() ?: 0,
+        ]);
+    }
+
     /** Permanently remove the stored object and soft-delete the record. */
     public function delete(FileModel $file): void
     {

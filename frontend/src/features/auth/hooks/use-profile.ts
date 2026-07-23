@@ -1,6 +1,6 @@
 "use client";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ApiError } from "@/lib/http-error";
 import { AUTH_QUERY_KEYS } from "../constants";
@@ -8,8 +8,16 @@ import {
   profileService,
   type ChangePasswordPayload,
   type UpdateProfilePayload,
+  type ProfileStats,
 } from "../services/profile-service";
 import type { AuthUser } from "../types";
+
+export function useProfileStats() {
+  return useQuery<ProfileStats, ApiError>({
+    queryKey: ["profile", "stats"],
+    queryFn: () => profileService.getProfileStats(),
+  });
+}
 
 export function useUpdateProfile() {
   const queryClient = useQueryClient();

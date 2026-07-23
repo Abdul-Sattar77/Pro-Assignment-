@@ -38,8 +38,8 @@ final class PaymentResource extends JsonResource
             ]),
             'invoice' => $this->whenLoaded('invoice', fn () => $this->invoice === null ? null : [
                 'id' => $this->invoice->uuid,
-                'invoiceNumber' => $this->invoice->invoice_number,
-                'amount' => (float) $this->invoice->amount,
+                'invoiceNumber' => $this->invoice->number,
+                'amount' => (float) ($this->invoice->amount_cents / 100),
             ]),
             'user' => $this->whenLoaded('user', fn () => $this->user === null ? null : [
                 'id' => $this->user->uuid,

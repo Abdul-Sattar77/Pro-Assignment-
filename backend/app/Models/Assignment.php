@@ -102,4 +102,16 @@ class Assignment extends Model
     {
         return $this->hasMany(AssignmentAttachment::class)->latest('id');
     }
+
+    /** @return HasMany<Invoice, $this> */
+    public function invoices(): HasMany
+    {
+        return $this->hasMany(Invoice::class);
+    }
+
+    /** @return HasMany<Payment, $this> */
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
+    }
 }

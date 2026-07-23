@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { FileText, Download, Star, TrendingUp, Loader2 } from "lucide-react";
 import { useDashboardStats } from "@/features/dashboard";
+import { formatCurrency } from "@/config/currency";
 import { apiClient } from "@/lib/api-client";
 import { toast } from "sonner";
 import {
@@ -214,11 +215,13 @@ export function AnalyticsPreview() {
                               cx={p.x}
                               cy={p.y}
                               r="5"
-                              className="cursor-pointer fill-background stroke-primary stroke-2 hover:r-[6.5] transition-all"
+                              className="fill-background stroke-primary hover:r-[6.5] cursor-pointer stroke-2 transition-all"
                             />
                           </TooltipTrigger>
                           <TooltipContent>
-                            <span className="font-semibold">{val} assignments</span>
+                            <span className="font-semibold">
+                              {val} assignments
+                            </span>
                           </TooltipContent>
                         </Tooltip>
                       );
@@ -298,7 +301,9 @@ export function AnalyticsPreview() {
                             />
                           </TooltipTrigger>
                           <TooltipContent>
-                            <span className="font-semibold">PKR {inf.toLocaleString()}</span>
+                            <span className="font-semibold">
+                              {formatCurrency(inf)}
+                            </span>
                           </TooltipContent>
                         </Tooltip>
                       );

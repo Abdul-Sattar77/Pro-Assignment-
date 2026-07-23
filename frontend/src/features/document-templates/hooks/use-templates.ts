@@ -34,6 +34,26 @@ export function useCreateTemplate() {
   });
 }
 
+export function useUpdateTemplate() {
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    DocumentTemplate,
+    ApiError,
+    { id: string; payload: CreateTemplatePayload }
+  >({
+    mutationFn: ({ id, payload }) => templatesService.update(id, payload),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: TEMPLATES_QUERY_KEYS.all,
+      });
+      toast.success("Document template updated successfully.");
+    },
+    onError: (error) =>
+      toast.error(error.message || "Failed to update template."),
+  });
+}
+
 export function useDeleteTemplate() {
   const queryClient = useQueryClient();
 

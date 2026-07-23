@@ -1,3 +1,4 @@
+import { formatCurrency, APP_CURRENCY } from "@/config/currency";
 import {
   PAYMENT_STATUS,
   PAYMENT_TYPE,
@@ -7,11 +8,11 @@ import {
 } from "../types";
 
 /** cents → localized currency string. */
-export function formatMoney(cents: number, currency = "USD"): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency,
-  }).format(cents / 100);
+export function formatMoney(
+  cents: number,
+  currency = APP_CURRENCY.code,
+): string {
+  return formatCurrency(cents / 100, currency);
 }
 
 export const INVOICE_STATUS_META: Record<

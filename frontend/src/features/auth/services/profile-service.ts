@@ -22,8 +22,27 @@ export interface ChangePasswordPayload {
   passwordConfirmation: string;
 }
 
+export interface ProfileStats {
+  assignmentsCompleted: number;
+  assignmentsInProgress: number;
+  totalEarned: string;
+  avgRating: number;
+  responseTime: string;
+  memberSince: string;
+  totalLeads: number;
+  convertedLeads: number;
+  filesManaged: number;
+  messagesExchanged: number;
+}
+
 /** Typed API calls for the signed-in user's own account. */
 export const profileService = {
+  async getProfileStats(): Promise<ProfileStats> {
+    const { data } =
+      await apiClient.get<Envelope<ProfileStats>>("/profile/stats");
+    return data.data;
+  },
+
   async updateProfile(payload: UpdateProfilePayload): Promise<AuthUser> {
     await ensureCsrfCookie();
     // Send only the fields present so a partial save (e.g. a writer updating

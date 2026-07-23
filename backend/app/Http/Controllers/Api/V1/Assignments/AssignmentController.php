@@ -197,7 +197,7 @@ final class AssignmentController extends Controller
 
     public function complete(WorkflowNoteRequest $request, Assignment $assignment): JsonResponse
     {
-        $this->authorize('requestRevision', $assignment);
+        $this->authorize('complete', $assignment);
 
         $updated = $this->service->complete($this->actor($request), $assignment);
 

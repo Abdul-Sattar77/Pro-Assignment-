@@ -27,12 +27,14 @@ import {
   Plus,
   Search,
   Trash2,
+  Pencil,
   FileDown,
   ShieldCheck,
   Tag,
 } from "lucide-react";
 import { format } from "date-fns";
 import { useAuth } from "@/features/auth";
+import type { DocumentTemplate } from "../types";
 
 export function TemplatesList() {
   const { hasRole } = useAuth();
@@ -43,6 +45,9 @@ export function TemplatesList() {
   const [sort, setSort] = useState("-created_at");
   const [page, setPage] = useState(1);
   const [openCreate, setOpenCreate] = useState(false);
+  const [templateToEdit, setTemplateToEdit] = useState<DocumentTemplate | null>(
+    null,
+  );
 
   const filters = {
     category: category === "all" ? undefined : category,
@@ -164,15 +169,28 @@ export function TemplatesList() {
                     {tpl.category.replace("_", " ")}
                   </Badge>
                   {isStaff && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="text-destructive hover:bg-destructive/10 -mt-1 -mr-2 h-7 w-7"
-                      onClick={() => handleDelete(tpl.id)}
-                      disabled={deleteTemplate.isPending}
-                    >
-                      <Trash2 className="size-3.5" />
-                    </Button>
+                    <div className="-mt-1 -mr-2 flex items-center gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="text-muted-foreground hover:text-foreground hover:bg-muted h-7 w-7"
+                        onClick={() => {
+                          setTemplateToEdit(tpl);
+                          setOpenCreate(true);
+                        }}
+                      >
+                        <Pencil className="size-3.5" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="text-destructive hover:bg-destructive/10 h-7 w-7"
+                        onClick={() => handleDelete(tpl.id)}
+                        disabled={deleteTemplate.isPending}
+                      >
+                        <Trash2 className="size-3.5" />
+                      </Button>
+                    </div>
                   )}
                 </div>
                 <CardTitle className="mt-2 text-base font-bold text-slate-800 dark:text-slate-200">
@@ -239,7 +257,14 @@ export function TemplatesList() {
         </div>
       )}
 
-      <CreateTemplateDialog open={openCreate} onOpenChange={setOpenCreate} />
+      <CreateTemplateDialog
+        open={openCreate}
+        onOpenChange={(open) => {
+          setOpenCreate(open);
+          if (!open) setTemplateToEdit(null);
+        }}
+        templateToEdit={templateToEdit}
+      />
     </div>
   );
 }

@@ -53,6 +53,19 @@ final class FileController extends Controller
         return ApiResponse::resource(FileResource::make($file->load('uploader')), 201);
     }
 
+    public function uploadGeneral(StoreFileRequest $request): JsonResponse
+    {
+        /** @var UploadedFile $upload */
+        $upload = $request->file('file');
+
+        /** @var User $actor */
+        $actor = $request->user();
+
+        $file = $this->files->uploadGeneral($actor, $upload);
+
+        return ApiResponse::resource(FileResource::make($file->load('uploader')), 201);
+    }
+
     public function download(Request $request, File $file): StreamedResponse
     {
         $this->authorize('view', $file);

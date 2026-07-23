@@ -13,6 +13,8 @@ interface DocumentTemplateRepositoryInterface
 
     public function create(array $data): DocumentTemplate;
 
+    public function update(DocumentTemplate $template, array $data): DocumentTemplate;
+
     public function delete(DocumentTemplate $template): void;
 
     public function getFiltered(array $filters, int $perPage = 15): LengthAwarePaginator;

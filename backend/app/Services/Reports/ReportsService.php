@@ -75,9 +75,151 @@ final class ReportsService
         return $csvString ?: '';
     }
 
+    /**
+     * Generate an Excel XML string of the report.
+     */
+    public function exportToExcel(string $type, ?string $from = null, ?string $to = null): string
+    {
+        $data = $this->getReportData($type, $from, $to);
+        $headers = $data['headers'];
+        $rows = $data['rows'];
+
+        $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+        $xml .= '<?mso-application progid="Excel.Sheet"?>' . "\n";
+        $xml .= '<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"' . "\n";
+        $xml .= ' xmlns:o="urn:schemas-microsoft-com:office:office"' . "\n";
+        $xml .= ' xmlns:x="urn:schemas-microsoft-com:office:excel"' . "\n";
+        $xml .= ' xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">' . "\n";
+        $xml .= ' <Worksheet ss:Name="' . ucfirst($type) . ' Report">' . "\n";
+        $xml .= '  <Table>' . "\n";
+
+        // Header row
+        $xml .= '   <Row>' . "\n";
+        foreach ($headers as $header) {
+            $xml .= '    <Cell><Data ss:Type="String">' . htmlspecialchars((string) $header) . '</Data></Cell>' . "\n";
+        }
+        $xml .= '   </Row>' . "\n";
+
+        // Data rows
+        foreach ($rows as $row) {
+            $xml .= '   <Row>' . "\n";
+            foreach (array_values($row) as $val) {
+                $display = is_bool($val) ? ($val ? 'Yes' : 'No') : (string) ($val ?? '');
+                $xml .= '    <Cell><Data ss:Type="String">' . htmlspecialchars($display) . '</Data></Cell>' . "\n";
+            }
+            $xml .= '   </Row>' . "\n";
+        }
+
+        $xml .= '  </Table>' . "\n";
+        $xml .= ' </Worksheet>' . "\n";
+        $xml .= '</Workbook>';
+
+        return $xml;
+    }
+
+    /**
+     * Generate a print-ready HTML/PDF string of the report.
+     */
+    public function exportToPdf(string $type, ?string $from = null, ?string $to = null): string
+    {
+        $data = $this->getReportData($type, $from, $to);
+        $headers = $data['headers'];
+        $rows = $data['rows'];
+        $metrics = $data['metrics'];
+
+        $html = '<!DOCTYPE html><html><head><meta charset="utf-8">';
+        $html .= '<title>' . ucfirst($type) . ' Report</title>';
+        $html .= '<style>
+            body { font-family: sans-serif; margin: 20px; color: #333; }
+            h1 { font-size: 20px; margin-bottom: 5px; }
+            .metrics { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }
+            .metric-card { border: 1px solid #ccc; padding: 10px; border-radius: 6px; flex: 1; min-width: 150px; }
+            .metric-label { font-size: 11px; text-transform: uppercase; color: #666; }
+            .metric-val { font-size: 16px; font-weight: bold; margin-top: 4px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 12px; }
+            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+            th { background-color: #f2f2f2; }
+            @media print { body { margin: 0; } }
+        </style></head><body>';
+        $html .= '<h1>' . ucfirst($type) . ' Report</h1>';
+        $html .= '<p style="font-size: 12px; color: #666;">Generated on ' . now()->toDayDateTimeString() . '</p>';
+
+        $html .= '<div class="metrics">';
+        foreach ($metrics as $m) {
+            $html .= '<div class="metric-card"><div class="metric-label">' . htmlspecialchars((string) $m['label']) . '</div><div class="metric-val">' . htmlspecialchars((string) $m['value']) . '</div></div>';
+        }
+        $html .= '</div>';
+
+        $html .= '<table><thead><tr>';
+        foreach ($headers as $h) {
+            $html .= '<th>' . htmlspecialchars((string) $h) . '</th>';
+        }
+        $html .= '</tr></thead><tbody>';
+
+        foreach ($rows as $row) {
+            $html .= '<tr>';
+            foreach (array_values($row) as $val) {
+                $display = is_bool($val) ? ($val ? 'Yes' : 'No') : (string) ($val ?? '');
+                $html .= '<td>' . htmlspecialchars($display) . '</td>';
+            }
+            $html .= '</tr>';
+        }
+
+        $html .= 'tbody></table>';
+        $html .= '<script>window.onload = function() { window.print(); };</script>';
+        $html .= '</body></html>';
+
+        return $html;
+    }
+
+    private function currencyPrefix(): string
+    {
+        return config('finance.currency', 'PKR') . ' ';
+    }
+
+    private function resolveAssignmentFinancials(Assignment $a): array
+    {
+        $price = (float) ($a->client_price ?? 0.0);
+        if ($price <= 0.0) {
+            $invoiceSum = (float) ($a->invoices->sum('amount_cents') / 100);
+            if ($invoiceSum > 0.0) {
+                $price = $invoiceSum;
+            } else {
+                $paymentSum = (float) $a->payments
+                    ->where('status', PaymentStatus::Verified)
+                    ->whereIn('payment_type', [PaymentType::Advance, PaymentType::Partial, PaymentType::Balance])
+                    ->sum('amount');
+                if ($paymentSum > 0.0) {
+                    $price = $paymentSum;
+                }
+            }
+        }
+
+        $cost = (float) ($a->writer_cost ?? 0.0);
+        if ($cost <= 0.0) {
+            $payoutSum = (float) $a->payments
+                ->where('status', PaymentStatus::Verified)
+                ->where('payment_type', PaymentType::WriterPayout)
+                ->sum('amount');
+            if ($payoutSum > 0.0) {
+                $cost = $payoutSum;
+            }
+        }
+
+        $discount = (float) ($a->discount ?? 0.0);
+        $profit = ($price - $discount) - $cost;
+
+        return [
+            'price' => $price,
+            'cost' => $cost,
+            'discount' => $discount,
+            'profit' => $profit,
+        ];
+    }
+
     private function assignmentsReport(?Carbon $from, ?Carbon $to): array
     {
-        $query = Assignment::query()->with(['client', 'writer', 'projectManager']);
+        $query = Assignment::query()->with(['client', 'writer', 'projectManager', 'invoices', 'payments']);
 
         if ($from) {
             $query->where('created_at', '>=', $from);
@@ -89,24 +231,30 @@ final class ReportsService
         $assignments = $query->orderBy('created_at', 'desc')->get();
 
         $totalCount = $assignments->count();
-        $totalRevenue = $assignments->sum('client_price');
-        $totalCost = $assignments->sum('writer_cost');
-        $totalProfit = $assignments->sum('net_profit');
+        $totalRevenue = 0.0;
+        $totalCost = 0.0;
+        $totalProfit = 0.0;
 
         $statusSummary = [];
         foreach (AssignmentStatus::cases() as $status) {
             $statusSummary[$status->value] = $assignments->where('status', $status)->count();
         }
 
+        $curr = config('finance.currency', 'PKR');
         $headers = [
             'Assignment ID', 'Title', 'Subject', 'Client Name', 'PM Name',
             'Writer Name', 'Status', 'Priority', 'Word Count',
-            'Client Price (PKR)', 'Writer Cost (PKR)', 'Net Profit (PKR)',
+            "Client Price ({$curr})", "Writer Cost ({$curr})", "Net Profit ({$curr})",
             'Deadline', 'Created At',
         ];
 
         $rows = [];
         foreach ($assignments as $a) {
+            $fin = $this->resolveAssignmentFinancials($a);
+            $totalRevenue += $fin['price'];
+            $totalCost += $fin['cost'];
+            $totalProfit += $fin['profit'];
+
             $rows[] = [
                 'id' => $a->uuid,
                 'title' => $a->title,
@@ -117,9 +265,9 @@ final class ReportsService
                 'status' => $a->status->label(),
                 'priority' => $a->priority->label(),
                 'word_count' => $a->word_count,
-                'client_price' => (float) $a->client_price,
-                'writer_cost' => (float) $a->writer_cost,
-                'net_profit' => (float) $a->net_profit,
+                'client_price' => $fin['price'],
+                'writer_cost' => $fin['cost'],
+                'net_profit' => $fin['profit'],
                 'deadline' => $a->deadline->toIso8601String(),
                 'created_at' => $a->created_at?->toIso8601String(),
             ];
@@ -128,9 +276,9 @@ final class ReportsService
         return [
             'metrics' => [
                 ['label' => 'Total Assignments', 'value' => $totalCount],
-                ['label' => 'Total Value', 'value' => 'PKR '.number_format($totalRevenue)],
-                ['label' => 'Total Cost', 'value' => 'PKR '.number_format($totalCost)],
-                ['label' => 'Projected Net Profit', 'value' => 'PKR '.number_format($totalProfit)],
+                ['label' => 'Total Value', 'value' => $this->currencyPrefix() . number_format($totalRevenue)],
+                ['label' => 'Total Cost', 'value' => $this->currencyPrefix() . number_format($totalCost)],
+                ['label' => 'Projected Net Profit', 'value' => $this->currencyPrefix() . number_format($totalProfit)],
             ],
             'statusSummary' => $statusSummary,
             'headers' => $headers,
@@ -194,16 +342,17 @@ final class ReportsService
         $activeClients = count(array_filter($rows, fn ($r) => $r['active_orders'] > 0));
         $totalRevenue = array_sum(array_column($rows, 'total_paid'));
 
+        $curr = config('finance.currency', 'PKR');
         $headers = [
             'Client ID', 'Client Name', 'Client Email', 'Total Orders',
-            'Total Paid Inflow (PKR)', 'Active Orders', 'Registered At',
+            "Total Paid Inflow ({$curr})", 'Active Orders', 'Registered At',
         ];
 
         return [
             'metrics' => [
                 ['label' => 'Total Clients', 'value' => $totalClients],
                 ['label' => 'Clients with Active Orders', 'value' => $activeClients],
-                ['label' => 'Total Received Revenue', 'value' => 'PKR '.number_format($totalRevenue)],
+                ['label' => 'Total Received Revenue', 'value' => $this->currencyPrefix() . number_format($totalRevenue)],
             ],
             'headers' => $headers,
             'rows' => $rows,
@@ -258,16 +407,17 @@ final class ReportsService
         $totalCompleted = array_sum(array_column($rows, 'completed'));
         $totalPaid = array_sum(array_column($rows, 'total_earnings'));
 
+        $curr = config('finance.currency', 'PKR');
         $headers = [
             'Writer ID', 'Writer Name', 'Writer Email', 'Current Workload',
-            'Completed Orders', 'Total Earnings (PKR)', 'Registered At',
+            'Completed Orders', "Total Earnings ({$curr})", 'Registered At',
         ];
 
         return [
             'metrics' => [
                 ['label' => 'Total Writers', 'value' => $totalWriters],
                 ['label' => 'Total Completed Assignments', 'value' => $totalCompleted],
-                ['label' => 'Total Writer Earnings Paid', 'value' => 'PKR '.number_format($totalPaid)],
+                ['label' => 'Total Writer Earnings Paid', 'value' => $this->currencyPrefix() . number_format($totalPaid)],
             ],
             'headers' => $headers,
             'rows' => $rows,
@@ -353,9 +503,10 @@ final class ReportsService
         $verifiedSum = $payments->where('status', PaymentStatus::Verified)->sum('amount');
         $pendingSum = $payments->where('status', PaymentStatus::Pending)->sum('amount');
 
+        $curr = config('finance.currency', 'PKR');
         $headers = [
             'Transaction ID', 'Date', 'Client Name', 'Payment Method',
-            'Payment Type', 'Amount (PKR)', 'Status', 'Notes',
+            'Payment Type', "Amount ({$curr})", 'Status', 'Notes',
         ];
 
         $rows = [];
@@ -375,8 +526,8 @@ final class ReportsService
         return [
             'metrics' => [
                 ['label' => 'Total Revenue Payments', 'value' => $totalCount],
-                ['label' => 'Verified Inflow Revenue', 'value' => 'PKR '.number_format($verifiedSum)],
-                ['label' => 'Pending Verification Inflow', 'value' => 'PKR '.number_format($pendingSum)],
+                ['label' => 'Verified Inflow Revenue', 'value' => $this->currencyPrefix() . number_format($verifiedSum)],
+                ['label' => 'Pending Verification Inflow', 'value' => $this->currencyPrefix() . number_format($pendingSum)],
             ],
             'headers' => $headers,
             'rows' => $rows,
@@ -407,9 +558,10 @@ final class ReportsService
         $expensesSum = $payments->where('payment_type', PaymentType::Expense)
             ->where('status', PaymentStatus::Verified)->sum('amount');
 
+        $curr = config('finance.currency', 'PKR');
         $headers = [
             'Transaction ID', 'Date', 'Payee/Vendor', 'Payment Method',
-            'Payment Type', 'Amount (PKR)', 'Status', 'Notes',
+            'Payment Type', "Amount ({$curr})", 'Status', 'Notes',
         ];
 
         $rows = [];
@@ -429,9 +581,9 @@ final class ReportsService
         return [
             'metrics' => [
                 ['label' => 'Total Outflow Payments', 'value' => $totalCount],
-                ['label' => 'Verified Outflow Cost', 'value' => 'PKR '.number_format($verifiedSum)],
-                ['label' => 'Writer Payouts (Verified)', 'value' => 'PKR '.number_format($payoutsSum)],
-                ['label' => 'General Expenses (Verified)', 'value' => 'PKR '.number_format($expensesSum)],
+                ['label' => 'Verified Outflow Cost', 'value' => $this->currencyPrefix() . number_format($verifiedSum)],
+                ['label' => 'Writer Payouts (Verified)', 'value' => $this->currencyPrefix() . number_format($payoutsSum)],
+                ['label' => 'General Expenses (Verified)', 'value' => $this->currencyPrefix() . number_format($expensesSum)],
             ],
             'headers' => $headers,
             'rows' => $rows,
@@ -513,7 +665,7 @@ final class ReportsService
 
     private function profitReport(?Carbon $from, ?Carbon $to): array
     {
-        $query = Assignment::query()->with(['client', 'writer', 'projectManager']);
+        $query = Assignment::query()->with(['client', 'writer', 'projectManager', 'invoices', 'payments']);
 
         if ($from) {
             $query->where('created_at', '>=', $from);
@@ -524,41 +676,49 @@ final class ReportsService
 
         $assignments = $query->orderBy('created_at', 'desc')->get();
 
-        $totalRevenue = $assignments->sum(fn ($a) => (float) $a->client_price - (float) $a->discount);
-        $totalCost = $assignments->sum(fn ($a) => (float) $a->writer_cost);
-        $totalProfit = $assignments->sum(fn ($a) => (float) $a->net_profit);
-        $averageMargin = $totalRevenue > 0 ? round(($totalProfit / $totalRevenue) * 100, 2) : 0.0;
+        $totalRevenue = 0.0;
+        $totalCost = 0.0;
+        $totalProfit = 0.0;
 
+        $curr = config('finance.currency', 'PKR');
         $headers = [
             'Assignment ID', 'Title', 'Client Name', 'Writer Name',
-            'Client Price (PKR)', 'Discount (PKR)', 'Writer Cost (PKR)',
-            'Net Profit (PKR)', 'Profit Margin (%)', 'Status', 'Created At',
+            "Client Price ({$curr})", "Discount ({$curr})", "Writer Cost ({$curr})",
+            "Net Profit ({$curr})", 'Profit Margin (%)', 'Status', 'Created At',
         ];
 
         $rows = [];
         foreach ($assignments as $a) {
-            $revenue = (float) $a->client_price - (float) $a->discount;
-            $margin = $revenue > 0 ? round(((float) $a->net_profit / $revenue) * 100, 2) : 0.0;
+            $fin = $this->resolveAssignmentFinancials($a);
+            $rev = $fin['price'] - $fin['discount'];
+            $margin = $rev > 0 ? round(($fin['profit'] / $rev) * 100, 2) : 0.0;
+
+            $totalRevenue += $rev;
+            $totalCost += $fin['cost'];
+            $totalProfit += $fin['profit'];
+
             $rows[] = [
                 'id' => $a->uuid,
                 'title' => $a->title,
                 'client_name' => $a->client?->name,
                 'writer_name' => $a->writer?->name,
-                'client_price' => (float) $a->client_price,
-                'discount' => (float) $a->discount,
-                'writer_cost' => (float) $a->writer_cost,
-                'net_profit' => (float) $a->net_profit,
+                'client_price' => $fin['price'],
+                'discount' => $fin['discount'],
+                'writer_cost' => $fin['cost'],
+                'net_profit' => $fin['profit'],
                 'profit_margin' => $margin,
                 'status' => $a->status->label(),
                 'created_at' => $a->created_at?->toIso8601String(),
             ];
         }
 
+        $averageMargin = $totalRevenue > 0 ? round(($totalProfit / $totalRevenue) * 100, 2) : 0.0;
+
         return [
             'metrics' => [
-                ['label' => 'Total Gross Revenue', 'value' => 'PKR '.number_format($assignments->sum('client_price'))],
-                ['label' => 'Total Cost & Outflows', 'value' => 'PKR '.number_format($totalCost)],
-                ['label' => 'Total Net Profit', 'value' => 'PKR '.number_format($totalProfit)],
+                ['label' => 'Total Gross Revenue', 'value' => $this->currencyPrefix() . number_format($totalRevenue)],
+                ['label' => 'Total Cost & Outflows', 'value' => $this->currencyPrefix() . number_format($totalCost)],
+                ['label' => 'Total Net Profit', 'value' => $this->currencyPrefix() . number_format($totalProfit)],
                 ['label' => 'Average Profit Margin', 'value' => $averageMargin.'%'],
             ],
             'headers' => $headers,
