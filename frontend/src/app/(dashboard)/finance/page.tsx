@@ -6,7 +6,7 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/layout/page-header";
 import { fadeIn, staggerContainer } from "@/animations/variants";
-import { Can } from "@/features/auth";
+import { Can, WriterProfileCard } from "@/features/auth";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   CreateInvoiceDialog,
@@ -43,6 +43,12 @@ export default function FinancePage() {
           }
         />
       </motion.div>
+      <Can role="writer">
+        <motion.div variants={fadeIn}>
+          <WriterProfileCard />
+        </motion.div>
+      </Can>
+
       <motion.div variants={fadeIn}>
         <FinanceSummaryTiles />
       </motion.div>

@@ -8,8 +8,10 @@ import {
   ChevronLeft,
   ChevronRight,
   CreditCard,
+  Download,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Can } from "@/features/auth";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -34,6 +36,7 @@ import {
   INVOICE_STATUS_OPTIONS,
 } from "../constants";
 import { useInvoiceAction, useInvoices } from "../hooks/use-finance";
+import { printInvoice } from "../lib/print-invoice";
 import type { Invoice, InvoiceStatus } from "../types";
 import { PaymentDialog } from "./payment-dialog";
 
@@ -152,11 +155,14 @@ export function InvoicesTable() {
                 <TableCell className="font-medium tabular-nums">
                   {formatMoney(invoice.amountCents, invoice.currency)}
                 </TableCell>
-                <TableCell className="text-muted-foreground tabular-nums text-sm">
+                <TableCell className="text-muted-foreground text-sm tabular-nums">
                   {formatMoney(invoice.paidAmountCents ?? 0, invoice.currency)}
                 </TableCell>
-                <TableCell className="font-semibold text-rose-600 dark:text-rose-400 tabular-nums text-sm">
-                  {formatMoney(invoice.dueAmountCents ?? invoice.amountCents, invoice.currency)}
+                <TableCell className="text-sm font-semibold text-rose-600 tabular-nums dark:text-rose-400">
+                  {formatMoney(
+                    invoice.dueAmountCents ?? invoice.amountCents,
+                    invoice.currency,
+                  )}
                 </TableCell>
                 <TableCell>
                   <Badge
@@ -170,6 +176,16 @@ export function InvoicesTable() {
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center justify-end gap-2">
+                    <Can role="client">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => printInvoice(invoice)}
+                      >
+                        <Download className="size-4" />
+                        Download
+                      </Button>
+                    </Can>
                     {invoice.actions.includes("submit_payment") && (
                       <Button size="sm" onClick={() => setPayFor(invoice)}>
                         <CreditCard className="size-4" />

@@ -12,6 +12,19 @@ type EchoClient = Echo<"reverb">;
 
 let client: EchoClient | null = null;
 
+/**
+ * Tear down the Echo client and its socket. Call on logout so a subsequent
+ * login rebuilds the client with the NEW bearer token (the token is captured
+ * at construction). Without this, the singleton keeps the previous session's
+ * token and broadcasting auth fails / a stale socket lingers across accounts.
+ */
+export function disconnectEcho(): void {
+  if (client) {
+    client.disconnect();
+    client = null;
+  }
+}
+
 export function getEcho(): EchoClient | null {
   if (typeof window === "undefined") return null;
   if (client) return client;

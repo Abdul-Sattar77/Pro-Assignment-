@@ -51,6 +51,22 @@ apiClient.interceptors.response.use(
     const status = error.response?.status ?? 0;
     const body = error.response?.data;
 
+    // Global 401 handling: a token that the server rejects means the session
+    // expired/was revoked. Clear it and bounce to login (full reload also drops
+    // stale React state). Skip auth endpoints (login/register/me handle their
+    // own 401) and skip when there was no token (public request).
+    if (status === 401 && typeof window !== "undefined") {
+      const url = error.config?.url ?? "";
+      const isAuthEndpoint = url.includes("/auth/");
+      const hadToken = Boolean(localStorage.getItem("token"));
+      if (hadToken && !isAuthEndpoint) {
+        localStorage.removeItem("token");
+        if (!window.location.pathname.startsWith("/login")) {
+          window.location.href = "/login";
+        }
+      }
+    }
+
     const normalized = new ApiError({
       code:
         body?.error?.code ??

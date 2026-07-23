@@ -2,28 +2,24 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { format } from "date-fns";
 import { staggerContainer, fadeIn } from "@/animations/variants";
 import {
-  CheckCircle2,
   Star,
   TrendingUp,
-  Clock,
-  Award,
+  Briefcase,
   Mail,
   Calendar,
   Shield,
-  FileText,
-  MessageSquare,
-  FolderOpen,
   Edit2,
   Check,
   X,
-  Camera,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+<<<<<<< HEAD
 import { Separator } from "@/components/ui/separator";
 import { useAuth, useProfileStats } from "@/features/auth";
 
@@ -120,31 +116,53 @@ function StatBar({
       </div>
     </div>
   );
+=======
+import { useAuth } from "@/features/auth";
+
+function formatPkr(amount: number): string {
+  return `PKR ${Math.round(amount).toLocaleString()}`;
+>>>>>>> 8e331a494fc8c089b7c92afb640adff61feb7cc1
 }
 
 export default function ProfilePage() {
   const { user } = useAuth();
   const { data: stats = DEFAULT_STATS } = useProfileStats();
   const [editing, setEditing] = useState(false);
-  const [displayName, setDisplayName] = useState("");
-  const [bio, setBio] = useState(
-    "Experienced Project Manager at Prossignment. I coordinate between clients and writers to deliver high-quality academic work on time.",
-  );
-  const [editBio, setEditBio] = useState(bio);
-  const [avatarColor] = useState("from-primary/40 to-primary/10");
+  const [bio, setBio] = useState("");
+  const [editBio, setEditBio] = useState("");
 
   if (!user) return null;
 
+<<<<<<< HEAD
   const name = displayName || user.name;
   const conversionRate = stats.totalLeads > 0
     ? Math.round((stats.convertedLeads / stats.totalLeads) * 100)
     : 0;
+=======
+  const name = user.name;
+>>>>>>> 8e331a494fc8c089b7c92afb640adff61feb7cc1
   const initials = name
     .split(" ")
     .map((n: string) => n[0])
     .join("")
     .slice(0, 2)
     .toUpperCase();
+
+  const isWriter = user.roles.includes("writer");
+  const memberSince = user.createdAt
+    ? format(new Date(user.createdAt), "MMMM yyyy")
+    : "—";
+  const rating = user.averageRating ?? 0;
+  const workload = user.currentWorkload ?? 0;
+
+  // Real skills come from the writer's structured profile / expertise.
+  const wp = user.writerProfile;
+  const skills = [wp?.subjects, wp?.codingLanguages, user.expertise]
+    .filter(Boolean)
+    .join(", ")
+    .split(/,\s*/)
+    .map((s) => s.trim())
+    .filter(Boolean);
 
   function saveEdit() {
     setBio(editBio);
@@ -158,28 +176,24 @@ export default function ProfilePage() {
       animate="visible"
       className="max-w-4xl space-y-5"
     >
-      {/* ── Profile Header ── */}
+      {/* Header */}
       <motion.div variants={fadeIn}>
         <Card className="overflow-hidden">
-          <div className={`h-28 bg-gradient-to-r ${avatarColor}`} />
+          <div className="from-primary/40 to-primary/10 h-28 bg-linear-to-r" />
           <CardContent className="pt-0 pb-6">
             <div className="-mt-12 mb-5 flex flex-col gap-4 sm:flex-row sm:items-end">
-              {/* Avatar */}
               <div className="relative w-fit">
                 <div className="bg-primary/20 border-background text-primary flex size-24 items-center justify-center rounded-2xl border-4 text-3xl font-bold select-none">
                   {initials}
                 </div>
-                <button className="bg-primary text-primary-foreground hover:bg-primary/90 absolute -right-1 -bottom-1 flex size-7 items-center justify-center rounded-full shadow-md transition-colors">
-                  <Camera className="size-3.5" />
-                </button>
               </div>
 
-              {/* Name + role */}
               <div className="flex-1 pb-1">
                 <div className="flex flex-wrap items-center gap-2">
                   <h1 className="text-xl font-bold">{name}</h1>
                   <button
                     onClick={() => setEditing(!editing)}
+                    aria-label="Edit bio"
                     className="text-muted-foreground hover:text-foreground transition-colors"
                   >
                     <Edit2 className="size-3.5" />
@@ -195,14 +209,13 @@ export default function ProfilePage() {
                       {role.replace("_", " ")}
                     </Badge>
                   ))}
-                  <span className="flex items-center gap-1 text-xs text-green-400">
-                    <span className="size-1.5 animate-pulse rounded-full bg-green-400" />
+                  <span className="flex items-center gap-1 text-xs text-green-500 dark:text-green-400">
+                    <span className="size-1.5 animate-pulse rounded-full bg-green-500 dark:bg-green-400" />
                     Active
                   </span>
                 </div>
               </div>
 
-              {/* Edit controls */}
               {editing && (
                 <div className="flex gap-2">
                   <Button size="sm" onClick={saveEdit} className="h-8 gap-1">
@@ -220,33 +233,39 @@ export default function ProfilePage() {
               )}
             </div>
 
-            {/* Bio */}
             {editing ? (
               <Input
                 value={editBio}
                 onChange={(e) => setEditBio(e.target.value)}
                 className="mb-4 text-sm"
-                placeholder="Write a short bio..."
+                placeholder="Write a short bio…"
               />
             ) : (
-              <p className="text-muted-foreground mb-4 text-sm leading-relaxed">
-                {bio}
-              </p>
+              bio && (
+                <p className="text-muted-foreground mb-4 text-sm leading-relaxed">
+                  {bio}
+                </p>
+              )
             )}
 
-            {/* Meta row */}
+            {/* Real meta */}
             <div className="flex flex-wrap gap-x-5 gap-y-2">
               <span className="text-muted-foreground flex items-center gap-1.5 text-xs">
                 <Mail className="size-3.5" /> {user.email}
               </span>
               <span className="text-muted-foreground flex items-center gap-1.5 text-xs">
+<<<<<<< HEAD
                 <Calendar className="size-3.5" /> Member since{" "}
                 {stats.memberSince}
+=======
+                <Calendar className="size-3.5" /> Member since {memberSince}
+>>>>>>> 8e331a494fc8c089b7c92afb640adff61feb7cc1
               </span>
               <span className="text-muted-foreground flex items-center gap-1.5 text-xs">
                 <Shield className="size-3.5" /> {user.permissions.length}{" "}
                 permissions
               </span>
+<<<<<<< HEAD
               <span className="flex items-center gap-1.5 text-xs text-amber-400">
                 <Star className="size-3.5 fill-amber-400" />{" "}
                 {stats.avgRating} rating
@@ -255,16 +274,25 @@ export default function ProfilePage() {
                 <Clock className="size-3.5" /> {stats.responseTime}{" "}
                 response
               </span>
+=======
+              {rating > 0 && (
+                <span className="flex items-center gap-1.5 text-xs text-amber-500 dark:text-amber-400">
+                  <Star className="size-3.5 fill-amber-400" />{" "}
+                  {rating.toFixed(1)} rating
+                </span>
+              )}
+>>>>>>> 8e331a494fc8c089b7c92afb640adff61feb7cc1
             </div>
           </CardContent>
         </Card>
       </motion.div>
 
-      {/* ── Stats Cards ── */}
+      {/* Real stat cards */}
       <motion.div
         variants={fadeIn}
-        className="grid grid-cols-2 gap-4 sm:grid-cols-4"
+        className="grid grid-cols-2 gap-4 sm:grid-cols-3"
       >
+<<<<<<< HEAD
         {[
           {
             value: stats.assignmentsCompleted,
@@ -293,10 +321,55 @@ export default function ProfilePage() {
           >
             <p className={`text-3xl font-bold ${color}`}>{value}</p>
             <p className="text-muted-foreground mt-1 text-xs">{label}</p>
-          </Card>
-        ))}
+=======
+        <Card className="p-4 text-center">
+          <p className="text-primary text-3xl font-bold tabular-nums">
+            {rating > 0 ? rating.toFixed(1) : "—"}
+          </p>
+          <p className="text-muted-foreground mt-1 text-xs">Average rating</p>
+        </Card>
+        <Card className="p-4 text-center">
+          <p className="text-3xl font-bold text-blue-500 tabular-nums dark:text-blue-400">
+            {workload}
+          </p>
+          <p className="text-muted-foreground mt-1 text-xs">
+            Active assignments
+          </p>
+        </Card>
+        <Card className="p-4 text-center">
+          <p className="text-3xl font-bold text-emerald-500 tabular-nums dark:text-emerald-400">
+            {user.permissions.length}
+          </p>
+          <p className="text-muted-foreground mt-1 text-xs">Permissions</p>
+        </Card>
       </motion.div>
 
+      {/* Expertise (real, when present) */}
+      {skills.length > 0 && (
+        <motion.div variants={fadeIn}>
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base">
+                Expertise &amp; skills
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-wrap gap-2">
+              {skills.map((skill, i) => (
+                <Badge
+                  key={`${skill}:${i}`}
+                  variant="outline"
+                  className="bg-muted/40 cursor-default px-3 py-1 text-xs"
+                >
+                  {skill}
+                </Badge>
+              ))}
+            </CardContent>
+>>>>>>> 8e331a494fc8c089b7c92afb640adff61feb7cc1
+          </Card>
+        </motion.div>
+      )}
+
+<<<<<<< HEAD
       <motion.div variants={fadeIn} className="grid gap-4 sm:grid-cols-2">
         {/* ── Progress Bars ── */}
         <Card>
@@ -346,52 +419,30 @@ export default function ProfilePage() {
                 <span className="text-xs leading-tight font-medium">
                   {label}
                 </span>
+=======
+      {/* Earnings — writers only, real */}
+      {isWriter && (
+        <motion.div variants={fadeIn}>
+          <Card className="border-primary/20 bg-primary/5">
+            <CardContent className="flex items-center justify-between p-5">
+              <div>
+                <p className="text-muted-foreground text-xs">Total earnings</p>
+                <p className="text-primary mt-1 text-3xl font-bold tabular-nums">
+                  {formatPkr(user.totalEarnings)}
+                </p>
+                <p className="text-muted-foreground mt-1 text-xs">
+                  From verified payouts
+                </p>
+>>>>>>> 8e331a494fc8c089b7c92afb640adff61feb7cc1
               </div>
-            ))}
-          </CardContent>
-        </Card>
-      </motion.div>
-
-      {/* ── Skills ── */}
-      <motion.div variants={fadeIn}>
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base">Skills & Expertise</CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-wrap gap-2">
-            {SKILLS.map((skill) => (
-              <Badge
-                key={skill}
-                variant="outline"
-                className="bg-muted/40 hover:bg-muted/70 cursor-default px-3 py-1 text-xs transition-colors"
-              >
-                {skill}
-              </Badge>
-            ))}
-          </CardContent>
-        </Card>
-      </motion.div>
-
-      {/* ── Recent Activity ── */}
-      <motion.div variants={fadeIn}>
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base">Recent Activity</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-1">
-            {RECENT_ACTIVITY.map((activity, i) => (
-              <div key={i}>
-                <div className="flex items-start gap-3 py-2.5">
-                  <CheckCircle2 className="text-primary mt-0.5 size-4 shrink-0" />
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm">{activity.text}</p>
-                    <p className="text-muted-foreground mt-0.5 text-xs">
-                      {activity.time}
-                    </p>
-                  </div>
-                </div>
-                {i < RECENT_ACTIVITY.length - 1 && <Separator />}
+              <div className="bg-primary/15 flex size-16 items-center justify-center rounded-2xl">
+                {user.totalEarnings > 0 ? (
+                  <TrendingUp className="text-primary size-8" />
+                ) : (
+                  <Briefcase className="text-primary size-8" />
+                )}
               </div>
+<<<<<<< HEAD
             ))}
           </CardContent>
         </Card>
@@ -418,6 +469,12 @@ export default function ProfilePage() {
           </CardContent>
         </Card>
       </motion.div>
+=======
+            </CardContent>
+          </Card>
+        </motion.div>
+      )}
+>>>>>>> 8e331a494fc8c089b7c92afb640adff61feb7cc1
     </motion.div>
   );
 }

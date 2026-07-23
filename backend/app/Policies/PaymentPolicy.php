@@ -36,7 +36,14 @@ final class PaymentPolicy
 
     public function create(User $actor): bool
     {
+<<<<<<< HEAD
         return $actor->hasRole(Role::Admin->value) || $actor->can('finance.manage') || $actor->can('payments.create');
+=======
+        // Only staff who manage invoices may record payments. finance.view is
+        // held by clients and writers (so they can SEE their own finances), and
+        // must not let them inject payment rows against arbitrary users/invoices.
+        return $actor->can('invoices.manage');
+>>>>>>> 8e331a494fc8c089b7c92afb640adff61feb7cc1
     }
 
     public function update(User $actor, Payment $payment): bool

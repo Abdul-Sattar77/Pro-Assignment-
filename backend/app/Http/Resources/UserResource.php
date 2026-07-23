@@ -31,9 +31,16 @@ final class UserResource extends JsonResource
             'studyYear' => $this->study_year,
             'availability' => $this->availability,
             'expertise' => $this->expertise,
+            'writerProfile' => $this->writer_profile,
             'notes' => $this->notes,
             'averageRating' => $this->average_rating,
             'totalEarnings' => $this->total_earnings,
+            // Computed only for the user's own record (auth/me, profile update)
+            // so admin list endpoints never trigger a per-row count query.
+            'currentWorkload' => $this->when(
+                $request->user()?->getKey() === $this->getKey(),
+                fn () => $this->current_workload,
+            ),
             'roles' => $this->getRoleNames()->values(),
             // Included only when eager-loaded (detail/auth responses) to avoid
             // N+1 permission lookups on list endpoints.

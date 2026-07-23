@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { ApiError } from "@/lib/http-error";
+import { disconnectEcho } from "@/lib/echo";
 import { ROUTES } from "@/constants/routes";
 import { AUTH_QUERY_KEYS } from "../constants";
 import { authService } from "../services/auth-service";
@@ -68,6 +69,9 @@ export function useLogout() {
   return useMutation<void, ApiError>({
     mutationFn: () => authService.logout(),
     onSettled: () => {
+      // Tear down the real-time socket so the next login rebuilds it with a
+      // fresh token (and no stale cross-account channel lingers).
+      disconnectEcho();
       // Clear ALL cached server state — nothing user-scoped may survive logout.
       queryClient.setQueryData(AUTH_QUERY_KEYS.ME, null);
       queryClient.removeQueries({ predicate: (q) => q.queryKey[0] !== "auth" });

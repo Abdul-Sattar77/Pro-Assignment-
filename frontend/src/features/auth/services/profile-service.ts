@@ -1,5 +1,5 @@
 import { apiClient, ensureCsrfCookie } from "@/lib/api-client";
-import type { AuthUser } from "../types";
+import type { AuthUser, WriterProfile } from "../types";
 
 interface Envelope<T> {
   data: T;
@@ -11,6 +11,9 @@ export interface UpdateProfilePayload {
   university?: string;
   department?: string;
   studyYear?: string;
+  availability?: "available" | "busy" | "away";
+  expertise?: string | null;
+  writerProfile?: WriterProfile | null;
 }
 
 export interface ChangePasswordPayload {
@@ -41,13 +44,29 @@ export const profileService = {
 
   async updateProfile(payload: UpdateProfilePayload): Promise<AuthUser> {
     await ensureCsrfCookie();
-    const { data } = await apiClient.patch<Envelope<AuthUser>>("/profile", {
+    // Send only the fields present so a partial save (e.g. a writer updating
+    // just availability) never clears untouched fields on the backend.
+    const body: Record<string, unknown> = {
       name: payload.name,
       email: payload.email,
-      university: payload.university || null,
-      department: payload.department || null,
-      study_year: payload.studyYear || null,
-    });
+    };
+    if (payload.university !== undefined)
+      body.university = payload.university || null;
+    if (payload.department !== undefined)
+      body.department = payload.department || null;
+    if (payload.studyYear !== undefined)
+      body.study_year = payload.studyYear || null;
+    if (payload.availability !== undefined)
+      body.availability = payload.availability;
+    if (payload.expertise !== undefined)
+      body.expertise = payload.expertise || null;
+    if (payload.writerProfile !== undefined)
+      body.writer_profile = payload.writerProfile;
+
+    const { data } = await apiClient.patch<Envelope<AuthUser>>(
+      "/profile",
+      body,
+    );
     return data.data;
   },
 

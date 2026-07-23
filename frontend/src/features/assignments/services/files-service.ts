@@ -17,10 +17,15 @@ export const filesService = {
     return data.data;
   },
 
-  async upload(assignmentId: string, file: File): Promise<AssignmentFile> {
+  async upload(
+    assignmentId: string,
+    file: File,
+    note?: string | null,
+  ): Promise<AssignmentFile> {
     await ensureCsrfCookie();
     const form = new FormData();
     form.append("file", file);
+    if (note && note.trim()) form.append("note", note.trim());
     const { data } = await apiClient.post<ItemEnvelope>(
       `/assignments/${assignmentId}/files`,
       form,
@@ -46,5 +51,16 @@ export const filesService = {
     anchor.click();
     anchor.remove();
     URL.revokeObjectURL(url);
+  },
+
+  /**
+   * Fetch the binary (authorized) and return an object URL for in-portal
+   * preview. Caller is responsible for revoking the URL when done.
+   */
+  async previewUrl(fileId: string): Promise<string> {
+    const response = await apiClient.get<Blob>(`/files/${fileId}/download`, {
+      responseType: "blob",
+    });
+    return URL.createObjectURL(response.data);
   },
 };
