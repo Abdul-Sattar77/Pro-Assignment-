@@ -60,6 +60,7 @@ Route::prefix('v1')->group(function (): void {
 
     // ---- Profile (own account) ----
     Route::middleware('auth:sanctum')->prefix('profile')->name('profile.')->group(function (): void {
+        Route::get('stats', [ProfileController::class, 'stats'])->name('stats');
         Route::patch('/', [ProfileController::class, 'update'])->name('update');
         Route::post('password', [ProfileController::class, 'changePassword'])->name('password');
     });
@@ -163,6 +164,7 @@ Route::prefix('v1')->group(function (): void {
 
     // ---- Files (authorized binary access) ----
     Route::middleware('auth:sanctum')->prefix('files')->name('files.')->group(function (): void {
+        Route::post('/', [FileController::class, 'uploadGeneral'])->name('store');
         Route::get('{file}/download', [FileController::class, 'download'])->name('download');
         Route::delete('{file}', [FileController::class, 'destroy'])->name('destroy');
     });

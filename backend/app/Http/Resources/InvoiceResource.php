@@ -64,7 +64,7 @@ final class InvoiceResource extends JsonResource
             'amountCents' => $this->amount_cents,
             'paidAmountCents' => $paidAmountCents,
             'dueAmountCents' => $dueAmountCents,
-            'currency' => $this->currency,
+            'currency' => $this->currency ?: config('finance.currency', 'PKR'),
             'status' => $this->status->value,
             'statusLabel' => $this->status->label(),
             'description' => $this->description,

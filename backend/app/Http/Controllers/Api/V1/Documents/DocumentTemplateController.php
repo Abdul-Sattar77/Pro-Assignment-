@@ -6,22 +6,28 @@ namespace App\Http\Controllers\Api\V1\Documents;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Documents\StoreDocumentTemplateRequest;
+use App\Http\Requests\Documents\UpdateDocumentTemplateRequest;
 use App\Http\Resources\DocumentTemplateResource;
 use App\Models\DocumentTemplate;
 use App\Models\File;
 use App\Repositories\Contracts\DocumentTemplateRepositoryInterface;
 use App\Support\ApiResponse;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 final class DocumentTemplateController extends Controller
 {
+    use AuthorizesRequests;
+
     public function __construct(
         private readonly DocumentTemplateRepositoryInterface $repository,
     ) {}
 
     public function index(Request $request): JsonResponse
     {
+        $this->authorize('viewAny', DocumentTemplate::class);
+
         $filters = [
             'category' => $request->query('category'),
             'search' => $request->query('search'),
@@ -42,6 +48,8 @@ final class DocumentTemplateController extends Controller
 
     public function store(StoreDocumentTemplateRequest $request): JsonResponse
     {
+        $this->authorize('create', DocumentTemplate::class);
+
         $actor = $request->user();
         $data = $request->validated();
 
@@ -66,15 +74,42 @@ final class DocumentTemplateController extends Controller
 
     public function show(DocumentTemplate $documentTemplate): JsonResponse
     {
+        $this->authorize('view', $documentTemplate);
+
         return ApiResponse::resource(DocumentTemplateResource::make($documentTemplate->load(['file', 'uploader'])));
+    }
+
+    public function update(UpdateDocumentTemplateRequest $request, DocumentTemplate $documentTemplate): JsonResponse
+    {
+        $this->authorize('update', $documentTemplate);
+
+        $data = $request->validated();
+
+        $payload = [];
+        if (isset($data['title'])) {
+            $payload['title'] = $data['title'];
+        }
+        if (isset($data['category'])) {
+            $payload['category'] = $data['category'];
+        }
+        if (array_key_exists('description', $data)) {
+            $payload['description'] = $data['description'];
+        }
+        if (isset($data['fileId'])) {
+            $file = File::query()->where('uuid', $data['fileId'])->first();
+            if ($file !== null) {
+                $payload['file_id'] = $file->id;
+            }
+        }
+
+        $updated = $this->repository->update($documentTemplate, $payload);
+
+        return ApiResponse::resource(DocumentTemplateResource::make($updated->load(['file', 'uploader'])));
     }
 
     public function destroy(Request $request, DocumentTemplate $documentTemplate): JsonResponse
     {
-        $user = $request->user();
-        if ($user === null || (!$user->hasRole('admin') && !$user->hasRole('project_manager'))) {
-            return ApiResponse::error('FORBIDDEN', 'You do not have permission to delete document templates.', 403);
-        }
+        $this->authorize('delete', $documentTemplate);
 
         $this->repository->delete($documentTemplate);
 

@@ -46,20 +46,41 @@ final class ReportsController extends Controller
 
         $request->validate([
             'type' => ['required', 'string', 'in:assignments,clients,writers,pms,revenue,expenses,performance,profit'],
+            'format' => ['nullable', 'string', 'in:csv,xlsx,excel,pdf'],
             'from' => ['nullable', 'date'],
             'to' => ['nullable', 'date'],
         ]);
 
         $type = (string) $request->query('type');
+        $format = (string) $request->query('format', 'csv');
         $from = $request->query('from') ? (string) $request->query('from') : null;
         $to = $request->query('to') ? (string) $request->query('to') : null;
 
+        $timestamp = now()->format('Ymd-His');
+
+        if ($format === 'xlsx' || $format === 'excel') {
+            $xml = $this->service->exportToExcel($type, $from, $to);
+            $filename = $type . '-report-' . $timestamp . '.xls';
+            return response($xml, 200, [
+                'Content-Type' => 'application/vnd.ms-excel; charset=UTF-8',
+                'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+                'Cache-Control' => 'no-cache, no-store, must-revalidate',
+            ]);
+        }
+
+        if ($format === 'pdf') {
+            $html = $this->service->exportToPdf($type, $from, $to);
+            return response($html, 200, [
+                'Content-Type' => 'text/html; charset=UTF-8',
+            ]);
+        }
+
         $csv = $this->service->exportToCsv($type, $from, $to);
-        $filename = $type.'-report-'.now()->format('Ymd-His').'.csv';
+        $filename = $type . '-report-' . $timestamp . '.csv';
 
         return response($csv, 200, [
             'Content-Type' => 'text/csv; charset=UTF-8',
-            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
             'Cache-Control' => 'no-cache, no-store, must-revalidate',
             'Pragma' => 'no-cache',
             'Expires' => '0',

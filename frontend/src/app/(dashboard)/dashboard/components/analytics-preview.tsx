@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { FileText, Download, Star, TrendingUp, Loader2 } from "lucide-react";
 import { useDashboardStats } from "@/features/dashboard";
+import { formatCurrency } from "@/config/currency";
 import { apiClient } from "@/lib/api-client";
 import { toast } from "sonner";
 import {
@@ -298,7 +299,7 @@ export function AnalyticsPreview() {
                             />
                           </TooltipTrigger>
                           <TooltipContent>
-                            <span className="font-semibold">PKR {inf.toLocaleString()}</span>
+                            <span className="font-semibold">{formatCurrency(inf)}</span>
                           </TooltipContent>
                         </Tooltip>
                       );

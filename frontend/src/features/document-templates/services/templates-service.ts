@@ -54,6 +54,17 @@ export const templatesService = {
     return data.data;
   },
 
+  async update(
+    id: string,
+    payload: CreateTemplatePayload,
+  ): Promise<DocumentTemplate> {
+    const { data } = await apiClient.patch<Envelope<DocumentTemplate>>(
+      `/document-templates/${id}`,
+      payload,
+    );
+    return data.data;
+  },
+
   async delete(id: string): Promise<void> {
     await apiClient.delete(`/document-templates/${id}`);
   },

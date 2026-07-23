@@ -68,7 +68,7 @@ export const NAV_SECTIONS: NavSection[] = [
         label: "Calendar",
         href: ROUTES.calendar,
         icon: Calendar,
-        permission: "tasks.view",
+        permission: "calendar.view",
       },
       {
         label: "Files",

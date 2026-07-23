@@ -31,6 +31,8 @@ import {
   Activity,
 } from "lucide-react";
 
+import { formatCurrency } from "@/config/currency";
+
 export function AnalyticsDashboard() {
   const { data, isLoading, error } = useAnalytics();
 
@@ -97,7 +99,7 @@ export function AnalyticsDashboard() {
     },
     {
       label: "Revenue Overview",
-      value: `PKR ${kpis.revenueOverview.toLocaleString()}`,
+      value: formatCurrency(kpis.revenueOverview),
       icon: DollarSign,
       colorClass: "text-emerald-600 dark:text-emerald-400",
       desc: "Total verified client deposits",
@@ -237,7 +239,7 @@ export function AnalyticsDashboard() {
                           {row.month}
                         </span>
                         <span className="font-semibold text-slate-900 dark:text-slate-100">
-                          PKR {row.total.toLocaleString()}
+                          {formatCurrency(row.total)}
                         </span>
                       </div>
                       <div className="h-3 w-full rounded-full bg-slate-100 dark:bg-slate-800">

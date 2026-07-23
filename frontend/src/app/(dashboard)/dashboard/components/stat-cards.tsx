@@ -102,6 +102,7 @@ export function StatCard({
 }
 
 import { useDashboardStats } from "@/features/dashboard";
+import { formatCurrency } from "@/config/currency";
 
 export function StatCards() {
   const { data, isLoading } = useDashboardStats();
@@ -116,19 +117,24 @@ export function StatCards() {
     );
   }
 
+  const latestInflow = data.trends?.inflows?.[data.trends.inflows.length - 1] ?? 0;
+  const prevInflow = data.trends?.inflows?.[data.trends.inflows.length - 2] ?? 0;
+  const trendPct = prevInflow > 0 ? (((latestInflow - prevInflow) / prevInflow) * 100).toFixed(1) : "0.0";
+  const isPositive = parseFloat(trendPct) >= 0;
+
   const stats = [
     {
       title: "Revenue Overview",
-      value: "PKR " + data.stats.revenue.toLocaleString(),
+      value: formatCurrency(data.stats.revenue),
       icon: DollarSign,
-      trend: { value: "+8.2%", positive: true },
+      trend: { value: `${isPositive ? "+" : ""}${trendPct}%`, positive: isPositive },
       description: "all-time verified",
       className: "border-primary/20 bg-primary/5",
       href: ROUTES.finance,
     },
     {
       title: "Net Profit Balance",
-      value: "PKR " + data.stats.profit.toLocaleString(),
+      value: formatCurrency(data.stats.profit),
       icon: TrendingUp,
       trend: { value: "Net Earnings", positive: true },
       description: "revenue minus payout",

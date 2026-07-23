@@ -27,9 +27,7 @@ final class UserController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        if (!$request->user()->can('users.view') && !$request->user()->can('tasks.manage') && !$request->user()->can('assignments.assign')) {
-            $this->authorize('viewAny', User::class);
-        }
+        $this->authorize('viewAny', User::class);
 
         /** @var array<string, mixed> $filter */
         $filter = (array) $request->query('filter', []);
@@ -57,6 +55,8 @@ final class UserController extends Controller
 
     public function store(StoreUserRequest $request): JsonResponse
     {
+        $this->authorize('create', User::class);
+
         /** @var array{name: string, email: string, password: string, roles: array<int, string>, is_active?: bool} $data */
         $data = $request->validated();
 
@@ -74,6 +74,8 @@ final class UserController extends Controller
 
     public function update(UpdateUserRequest $request, User $user): JsonResponse
     {
+        $this->authorize('update', $user);
+
         /** @var array{name?: string, email?: string, password?: string|null, roles?: array<int, string>, is_active?: bool} $data */
         $data = $request->validated();
 

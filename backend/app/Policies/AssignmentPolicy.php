@@ -59,6 +59,15 @@ final class AssignmentPolicy
         return $actor->can('assignments.request_revision');
     }
 
+    public function complete(User $actor, Assignment $assignment): bool
+    {
+        if ($actor->hasRole(Role::Admin->value) || $actor->hasRole(Role::ProjectManager->value)) {
+            return true;
+        }
+
+        return $actor->can('assignments.complete');
+    }
+
     /** Cancel window rules are enforced in the service. */
     public function cancel(User $actor, Assignment $assignment): bool
     {

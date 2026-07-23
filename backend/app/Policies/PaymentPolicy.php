@@ -36,7 +36,7 @@ final class PaymentPolicy
 
     public function create(User $actor): bool
     {
-        return $actor->can('finance.view');
+        return $actor->hasRole(Role::Admin->value) || $actor->can('finance.manage') || $actor->can('payments.create');
     }
 
     public function update(User $actor, Payment $payment): bool
@@ -51,6 +51,6 @@ final class PaymentPolicy
 
     public function verify(User $actor): bool
     {
-        return $actor->can('payments.verify');
+        return $actor->hasRole(Role::Admin->value) || $actor->can('payments.verify');
     }
 }

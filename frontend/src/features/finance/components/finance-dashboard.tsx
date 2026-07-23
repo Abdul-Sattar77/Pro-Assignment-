@@ -22,6 +22,7 @@ import {
   ArrowUpRight,
 } from "lucide-react";
 import { format } from "date-fns";
+import { formatCurrency } from "@/config/currency";
 
 interface FinanceDashboardProps {
   onTabChange: (tab: string) => void;
@@ -76,7 +77,7 @@ export function FinanceDashboard({ onTabChange }: FinanceDashboardProps) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold tracking-tight">
-              PKR {totalRevenue.toLocaleString()}
+              {formatCurrency(totalRevenue)}
             </div>
             <p className="text-muted-foreground mt-1 flex items-center gap-1 text-xs">
               <TrendingUp className="h-3 w-3 text-emerald-500" />
@@ -94,7 +95,7 @@ export function FinanceDashboard({ onTabChange }: FinanceDashboardProps) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold tracking-tight">
-              PKR {totalExpenses.toLocaleString()}
+              {formatCurrency(totalExpenses)}
             </div>
             <p className="text-muted-foreground mt-1 flex items-center gap-1 text-xs">
               <TrendingDown className="h-3 w-3 text-rose-500" />
@@ -112,7 +113,7 @@ export function FinanceDashboard({ onTabChange }: FinanceDashboardProps) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold tracking-tight">
-              PKR {totalProfit.toLocaleString()}
+              {formatCurrency(totalProfit)}
             </div>
             <p className="text-muted-foreground mt-1 text-xs">
               Revenue minus Expenses
@@ -173,11 +174,11 @@ export function FinanceDashboard({ onTabChange }: FinanceDashboardProps) {
                         <span className="text-muted-foreground">
                           Rev:{" "}
                           <strong className="text-slate-900 dark:text-slate-100">
-                            PKR {row.revenue.toLocaleString()}
+                            {formatCurrency(row.revenue)}
                           </strong>{" "}
                           | Exp:{" "}
                           <strong className="text-slate-900 dark:text-slate-100">
-                            PKR {row.expenses.toLocaleString()}
+                            {formatCurrency(row.expenses)}
                           </strong>
                         </span>
                       </div>
@@ -277,7 +278,7 @@ export function FinanceDashboard({ onTabChange }: FinanceDashboardProps) {
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-sm font-semibold">
-                      PKR {payment.amount.toLocaleString()}
+                      {formatCurrency(payment.amount)}
                     </span>
                     <Badge
                       variant="outline"

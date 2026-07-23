@@ -146,7 +146,7 @@ final class InvoiceService
             ->where('status', $status->value)->sum('amount_cents');
 
         return [
-            'currency' => 'USD',
+            'currency' => config('finance.currency', 'PKR'),
             'paidCents' => $sumFor(InvoiceStatus::Paid),
             'outstandingCents' => $sumFor(InvoiceStatus::Pending),
             'awaitingCents' => $sumFor(InvoiceStatus::AwaitingVerification),

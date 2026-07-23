@@ -31,6 +31,7 @@ import { useAuth } from "@/features/auth";
 import { applyFieldErrors } from "@/lib/apply-field-errors";
 import { formatMoney } from "../constants";
 import { PAYMENT_TYPE, type PaymentType } from "../types";
+import { APP_CURRENCY } from "@/config/currency";
 
 const recordPaymentSchema = z.object({
   assignmentId: z.string().optional().nullable(),
@@ -224,7 +225,7 @@ export function RecordPaymentDialog({
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="payment-amount">Amount (PKR)</Label>
+              <Label htmlFor="payment-amount">Amount ({APP_CURRENCY.code})</Label>
               <Input
                 id="payment-amount"
                 type="number"

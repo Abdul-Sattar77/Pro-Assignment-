@@ -43,6 +43,7 @@ import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { Can, useAuth } from "@/features/auth";
 import { ASSIGNABLE_ROLES } from "../constants";
 import { useUpdateUser, useUsers } from "../hooks/use-users";
+import { formatCurrency } from "@/config/currency";
 import type { UserListItem } from "../types";
 import { DeleteUserDialog } from "./delete-user-dialog";
 import { UserFormDialog } from "./user-form-dialog";
@@ -237,8 +238,7 @@ export function UsersTable() {
                       {isWriter && (
                         <div className="text-muted-foreground flex flex-wrap gap-x-2 gap-y-0.5 text-[11px] font-normal">
                           <span>
-                            Earnings: PKR{" "}
-                            {user.totalEarnings?.toLocaleString() || "0"}
+                            Earnings: {formatCurrency(user.totalEarnings || 0)}
                           </span>
                           {user.expertise && (
                             <>

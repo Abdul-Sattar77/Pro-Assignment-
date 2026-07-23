@@ -23,6 +23,8 @@ import {
 import { useAssignments } from "@/features/assignments";
 import { useCreateInvoice } from "../hooks/use-finance";
 
+import { APP_CURRENCY } from "@/config/currency";
+
 /**
  * Staff raises an invoice against an order. The client is taken from the
  * selected order, so there's no separate client picker.
@@ -90,7 +92,7 @@ export function CreateInvoiceDialog({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="invoice-amount">Amount (USD)</Label>
+            <Label htmlFor="invoice-amount">Amount ({APP_CURRENCY.code})</Label>
             <Input
               id="invoice-amount"
               type="number"

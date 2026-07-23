@@ -20,6 +20,7 @@ import {
   Building,
 } from "lucide-react";
 import { format } from "date-fns";
+import { formatCurrency } from "@/config/currency";
 import type { UserListItem } from "../types";
 
 interface UserDetailDrawerProps {
@@ -108,7 +109,7 @@ export function UserDetailDrawer({
                 <CardContent className="px-4 pb-3 pt-0 font-medium text-sm flex items-center justify-between">
                   <span>★ {user.averageRating ? user.averageRating.toFixed(1) : "5.0"}</span>
                   <span className="font-mono text-xs text-emerald-600 dark:text-emerald-400">
-                    PKR {(user.totalEarnings ?? 0).toLocaleString()}
+                    {formatCurrency(user.totalEarnings ?? 0)}
                   </span>
                 </CardContent>
               </Card>
@@ -194,7 +195,7 @@ export function UserDetailDrawer({
                     <div className="rounded-md border p-2.5 text-center">
                       <p className="text-xs text-muted-foreground">Verified Earnings</p>
                       <p className="text-lg font-bold font-mono text-emerald-600 dark:text-emerald-400 mt-0.5">
-                        PKR {(user.totalEarnings ?? 0).toLocaleString()}
+                        {formatCurrency(user.totalEarnings ?? 0)}
                       </p>
                     </div>
                   </div>

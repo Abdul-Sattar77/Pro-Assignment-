@@ -82,6 +82,8 @@ final class PaymentController extends Controller
 
     public function store(StorePaymentRequest $request): JsonResponse
     {
+        $this->authorize('create', Payment::class);
+
         /** @var array{assignmentId?: string|null, invoiceId?: string|null, userId?: string|null, amount: float, paymentMethod?: string|null, paymentType: string, proofFileId?: string|null, verified?: bool|null, notes?: string|null} $data */
         $data = $request->validated();
 
@@ -133,6 +135,8 @@ final class PaymentController extends Controller
 
     public function verify(VerifyPaymentRequest $request, Payment $payment): JsonResponse
     {
+        $this->authorize('verify', $payment);
+
         /** @var array{status: string, notes?: string|null} $data */
         $data = $request->validated();
 

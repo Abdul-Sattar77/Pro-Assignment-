@@ -25,19 +25,19 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { useAuth } from "@/features/auth";
+import { useAuth, useProfileStats } from "@/features/auth";
 
-const MOCK_STATS = {
-  assignmentsCompleted: 47,
-  assignmentsInProgress: 3,
-  totalEarned: "PKR 235,000",
-  avgRating: 4.8,
+const DEFAULT_STATS = {
+  assignmentsCompleted: 0,
+  assignmentsInProgress: 0,
+  totalEarned: "PKR 0",
+  avgRating: 5.0,
   responseTime: "< 2 hrs",
   memberSince: "January 2026",
-  totalLeads: 62,
-  convertedLeads: 54,
-  filesManaged: 128,
-  messagesExchanged: 340,
+  totalLeads: 0,
+  convertedLeads: 0,
+  filesManaged: 0,
+  messagesExchanged: 0,
 };
 
 const ACHIEVEMENTS = [
@@ -124,6 +124,7 @@ function StatBar({
 
 export default function ProfilePage() {
   const { user } = useAuth();
+  const { data: stats = DEFAULT_STATS } = useProfileStats();
   const [editing, setEditing] = useState(false);
   const [displayName, setDisplayName] = useState("");
   const [bio, setBio] = useState(
@@ -135,9 +136,9 @@ export default function ProfilePage() {
   if (!user) return null;
 
   const name = displayName || user.name;
-  const conversionRate = Math.round(
-    (MOCK_STATS.convertedLeads / MOCK_STATS.totalLeads) * 100,
-  );
+  const conversionRate = stats.totalLeads > 0
+    ? Math.round((stats.convertedLeads / stats.totalLeads) * 100)
+    : 0;
   const initials = name
     .split(" ")
     .map((n: string) => n[0])
@@ -240,7 +241,7 @@ export default function ProfilePage() {
               </span>
               <span className="text-muted-foreground flex items-center gap-1.5 text-xs">
                 <Calendar className="size-3.5" /> Member since{" "}
-                {MOCK_STATS.memberSince}
+                {stats.memberSince}
               </span>
               <span className="text-muted-foreground flex items-center gap-1.5 text-xs">
                 <Shield className="size-3.5" /> {user.permissions.length}{" "}
@@ -248,10 +249,10 @@ export default function ProfilePage() {
               </span>
               <span className="flex items-center gap-1.5 text-xs text-amber-400">
                 <Star className="size-3.5 fill-amber-400" />{" "}
-                {MOCK_STATS.avgRating} rating
+                {stats.avgRating} rating
               </span>
               <span className="text-muted-foreground flex items-center gap-1.5 text-xs">
-                <Clock className="size-3.5" /> {MOCK_STATS.responseTime}{" "}
+                <Clock className="size-3.5" /> {stats.responseTime}{" "}
                 response
               </span>
             </div>
@@ -266,7 +267,7 @@ export default function ProfilePage() {
       >
         {[
           {
-            value: MOCK_STATS.assignmentsCompleted,
+            value: stats.assignmentsCompleted,
             label: "Assignments Done",
             color: "text-primary",
           },
@@ -276,12 +277,12 @@ export default function ProfilePage() {
             color: "text-green-400",
           },
           {
-            value: MOCK_STATS.avgRating,
+            value: stats.avgRating,
             label: "Avg Rating",
             color: "text-amber-400",
           },
           {
-            value: MOCK_STATS.assignmentsInProgress,
+            value: stats.assignmentsInProgress,
             label: "In Progress",
             color: "text-blue-400",
           },
@@ -305,25 +306,25 @@ export default function ProfilePage() {
           <CardContent className="space-y-4">
             <StatBar
               label="Leads managed"
-              value={MOCK_STATS.totalLeads}
+              value={stats.totalLeads}
               max={100}
               color="bg-green-400"
             />
             <StatBar
               label="Files managed"
-              value={MOCK_STATS.filesManaged}
+              value={stats.filesManaged}
               max={200}
               color="bg-blue-400"
             />
             <StatBar
               label="Messages sent"
-              value={MOCK_STATS.messagesExchanged}
+              value={stats.messagesExchanged}
               max={500}
               color="bg-purple-400"
             />
             <StatBar
               label="Assignments completed"
-              value={MOCK_STATS.assignmentsCompleted}
+              value={stats.assignmentsCompleted}
               max={100}
               color="bg-primary"
             />
@@ -405,10 +406,10 @@ export default function ProfilePage() {
                 Total Revenue Managed
               </p>
               <p className="text-primary mt-1 text-3xl font-bold">
-                {MOCK_STATS.totalEarned}
+                {stats.totalEarned}
               </p>
               <p className="text-muted-foreground mt-1 text-xs">
-                Across {MOCK_STATS.assignmentsCompleted} completed assignments
+                Across {stats.assignmentsCompleted} completed assignments
               </p>
             </div>
             <div className="bg-primary/15 flex size-16 items-center justify-center rounded-2xl">

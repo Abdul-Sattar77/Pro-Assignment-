@@ -2,63 +2,54 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { MessageSquareOff, RefreshCw } from "lucide-react";
-import { useAuth } from "@/features/auth";
+import { MessageSquareOff, Plus, RefreshCw, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { fadeIn, staggerContainer } from "@/animations/variants";
 import {
-  ConversationList,
-  ChatWindow,
-  MessageInput,
   useConversations,
-  useChatHistory,
-  useSendMessage,
-  type Conversation,
-} from "@/features/messaging";
+  useChatContacts,
+  useStartConversation,
+} from "@/features/chat/hooks/use-chat";
+import { ChatThread } from "@/features/chat/components/chat-thread";
+import {
+  ConversationList,
+  ContactPicker,
+} from "@/features/chat/components/conversation-list";
+import type { ChatConversation, ChatContact } from "@/features/chat/types";
 
 export default function MessagesPage() {
-  const [selectedConversation, setSelectedConversation] =
-    useState<Conversation | null>(null);
-  const [search, setSearch] = useState("");
+  const [selectedConversation, setSelectedConversation] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
+  const [mode, setMode] = useState<"conversations" | "contacts">("conversations");
 
   const {
-    data: conversations,
+    data: conversations = [],
     isPending: loadingList,
     refetch: refetchList,
-  } = useConversations(search.trim() || undefined);
+  } = useConversations();
 
-  const {
-    data: messages,
-    isPending: loadingHistory,
-    refetch: refetchHistory,
-  } = useChatHistory(selectedConversation?.id || null);
+  const { data: contacts = [], isPending: loadingContacts } = useChatContacts();
+  const startConversation = useStartConversation();
 
-  const sendMessage = useSendMessage();
-
-  const handleSendMessage = (
-    messageText: string | null,
-    attachmentId: string | null,
-  ) => {
-    if (!selectedConversation) return;
-
-    sendMessage.mutate(
-      {
-        assignmentId: selectedConversation.assignment.id,
-        type: selectedConversation.type,
-        message: messageText,
-        attachmentId,
-      },
-      {
-        onSuccess: () => {
-          void refetchHistory();
-          void refetchList();
-        },
-      },
-    );
+  const handleSelectConversation = (c: ChatConversation) => {
+    setSelectedConversation({
+      id: c.id,
+      name: c.contact?.name ?? "Chat",
+    });
   };
 
-  const handleSelectConversation = (c: Conversation) => {
-    setSelectedConversation(c);
+  const handlePickContact = (contact: ChatContact) => {
+    startConversation.mutate(contact.id, {
+      onSuccess: (conv) => {
+        setSelectedConversation({
+          id: conv.id,
+          name: contact.name,
+        });
+        setMode("conversations");
+      },
+    });
   };
 
   return (
@@ -66,38 +57,59 @@ export default function MessagesPage() {
       variants={staggerContainer}
       initial="hidden"
       animate="visible"
-      className="bg-card flex h-[calc(100vh-140px)] overflow-hidden rounded-xl border shadow-sm"
+      className="bg-card flex h-[calc(100vh-140px)] overflow-hidden rounded-xl border shadow-xs"
     >
       {/* Sidebar List (1/3 width) */}
-      <div className="h-full w-full shrink-0 border-r md:w-80 lg:w-96">
-        <ConversationList
-          conversations={conversations || []}
-          selectedId={selectedConversation?.id || null}
-          onSelect={handleSelectConversation}
-          isLoading={loadingList}
-        />
+      <div className="flex h-full w-full flex-col shrink-0 border-r md:w-80 lg:w-96">
+        <div className="flex items-center justify-between border-b p-3">
+          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            {mode === "conversations" ? "Conversations" : "Start New Chat"}
+          </span>
+          {mode === "conversations" ? (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setMode("contacts")}
+              className="gap-1 h-7 text-xs"
+            >
+              <UserPlus className="size-3.5" />
+              New Chat
+            </Button>
+          ) : (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setMode("conversations")}
+              className="h-7 text-xs"
+            >
+              Back to chats
+            </Button>
+          )}
+        </div>
+
+        <div className="flex-1 overflow-y-auto">
+          {mode === "conversations" ? (
+            <ConversationList
+              conversations={conversations}
+              onSelect={handleSelectConversation}
+            />
+          ) : (
+            <ContactPicker contacts={contacts} onPick={handlePickContact} />
+          )}
+        </div>
       </div>
 
       {/* Main Chat Window (2/3 width) */}
       <div className="flex h-full flex-1 flex-col bg-zinc-50/50 dark:bg-zinc-950/10">
         {selectedConversation ? (
-          <>
-            {/* Header / Top actions */}
-            <div className="flex h-full flex-1 flex-col overflow-hidden">
-              <ChatWindow
-                conversation={selectedConversation}
-                messages={messages || []}
-                isLoading={loadingHistory}
-              />
-
-              {/* Message Input bar */}
-              <MessageInput
-                assignmentId={selectedConversation.assignment.id}
-                onSend={handleSendMessage}
-                isSending={sendMessage.isPending}
-              />
+          <div className="flex h-full flex-1 flex-col overflow-hidden">
+            <div className="border-b bg-card px-4 py-3">
+              <h3 className="text-sm font-semibold">
+                {selectedConversation.name}
+              </h3>
             </div>
-          </>
+            <ChatThread conversationId={selectedConversation.id} />
+          </div>
         ) : (
           <div className="flex flex-1 flex-col items-center justify-center p-8 text-center">
             <motion.div variants={fadeIn} className="max-w-xs space-y-3">
@@ -127,3 +139,4 @@ export default function MessagesPage() {
     </motion.div>
   );
 }
+

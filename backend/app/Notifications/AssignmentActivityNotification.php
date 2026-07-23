@@ -7,13 +7,14 @@ namespace App\Notifications;
 use App\Enums\AssignmentEventType;
 use App\Models\Assignment;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 /**
- * In-app notification for a workflow event on an assignment. Stored via the
- * database channel; realtime-ready (add 'broadcast' to via() when Reverb ships).
+ * Queued notification supporting both database in-app alerts and email channel.
  */
-final class AssignmentActivityNotification extends Notification
+final class AssignmentActivityNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -28,7 +29,18 @@ final class AssignmentActivityNotification extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['database'];
+        return ['database', 'mail'];
+    }
+
+    public function toMail(object $notifiable): MailMessage
+    {
+        return (new MailMessage)
+            ->subject('Assignment Activity: ' . $this->assignment->title)
+            ->greeting('Hello!')
+            ->line('There is a new update on assignment "' . $this->assignment->title . '":')
+            ->line($this->message)
+            ->action('View Assignment', config('app.url') . '/assignments/' . $this->assignment->uuid)
+            ->line('Thank you for using our platform!');
     }
 
     /**
