@@ -1,129 +1,139 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { MessageSquareOff, RefreshCw } from "lucide-react";
-import { useAuth } from "@/features/auth";
+import { Loader2, MessageSquare, PenSquare, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { fadeIn, staggerContainer } from "@/animations/variants";
 import {
+  ChatThread,
+  ContactPicker,
   ConversationList,
-  ChatWindow,
-  MessageInput,
+  roleLabel,
+  useChatContacts,
   useConversations,
-  useChatHistory,
-  useSendMessage,
-  type Conversation,
-} from "@/features/messaging";
+  useStartConversation,
+  type ChatContact,
+  type ChatConversation,
+} from "@/features/chat";
 
+interface Active {
+  id: string;
+  name: string;
+  role: ChatContact["role"];
+}
+
+/**
+ * Full-page Messages — the same real-time direct chat the floating widget uses
+ * (backed by the wired /chat endpoints). Two panes: conversations on the left,
+ * the open thread on the right, plus a "new message" contact picker.
+ */
 export default function MessagesPage() {
-  const [selectedConversation, setSelectedConversation] =
-    useState<Conversation | null>(null);
-  const [search, setSearch] = useState("");
+  const { data: conversations = [], isPending } = useConversations();
+  const { data: contacts = [] } = useChatContacts();
+  const startConversation = useStartConversation();
 
-  const {
-    data: conversations,
-    isPending: loadingList,
-    refetch: refetchList,
-  } = useConversations(search.trim() || undefined);
+  const [active, setActive] = useState<Active | null>(null);
+  const [picking, setPicking] = useState(false);
 
-  const {
-    data: messages,
-    isPending: loadingHistory,
-    refetch: refetchHistory,
-  } = useChatHistory(selectedConversation?.id || null);
-
-  const sendMessage = useSendMessage();
-
-  const handleSendMessage = (
-    messageText: string | null,
-    attachmentId: string | null,
-  ) => {
-    if (!selectedConversation) return;
-
-    sendMessage.mutate(
-      {
-        assignmentId: selectedConversation.assignment.id,
-        type: selectedConversation.type,
-        message: messageText,
-        attachmentId,
-      },
-      {
-        onSuccess: () => {
-          void refetchHistory();
-          void refetchList();
-        },
-      },
-    );
+  const openConversation = (c: ChatConversation) => {
+    setActive({
+      id: c.id,
+      name: c.contact?.name ?? "Chat",
+      role: c.contact?.role ?? null,
+    });
+    setPicking(false);
   };
 
-  const handleSelectConversation = (c: Conversation) => {
-    setSelectedConversation(c);
+  const openContact = (contact: ChatContact) => {
+    startConversation.mutate(contact.id, {
+      onSuccess: (conversation) => {
+        setActive({
+          id: conversation.id,
+          name: contact.name,
+          role: contact.role,
+        });
+        setPicking(false);
+      },
+    });
   };
 
   return (
-    <motion.div
-      variants={staggerContainer}
-      initial="hidden"
-      animate="visible"
-      className="bg-card flex h-[calc(100vh-140px)] overflow-hidden rounded-xl border shadow-sm"
-    >
-      {/* Sidebar List (1/3 width) */}
-      <div className="h-full w-full shrink-0 border-r md:w-80 lg:w-96">
-        <ConversationList
-          conversations={conversations || []}
-          selectedId={selectedConversation?.id || null}
-          onSelect={handleSelectConversation}
-          isLoading={loadingList}
-        />
+    <div className="bg-card flex h-[calc(100dvh-9rem)] overflow-hidden rounded-xl border shadow-sm">
+      {/* Left: conversations */}
+      <div className="flex h-full w-full shrink-0 flex-col border-r sm:w-80 lg:w-96">
+        <div className="flex items-center justify-between gap-2 border-b px-4 py-3">
+          <h2 className="flex items-center gap-2 text-sm font-semibold">
+            <MessageSquare className="text-primary size-4" />
+            {picking ? "New message" : "Messages"}
+          </h2>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-8"
+            aria-label={picking ? "Back to conversations" : "New message"}
+            onClick={() => setPicking((p) => !p)}
+          >
+            {picking ? (
+              <X className="size-4" />
+            ) : (
+              <PenSquare className="size-4" />
+            )}
+          </Button>
+        </div>
+
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          {picking ? (
+            startConversation.isPending ? (
+              <div className="text-muted-foreground flex items-center justify-center py-10">
+                <Loader2 className="size-5 animate-spin" />
+              </div>
+            ) : (
+              <ContactPicker contacts={contacts} onPick={openContact} />
+            )
+          ) : isPending ? (
+            <div className="text-muted-foreground flex items-center justify-center py-10">
+              <Loader2 className="size-5 animate-spin" />
+            </div>
+          ) : (
+            <ConversationList
+              conversations={conversations}
+              onSelect={openConversation}
+            />
+          )}
+        </div>
       </div>
 
-      {/* Main Chat Window (2/3 width) */}
-      <div className="flex h-full flex-1 flex-col bg-zinc-50/50 dark:bg-zinc-950/10">
-        {selectedConversation ? (
+      {/* Right: open thread */}
+      <div className="hidden min-w-0 flex-1 flex-col sm:flex">
+        {active ? (
           <>
-            {/* Header / Top actions */}
-            <div className="flex h-full flex-1 flex-col overflow-hidden">
-              <ChatWindow
-                conversation={selectedConversation}
-                messages={messages || []}
-                isLoading={loadingHistory}
-              />
-
-              {/* Message Input bar */}
-              <MessageInput
-                assignmentId={selectedConversation.assignment.id}
-                onSend={handleSendMessage}
-                isSending={sendMessage.isPending}
-              />
+            <div className="border-b px-5 py-3">
+              <p className="truncate text-sm font-semibold">{active.name}</p>
+              {active.role && (
+                <p className="text-muted-foreground text-xs">
+                  {roleLabel(active.role)}
+                </p>
+              )}
+            </div>
+            <div className="min-h-0 flex-1">
+              <ChatThread conversationId={active.id} />
             </div>
           </>
         ) : (
-          <div className="flex flex-1 flex-col items-center justify-center p-8 text-center">
-            <motion.div variants={fadeIn} className="max-w-xs space-y-3">
-              <div className="bg-muted mx-auto flex size-12 items-center justify-center rounded-full">
-                <MessageSquareOff className="text-muted-foreground size-6" />
-              </div>
-              <h3 className="text-sm font-bold">Select a conversation</h3>
-              <p className="text-muted-foreground text-xs">
-                Choose a workflow channel from the list on the left to review
-                messages and coordinate assignments.
+          <div className="text-muted-foreground flex flex-1 flex-col items-center justify-center gap-3 p-8 text-center">
+            <span className="bg-muted flex size-12 items-center justify-center rounded-full">
+              <MessageSquare className="size-6" />
+            </span>
+            <div>
+              <p className="text-foreground text-sm font-semibold">
+                Select a conversation
               </p>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  void refetchList();
-                }}
-                className="gap-1 px-3 text-xs"
-              >
-                <RefreshCw className="size-3.5" />
-                Refresh Chats
-              </Button>
-            </motion.div>
+              <p className="mt-1 text-xs">
+                Pick a chat on the left, or start a new one with the ✏️ button.
+              </p>
+            </div>
           </div>
         )}
       </div>
-    </motion.div>
+    </div>
   );
 }
