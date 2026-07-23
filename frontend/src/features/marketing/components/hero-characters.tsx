@@ -3,57 +3,74 @@
 import { motion } from "framer-motion";
 
 /**
- * Hand-built flat-vector cartoon characters for the hero gutters — upgraded to
- * a polished "SaaS illustration" look with gradients, soft shading, outlined
- * silhouettes and highlights. Each floats and has idle motion (wave / tassel /
- * blink). Pure SVG, no external asset. `transformBox: fill-box` keeps rotate
- * origins predictable inside the SVG.
+ * Young-adult university-student characters for the hero gutters — modern flat
+ * illustration with adult proportions (small head, long body), hoodie/gown,
+ * glasses, laptop/diploma, and a minimal mature face. Each floats and has idle
+ * motion (wave / tassel / blink) plus cursor parallax (handled by the parent).
+ * Pure SVG, no external asset.
  */
 
-function Face({ mouth = "#b4694a" }: { mouth?: string }) {
+const skinDefs = (
+  <radialGradient id="skin" cx="42%" cy="34%" r="72%">
+    <stop offset="0%" stopColor="#f4c9a0" />
+    <stop offset="100%" stopColor="#e3a878" />
+  </radialGradient>
+);
+
+/** Minimal, mature face (no blush). Optionally with glasses. */
+function Face({
+  glasses = false,
+  mouth = "#9c5a3c",
+}: {
+  glasses?: boolean;
+  mouth?: string;
+}) {
   return (
     <>
       {/* brows */}
       <path
-        d="M67 51 Q73 48 79 51"
-        stroke="#7a4a30"
-        strokeWidth="2"
+        d="M63 52 Q68 50 73 52"
+        stroke="#6b4a35"
+        strokeWidth="1.6"
         strokeLinecap="round"
         fill="none"
-        opacity="0.5"
       />
       <path
-        d="M91 51 Q97 48 103 51"
-        stroke="#7a4a30"
-        strokeWidth="2"
+        d="M77 52 Q82 50 87 52"
+        stroke="#6b4a35"
+        strokeWidth="1.6"
         strokeLinecap="round"
         fill="none"
-        opacity="0.5"
       />
       {/* blinking eyes */}
       <motion.g
         style={{ transformBox: "fill-box", transformOrigin: "center" }}
-        animate={{ scaleY: [1, 1, 0.12, 1, 1] }}
+        animate={{ scaleY: [1, 1, 0.1, 1, 1] }}
         transition={{
-          duration: 4.5,
+          duration: 5,
           times: [0, 0.9, 0.94, 0.98, 1],
           ease: "easeInOut",
           repeat: Infinity,
         }}
       >
-        <ellipse cx="73" cy="60" rx="3.4" ry="5" fill="#2b2b2b" />
-        <ellipse cx="97" cy="60" rx="3.4" ry="5" fill="#2b2b2b" />
-        <circle cx="74.4" cy="58.4" r="1.3" fill="#fff" />
-        <circle cx="98.4" cy="58.4" r="1.3" fill="#fff" />
+        <circle cx="68" cy="58" r="2.6" fill="#2b2b2b" />
+        <circle cx="82" cy="58" r="2.6" fill="#2b2b2b" />
       </motion.g>
-      {/* cheeks */}
-      <circle cx="65" cy="70" r="5.5" fill="#ff8fa8" opacity="0.5" />
-      <circle cx="105" cy="70" r="5.5" fill="#ff8fa8" opacity="0.5" />
+      {glasses && (
+        <g stroke="#1f2937" strokeWidth="2" fill="none">
+          <rect x="61" y="53" width="14" height="11" rx="4" />
+          <rect x="75" y="53" width="14" height="11" rx="4" />
+          <line x1="75" y1="57" x2="75" y2="57" />
+          <path d="M75 57 h0" />
+          <line x1="61" y1="56" x2="55" y2="55" />
+          <line x1="89" y1="56" x2="95" y2="55" />
+        </g>
+      )}
       {/* smile */}
       <path
-        d="M76 70 Q85 80 94 70"
+        d="M71 66 Q75 70 79 66"
         stroke={mouth}
-        strokeWidth="3"
+        strokeWidth="2.2"
         strokeLinecap="round"
         fill="none"
       />
@@ -61,154 +78,91 @@ function Face({ mouth = "#b4694a" }: { mouth?: string }) {
   );
 }
 
-/** Shared head with skin gradient, ears, highlight. */
-function Head() {
-  return (
-    <>
-      <circle cx="55" cy="65" r="6.5" fill="url(#skin)" />
-      <circle cx="115" cy="65" r="6.5" fill="url(#skin)" />
-      <circle
-        cx="85"
-        cy="62"
-        r="32"
-        fill="url(#skin)"
-        stroke="#e8a877"
-        strokeWidth="1.5"
-      />
-      <ellipse cx="74" cy="48" rx="12" ry="8" fill="#fff" opacity="0.18" />
-    </>
-  );
-}
-
-const skinDefs = (
-  <>
-    <radialGradient id="skin" cx="40%" cy="35%" r="75%">
-      <stop offset="0%" stopColor="#ffd9b0" />
-      <stop offset="100%" stopColor="#f6b787" />
-    </radialGradient>
-  </>
-);
-
-/** Student holding a book, waving hello. */
+/** University student — hoodie, glasses, backpack, holding a laptop; waving. */
 export function StudentMascot({ className }: { className?: string }) {
   return (
     <motion.svg
-      viewBox="0 0 170 210"
+      viewBox="0 0 150 300"
       className={className}
       aria-hidden
       animate={{ y: [0, -14, 0] }}
-      transition={{ duration: 5.5, ease: "easeInOut", repeat: Infinity }}
+      transition={{ duration: 5.6, ease: "easeInOut", repeat: Infinity }}
     >
       <defs>
         {skinDefs}
-        <linearGradient id="shirt" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#60a5fa" />
-          <stop offset="100%" stopColor="#4f46e5" />
+        <linearGradient id="hoodie" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#5b9bff" />
+          <stop offset="100%" stopColor="#3b5bdb" />
         </linearGradient>
-        <linearGradient id="hairS" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#5b3b2a" />
-          <stop offset="100%" stopColor="#3d2519" />
+        <linearGradient id="jeans" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#334970" />
+          <stop offset="100%" stopColor="#22314f" />
         </linearGradient>
       </defs>
 
-      <ellipse cx="85" cy="200" rx="40" ry="7" fill="#000" opacity="0.12" />
+      <ellipse cx="75" cy="289" rx="40" ry="7" fill="#000" opacity="0.12" />
+
       {/* legs */}
-      <rect x="70" y="150" width="13" height="42" rx="6.5" fill="#334155" />
-      <rect x="87" y="150" width="13" height="42" rx="6.5" fill="#334155" />
-      <ellipse cx="72" cy="193" rx="12" ry="6" fill="#1e293b" />
-      <ellipse cx="98" cy="193" rx="12" ry="6" fill="#1e293b" />
-      {/* torso */}
-      <rect
-        x="55"
-        y="93"
-        width="60"
-        height="68"
-        rx="28"
-        fill="url(#shirt)"
-        stroke="#3b5bdb"
+      <rect x="61" y="176" width="13" height="98" rx="6.5" fill="url(#jeans)" />
+      <rect x="76" y="176" width="13" height="98" rx="6.5" fill="url(#jeans)" />
+      {/* shoes */}
+      <path d="M54 272 h20 v8 q0 5 -5 5 h-15 q-4 0 -4 -4 z" fill="#e5e7eb" />
+      <path d="M76 272 h20 v9 q0 4 -4 4 h-16 q-5 0 -5 -5 z" fill="#e5e7eb" />
+
+      {/* torso — hoodie */}
+      <path
+        d="M50 100 q0 -14 14 -16 h22 q14 2 14 16 v66 q0 12 -12 12 H62 q-12 0 -12 -12 z"
+        fill="url(#hoodie)"
+        stroke="#31489f"
         strokeWidth="1.5"
       />
+      {/* hood */}
       <path
-        d="M85 93 Q77 104 85 112 Q93 104 85 93 Z"
-        fill="#3b5bdb"
-        opacity="0.5"
+        d="M60 90 q15 12 30 0 l-3 12 q-12 8 -24 0 z"
+        fill="#31489f"
+        opacity="0.55"
       />
-      <ellipse cx="70" cy="112" rx="8" ry="14" fill="#fff" opacity="0.12" />
-      {/* left arm + book */}
+      {/* pocket */}
+      <path
+        d="M60 150 h30 v14 q0 4 -4 4 H64 q-4 0 -4 -4 z"
+        fill="#31489f"
+        opacity="0.4"
+      />
+      {/* drawstrings */}
+      <line x1="70" y1="98" x2="69" y2="120" stroke="#dbe4ff" strokeWidth="2" />
+      <line x1="80" y1="98" x2="81" y2="120" stroke="#dbe4ff" strokeWidth="2" />
+      {/* backpack strap */}
+      <path
+        d="M64 92 L86 176"
+        stroke="#1f2937"
+        strokeWidth="6"
+        opacity="0.35"
+        strokeLinecap="round"
+      />
+
+      {/* left arm holding laptop */}
       <rect
-        x="43"
-        y="112"
-        width="16"
-        height="46"
-        rx="8"
-        fill="url(#shirt)"
-        transform="rotate(15 51 118)"
+        x="40"
+        y="120"
+        width="14"
+        height="44"
+        rx="7"
+        fill="url(#hoodie)"
+        transform="rotate(14 47 126)"
       />
-      <g transform="rotate(-7 60 150)">
-        <rect
-          x="31"
-          y="128"
-          width="56"
-          height="38"
-          rx="5"
-          fill="#6366f1"
-          stroke="#4f46e5"
-          strokeWidth="1.5"
-        />
-        <rect x="35" y="132" width="48" height="30" rx="2" fill="#f8fafc" />
-        <line
-          x1="59"
-          y1="132"
-          x2="59"
-          y2="162"
-          stroke="#c7d2fe"
-          strokeWidth="2.5"
-        />
-        <line
-          x1="41"
-          y1="141"
-          x2="55"
-          y2="141"
-          stroke="#cbd5e1"
-          strokeWidth="2"
-        />
-        <line
-          x1="41"
-          y1="148"
-          x2="55"
-          y2="148"
-          stroke="#cbd5e1"
-          strokeWidth="2"
-        />
-        <line
-          x1="63"
-          y1="141"
-          x2="77"
-          y2="141"
-          stroke="#cbd5e1"
-          strokeWidth="2"
-        />
-        <line
-          x1="63"
-          y1="148"
-          x2="77"
-          y2="148"
-          stroke="#cbd5e1"
-          strokeWidth="2"
-        />
+      <g transform="rotate(-6 55 165)">
+        <rect x="30" y="150" width="46" height="30" rx="4" fill="#cbd5e1" />
+        <rect x="33" y="153" width="40" height="22" rx="2" fill="#1e293b" />
+        <rect x="36" y="156" width="18" height="3" rx="1.5" fill="#5b9bff" />
+        <rect x="36" y="162" width="30" height="2.5" rx="1.25" fill="#475569" />
+        <rect x="36" y="167" width="24" height="2.5" rx="1.25" fill="#475569" />
       </g>
-      <circle
-        cx="47"
-        cy="152"
-        r="9"
-        fill="url(#skin)"
-        stroke="#e8a877"
-        strokeWidth="1.2"
-      />
+      <circle cx="42" cy="164" r="8" fill="url(#skin)" />
+
       {/* waving arm */}
       <motion.g
         style={{ transformBox: "fill-box", transformOrigin: "bottom left" }}
-        animate={{ rotate: [0, 20, -3, 20, 0] }}
+        animate={{ rotate: [0, 18, -3, 18, 0] }}
         transition={{
           duration: 2,
           ease: "easeInOut",
@@ -217,40 +171,45 @@ export function StudentMascot({ className }: { className?: string }) {
         }}
       >
         <rect
-          x="104"
-          y="95"
-          width="16"
-          height="48"
-          rx="8"
-          fill="url(#shirt)"
-          transform="rotate(-26 112 139)"
+          x="94"
+          y="104"
+          width="14"
+          height="46"
+          rx="7"
+          fill="url(#hoodie)"
+          transform="rotate(-24 101 147)"
         />
-        <circle
-          cx="130"
-          cy="101"
-          r="9"
-          fill="url(#skin)"
-          stroke="#e8a877"
-          strokeWidth="1.2"
-        />
+        <circle cx="118" cy="108" r="8" fill="url(#skin)" />
       </motion.g>
 
-      <Head />
-      {/* hair */}
-      <path
-        d="M52 60 Q49 26 85 26 Q121 26 118 60 Q113 47 100 44 Q104 52 96 52 Q94 44 85 44 Q76 44 74 52 Q66 52 70 44 Q57 47 52 60 Z"
-        fill="url(#hairS)"
+      {/* neck + head */}
+      <rect x="69" y="78" width="12" height="14" rx="5" fill="url(#skin)" />
+      <circle cx="49" cy="60" r="5" fill="url(#skin)" />
+      <circle cx="101" cy="60" r="5" fill="url(#skin)" />
+      <circle
+        cx="75"
+        cy="58"
+        r="24"
+        fill="url(#skin)"
+        stroke="#d99a68"
+        strokeWidth="1.3"
       />
-      <Face />
+      <ellipse cx="66" cy="46" rx="9" ry="6" fill="#fff" opacity="0.16" />
+      {/* modern hair */}
+      <path
+        d="M51 56 Q49 30 75 30 Q101 30 99 56 Q96 44 84 41 Q88 36 75 36 Q62 36 66 41 Q54 44 51 56 Z"
+        fill="#3d2a1e"
+      />
+      <Face glasses />
     </motion.svg>
   );
 }
 
-/** Graduate in a cap, holding a diploma, waving. */
+/** Graduate — cap & gown, diploma; waving. Adult proportions. */
 export function GraduateMascot({ className }: { className?: string }) {
   return (
     <motion.svg
-      viewBox="0 0 170 210"
+      viewBox="0 0 150 300"
       className={className}
       aria-hidden
       animate={{ y: [0, -12, 0] }}
@@ -259,57 +218,57 @@ export function GraduateMascot({ className }: { className?: string }) {
       <defs>
         {skinDefs}
         <linearGradient id="gown" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#a78bfa" />
-          <stop offset="100%" stopColor="#7c3aed" />
+          <stop offset="0%" stopColor="#9d7bf0" />
+          <stop offset="100%" stopColor="#6d28d9" />
         </linearGradient>
       </defs>
 
-      <ellipse cx="85" cy="200" rx="40" ry="7" fill="#000" opacity="0.12" />
+      <ellipse cx="75" cy="289" rx="42" ry="7" fill="#000" opacity="0.12" />
+
       {/* legs */}
-      <rect x="70" y="150" width="13" height="42" rx="6.5" fill="#3b3560" />
-      <rect x="87" y="150" width="13" height="42" rx="6.5" fill="#3b3560" />
-      <ellipse cx="72" cy="193" rx="12" ry="6" fill="#241f3d" />
-      <ellipse cx="98" cy="193" rx="12" ry="6" fill="#241f3d" />
+      <rect x="61" y="182" width="13" height="92" rx="6.5" fill="#2c2748" />
+      <rect x="76" y="182" width="13" height="92" rx="6.5" fill="#2c2748" />
+      <path d="M54 272 h20 v8 q0 5 -5 5 h-15 q-4 0 -4 -4 z" fill="#1f2937" />
+      <path d="M76 272 h20 v9 q0 4 -4 4 h-16 q-5 0 -5 -5 z" fill="#1f2937" />
+
       {/* gown */}
-      <rect
-        x="55"
-        y="93"
-        width="60"
-        height="68"
-        rx="28"
+      <path
+        d="M48 100 q0 -14 14 -16 h26 q14 2 14 16 v78 q0 10 -10 10 H58 q-10 0 -10 -10 z"
         fill="url(#gown)"
-        stroke="#6d28d9"
+        stroke="#5b21b6"
         strokeWidth="1.5"
       />
-      <path d="M85 95 L97 161 L73 161 Z" fill="#6d28d9" opacity="0.55" />
-      <ellipse cx="70" cy="112" rx="8" ry="14" fill="#fff" opacity="0.12" />
-      {/* left arm + diploma */}
+      <path d="M75 96 L88 188 L62 188 Z" fill="#5b21b6" opacity="0.5" />
+      {/* stole */}
+      <path
+        d="M64 92 L70 178 M86 92 L80 178"
+        stroke="#facc15"
+        strokeWidth="7"
+        opacity="0.9"
+        strokeLinecap="round"
+      />
+
+      {/* left arm holding diploma */}
       <rect
-        x="45"
-        y="110"
-        width="16"
-        height="46"
-        rx="8"
+        x="42"
+        y="118"
+        width="14"
+        height="44"
+        rx="7"
         fill="url(#gown)"
-        transform="rotate(19 53 116)"
+        transform="rotate(18 49 124)"
       />
-      <g transform="rotate(-13 52 152)">
-        <rect x="28" y="148" width="48" height="12" rx="6" fill="#fef3c7" />
-        <rect x="28" y="148" width="8" height="12" rx="4" fill="#fbbf24" />
-        <rect x="68" y="148" width="8" height="12" rx="4" fill="#fbbf24" />
+      <g transform="rotate(-12 50 164)">
+        <rect x="26" y="160" width="48" height="12" rx="6" fill="#fef3c7" />
+        <rect x="26" y="160" width="8" height="12" rx="4" fill="#ef4444" />
+        <rect x="66" y="160" width="8" height="12" rx="4" fill="#ef4444" />
       </g>
-      <circle
-        cx="50"
-        cy="152"
-        r="9"
-        fill="url(#skin)"
-        stroke="#e8a877"
-        strokeWidth="1.2"
-      />
+      <circle cx="46" cy="164" r="8" fill="url(#skin)" />
+
       {/* waving arm */}
       <motion.g
         style={{ transformBox: "fill-box", transformOrigin: "bottom left" }}
-        animate={{ rotate: [0, -4, 18, -4, 0] }}
+        animate={{ rotate: [0, -3, 18, -3, 0] }}
         transition={{
           duration: 2.4,
           ease: "easeInOut",
@@ -318,56 +277,59 @@ export function GraduateMascot({ className }: { className?: string }) {
         }}
       >
         <rect
-          x="104"
-          y="93"
-          width="16"
-          height="48"
-          rx="8"
+          x="94"
+          y="102"
+          width="14"
+          height="46"
+          rx="7"
           fill="url(#gown)"
-          transform="rotate(-28 112 137)"
+          transform="rotate(-26 101 145)"
         />
-        <circle
-          cx="131"
-          cy="98"
-          r="9"
-          fill="url(#skin)"
-          stroke="#e8a877"
-          strokeWidth="1.2"
-        />
+        <circle cx="119" cy="106" r="8" fill="url(#skin)" />
       </motion.g>
 
-      <Head />
-      {/* hair peeking under cap */}
+      {/* neck + head */}
+      <rect x="69" y="78" width="12" height="14" rx="5" fill="url(#skin)" />
+      <circle cx="49" cy="60" r="5" fill="url(#skin)" />
+      <circle cx="101" cy="60" r="5" fill="url(#skin)" />
+      <circle
+        cx="75"
+        cy="58"
+        r="24"
+        fill="url(#skin)"
+        stroke="#d99a68"
+        strokeWidth="1.3"
+      />
+      {/* hair under cap */}
       <path
-        d="M55 62 Q54 40 85 40 Q116 40 115 62 Q108 52 85 52 Q62 52 55 62 Z"
-        fill="#2b2b2b"
+        d="M52 58 Q51 40 75 40 Q99 40 98 58 Q92 50 75 50 Q58 50 52 58 Z"
+        fill="#241a12"
       />
       {/* mortarboard */}
-      <rect x="73" y="30" width="24" height="11" rx="3" fill="#111827" />
+      <rect x="64" y="30" width="22" height="10" rx="3" fill="#141a26" />
       <path
-        d="M53 30 L85 19 L117 30 L85 41 Z"
+        d="M47 30 L75 20 L103 30 L75 40 Z"
         fill="#1f2937"
         stroke="#0b1120"
-        strokeWidth="1.5"
+        strokeWidth="1.4"
       />
-      <ellipse cx="78" cy="27" rx="10" ry="3" fill="#374151" opacity="0.7" />
-      <circle cx="85" cy="30" r="2.5" fill="#fbbf24" />
+      <circle cx="75" cy="30" r="2.4" fill="#facc15" />
       {/* tassel */}
       <motion.g
         style={{ transformBox: "fill-box", transformOrigin: "left top" }}
-        animate={{ rotate: [0, 11, 0, -11, 0] }}
-        transition={{ duration: 3.5, ease: "easeInOut", repeat: Infinity }}
+        animate={{ rotate: [0, 10, 0, -10, 0] }}
+        transition={{ duration: 3.6, ease: "easeInOut", repeat: Infinity }}
       >
         <path
-          d="M85 30 Q108 30 111 36 L111 54"
-          stroke="#fbbf24"
-          strokeWidth="2.5"
+          d="M75 30 Q99 30 101 36 L101 52"
+          stroke="#facc15"
+          strokeWidth="2.4"
           fill="none"
         />
-        <circle cx="111" cy="57" r="4.5" fill="#f59e0b" />
-        <rect x="108" y="52" width="6" height="6" rx="1" fill="#fbbf24" />
+        <rect x="98" y="50" width="6" height="6" rx="1" fill="#facc15" />
+        <circle cx="101" cy="58" r="4" fill="#eab308" />
       </motion.g>
-      <Face mouth="#a35c3f" />
+      <Face mouth="#8a4f36" />
     </motion.svg>
   );
 }
@@ -436,35 +398,44 @@ export function BookProp({ className }: { className?: string }) {
   );
 }
 
-/** Small floating pencil prop. */
+/** Small floating coffee-cup prop (late-night study fuel). */
 export function PencilProp({ className }: { className?: string }) {
   return (
     <motion.svg
-      viewBox="0 0 40 90"
+      viewBox="0 0 56 64"
       className={className}
       aria-hidden
-      animate={{ y: [0, -12, 0], rotate: [8, -8, 8] }}
+      animate={{ y: [0, -11, 0], rotate: [6, -6, 6] }}
       transition={{ duration: 6, ease: "easeInOut", repeat: Infinity }}
     >
-      <defs>
-        <linearGradient id="pc" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#fcd34d" />
-          <stop offset="100%" stopColor="#f59e0b" />
-        </linearGradient>
-      </defs>
-      <rect x="13" y="18" width="14" height="52" fill="url(#pc)" />
-      <polygon points="13,70 27,70 20,86" fill="#f5deb3" />
-      <polygon points="16,80 24,80 20,86" fill="#1f2937" />
-      <rect x="13" y="8" width="14" height="12" rx="2" fill="#ef4444" />
-      <rect x="13" y="6" width="14" height="5" rx="2" fill="#e5e7eb" />
-      <line
-        x1="17"
-        y1="18"
-        x2="17"
-        y2="70"
-        stroke="#fff"
+      {/* steam */}
+      <path
+        d="M22 8 q4 -6 0 -12"
+        stroke="#cbd5e1"
+        strokeWidth="2.5"
+        fill="none"
+        strokeLinecap="round"
+        opacity="0.6"
+      />
+      <path
+        d="M32 8 q4 -6 0 -12"
+        stroke="#cbd5e1"
+        strokeWidth="2.5"
+        fill="none"
+        strokeLinecap="round"
+        opacity="0.6"
+      />
+      {/* cup */}
+      <path
+        d="M12 18 h32 l-4 34 q-1 6 -7 6 H23 q-6 0 -7 -6 z"
+        fill="#f8fafc"
+        stroke="#cbd5e1"
         strokeWidth="1.5"
-        opacity="0.4"
+      />
+      <path d="M13 22 h30 l-1 8 H14 z" fill="#3b82f6" />
+      <path
+        d="M44 24 q10 0 10 9 q0 9 -11 9 l1 -5 q5 0 5 -4 q0 -4 -5 -4 z"
+        fill="#94a3b8"
       />
     </motion.svg>
   );
