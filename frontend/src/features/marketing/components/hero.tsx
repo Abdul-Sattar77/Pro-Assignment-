@@ -402,7 +402,7 @@ function HeroCharacters({
         mx={mx}
         my={my}
         depth={22}
-        className="top-1/2 left-[0.5%] w-72 -translate-y-1/2 2xl:w-80"
+        className="top-[46vh] left-[1%] w-64 -translate-y-1/2 2xl:w-72"
       >
         <FloatImg src="/animations/student-1.svg" />
       </Parallax>
@@ -410,7 +410,7 @@ function HeroCharacters({
         mx={mx}
         my={my}
         depth={22}
-        className="top-1/2 right-[0.5%] w-72 -translate-y-1/2 2xl:w-80"
+        className="top-[46vh] right-[1%] w-64 -translate-y-1/2 2xl:w-72"
       >
         <FloatImg src="/animations/student-2.svg" />
       </Parallax>
