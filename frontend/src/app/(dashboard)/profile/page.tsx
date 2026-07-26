@@ -14,19 +14,20 @@ import {
   Edit2,
   Check,
   X,
+  Clock,
+  Award,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-<<<<<<< HEAD
-import { Separator } from "@/components/ui/separator";
 import { useAuth, useProfileStats } from "@/features/auth";
+import { formatCurrency } from "@/config/currency";
 
 const DEFAULT_STATS = {
   assignmentsCompleted: 0,
   assignmentsInProgress: 0,
-  totalEarned: "PKR 0",
+  totalEarned: "0",
   avgRating: 5.0,
   responseTime: "< 2 hrs",
   memberSince: "January 2026",
@@ -35,94 +36,6 @@ const DEFAULT_STATS = {
   filesManaged: 0,
   messagesExchanged: 0,
 };
-
-const ACHIEVEMENTS = [
-  {
-    label: "Top Performer",
-    icon: Award,
-    color: "text-amber-400",
-    bg: "bg-amber-400/10 border-amber-400/20",
-  },
-  {
-    label: "Fast Responder",
-    icon: Clock,
-    color: "text-blue-400",
-    bg: "bg-blue-400/10 border-blue-400/20",
-  },
-  {
-    label: "High Converter",
-    icon: TrendingUp,
-    color: "text-green-400",
-    bg: "bg-green-400/10 border-green-400/20",
-  },
-  {
-    label: "Client Favourite",
-    icon: Star,
-    color: "text-purple-400",
-    bg: "bg-purple-400/10 border-purple-400/20",
-  },
-];
-
-const SKILLS = [
-  "Project Management",
-  "Client Relations",
-  "Assignment Review",
-  "Writer Coordination",
-  "Lead Conversion",
-  "Quality Assurance",
-  "Team Leadership",
-  "SaaS Operations",
-];
-
-const RECENT_ACTIVITY = [
-  { text: "Converted Lead L002 to Assignment #A-105", time: "2 hours ago" },
-  {
-    text: "Reviewed and approved Draft for Assignment #A-101",
-    time: "5 hours ago",
-  },
-  { text: "Assigned writer Sara to Assignment #A-104", time: "1 day ago" },
-  {
-    text: "Replied to client John Smith on Assignment #A-101",
-    time: "1 day ago",
-  },
-  { text: "Uploaded revision notes for Assignment #A-103", time: "2 days ago" },
-];
-
-function StatBar({
-  label,
-  value,
-  max,
-  color,
-}: {
-  label: string;
-  value: number;
-  max: number;
-  color: string;
-}) {
-  const pct = Math.min(100, Math.round((value / max) * 100));
-  return (
-    <div className="space-y-1.5">
-      <div className="flex justify-between text-xs">
-        <span className="text-muted-foreground">{label}</span>
-        <span className="font-medium">{value}</span>
-      </div>
-      <div className="bg-muted h-1.5 overflow-hidden rounded-full">
-        <motion.div
-          initial={{ width: 0 }}
-          animate={{ width: `${pct}%` }}
-          transition={{ duration: 1, ease: "easeOut" }}
-          className={`h-full rounded-full ${color}`}
-        />
-      </div>
-    </div>
-  );
-=======
-import { useAuth } from "@/features/auth";
-
-function formatPkr(amount: number): string {
-  return `PKR ${Math.round(amount).toLocaleString()}`;
->>>>>>> 8e331a494fc8c089b7c92afb640adff61feb7cc1
-}
 
 export default function ProfilePage() {
   const { user } = useAuth();
@@ -133,14 +46,8 @@ export default function ProfilePage() {
 
   if (!user) return null;
 
-<<<<<<< HEAD
-  const name = displayName || user.name;
-  const conversionRate = stats.totalLeads > 0
-    ? Math.round((stats.convertedLeads / stats.totalLeads) * 100)
-    : 0;
-=======
   const name = user.name;
->>>>>>> 8e331a494fc8c089b7c92afb640adff61feb7cc1
+
   const initials = name
     .split(" ")
     .map((n: string) => n[0])
@@ -151,9 +58,9 @@ export default function ProfilePage() {
   const isWriter = user.roles.includes("writer");
   const memberSince = user.createdAt
     ? format(new Date(user.createdAt), "MMMM yyyy")
-    : "—";
-  const rating = user.averageRating ?? 0;
-  const workload = user.currentWorkload ?? 0;
+    : stats.memberSince || "—";
+  const rating = user.averageRating ?? stats.avgRating ?? 0;
+  const workload = user.currentWorkload ?? stats.assignmentsInProgress ?? 0;
 
   // Real skills come from the writer's structured profile / expertise.
   const wp = user.writerProfile;
@@ -254,34 +161,18 @@ export default function ProfilePage() {
                 <Mail className="size-3.5" /> {user.email}
               </span>
               <span className="text-muted-foreground flex items-center gap-1.5 text-xs">
-<<<<<<< HEAD
-                <Calendar className="size-3.5" /> Member since{" "}
-                {stats.memberSince}
-=======
                 <Calendar className="size-3.5" /> Member since {memberSince}
->>>>>>> 8e331a494fc8c089b7c92afb640adff61feb7cc1
               </span>
               <span className="text-muted-foreground flex items-center gap-1.5 text-xs">
                 <Shield className="size-3.5" /> {user.permissions.length}{" "}
                 permissions
               </span>
-<<<<<<< HEAD
-              <span className="flex items-center gap-1.5 text-xs text-amber-400">
-                <Star className="size-3.5 fill-amber-400" />{" "}
-                {stats.avgRating} rating
-              </span>
-              <span className="text-muted-foreground flex items-center gap-1.5 text-xs">
-                <Clock className="size-3.5" /> {stats.responseTime}{" "}
-                response
-              </span>
-=======
               {rating > 0 && (
                 <span className="flex items-center gap-1.5 text-xs text-amber-500 dark:text-amber-400">
                   <Star className="size-3.5 fill-amber-400" />{" "}
                   {rating.toFixed(1)} rating
                 </span>
               )}
->>>>>>> 8e331a494fc8c089b7c92afb640adff61feb7cc1
             </div>
           </CardContent>
         </Card>
@@ -290,51 +181,25 @@ export default function ProfilePage() {
       {/* Real stat cards */}
       <motion.div
         variants={fadeIn}
-        className="grid grid-cols-2 gap-4 sm:grid-cols-3"
+        className="grid grid-cols-2 gap-4 sm:grid-cols-4"
       >
-<<<<<<< HEAD
-        {[
-          {
-            value: stats.assignmentsCompleted,
-            label: "Assignments Done",
-            color: "text-primary",
-          },
-          {
-            value: `${conversionRate}%`,
-            label: "Lead Conversion",
-            color: "text-green-400",
-          },
-          {
-            value: stats.avgRating,
-            label: "Avg Rating",
-            color: "text-amber-400",
-          },
-          {
-            value: stats.assignmentsInProgress,
-            label: "In Progress",
-            color: "text-blue-400",
-          },
-        ].map(({ value, label, color }) => (
-          <Card
-            key={label}
-            className="hover:bg-muted/30 p-4 text-center transition-colors"
-          >
-            <p className={`text-3xl font-bold ${color}`}>{value}</p>
-            <p className="text-muted-foreground mt-1 text-xs">{label}</p>
-=======
         <Card className="p-4 text-center">
           <p className="text-primary text-3xl font-bold tabular-nums">
-            {rating > 0 ? rating.toFixed(1) : "—"}
+            {stats.assignmentsCompleted ?? 0}
           </p>
-          <p className="text-muted-foreground mt-1 text-xs">Average rating</p>
+          <p className="text-muted-foreground mt-1 text-xs">Assignments done</p>
         </Card>
         <Card className="p-4 text-center">
           <p className="text-3xl font-bold text-blue-500 tabular-nums dark:text-blue-400">
             {workload}
           </p>
-          <p className="text-muted-foreground mt-1 text-xs">
-            Active assignments
+          <p className="text-muted-foreground mt-1 text-xs">Active work</p>
+        </Card>
+        <Card className="p-4 text-center">
+          <p className="text-3xl font-bold text-amber-500 tabular-nums dark:text-amber-400">
+            {rating > 0 ? rating.toFixed(1) : "—"}
           </p>
+          <p className="text-muted-foreground mt-1 text-xs">Average rating</p>
         </Card>
         <Card className="p-4 text-center">
           <p className="text-3xl font-bold text-emerald-500 tabular-nums dark:text-emerald-400">
@@ -364,117 +229,37 @@ export default function ProfilePage() {
                 </Badge>
               ))}
             </CardContent>
->>>>>>> 8e331a494fc8c089b7c92afb640adff61feb7cc1
           </Card>
         </motion.div>
       )}
 
-<<<<<<< HEAD
-      <motion.div variants={fadeIn} className="grid gap-4 sm:grid-cols-2">
-        {/* ── Progress Bars ── */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base">Activity Overview</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <StatBar
-              label="Leads managed"
-              value={stats.totalLeads}
-              max={100}
-              color="bg-green-400"
-            />
-            <StatBar
-              label="Files managed"
-              value={stats.filesManaged}
-              max={200}
-              color="bg-blue-400"
-            />
-            <StatBar
-              label="Messages sent"
-              value={stats.messagesExchanged}
-              max={500}
-              color="bg-purple-400"
-            />
-            <StatBar
-              label="Assignments completed"
-              value={stats.assignmentsCompleted}
-              max={100}
-              color="bg-primary"
-            />
-          </CardContent>
-        </Card>
-
-        {/* ── Achievements ── */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base">Achievements</CardTitle>
-          </CardHeader>
-          <CardContent className="grid grid-cols-2 gap-3">
-            {ACHIEVEMENTS.map(({ label, icon: Icon, color, bg }) => (
-              <div
-                key={label}
-                className={`flex items-center gap-2.5 rounded-xl border p-3 ${bg}`}
-              >
-                <Icon className={`size-5 ${color} shrink-0`} />
-                <span className="text-xs leading-tight font-medium">
-                  {label}
-                </span>
-=======
-      {/* Earnings — writers only, real */}
-      {isWriter && (
-        <motion.div variants={fadeIn}>
-          <Card className="border-primary/20 bg-primary/5">
-            <CardContent className="flex items-center justify-between p-5">
-              <div>
-                <p className="text-muted-foreground text-xs">Total earnings</p>
-                <p className="text-primary mt-1 text-3xl font-bold tabular-nums">
-                  {formatPkr(user.totalEarnings)}
-                </p>
-                <p className="text-muted-foreground mt-1 text-xs">
-                  From verified payouts
-                </p>
->>>>>>> 8e331a494fc8c089b7c92afb640adff61feb7cc1
-              </div>
-              <div className="bg-primary/15 flex size-16 items-center justify-center rounded-2xl">
-                {user.totalEarnings > 0 ? (
-                  <TrendingUp className="text-primary size-8" />
-                ) : (
-                  <Briefcase className="text-primary size-8" />
-                )}
-              </div>
-<<<<<<< HEAD
-            ))}
-          </CardContent>
-        </Card>
-      </motion.div>
-
-      {/* ── Revenue ── */}
+      {/* Earnings / Revenue Card */}
       <motion.div variants={fadeIn}>
         <Card className="border-primary/20 bg-primary/5">
           <CardContent className="flex items-center justify-between p-5">
             <div>
               <p className="text-muted-foreground text-xs">
-                Total Revenue Managed
+                {isWriter ? "Total Earnings" : "Total Revenue Managed"}
               </p>
-              <p className="text-primary mt-1 text-3xl font-bold">
-                {stats.totalEarned}
+              <p className="text-primary mt-1 text-3xl font-bold tabular-nums">
+                {formatCurrency(user.totalEarnings ?? stats.totalEarned)}
               </p>
               <p className="text-muted-foreground mt-1 text-xs">
-                Across {stats.assignmentsCompleted} completed assignments
+                {isWriter
+                  ? "From verified payouts"
+                  : `Across ${stats.assignmentsCompleted} completed assignments`}
               </p>
             </div>
             <div className="bg-primary/15 flex size-16 items-center justify-center rounded-2xl">
-              <TrendingUp className="text-primary size-8" />
+              {(user.totalEarnings ?? 0) > 0 || (stats.assignmentsCompleted ?? 0) > 0 ? (
+                <TrendingUp className="text-primary size-8" />
+              ) : (
+                <Briefcase className="text-primary size-8" />
+              )}
             </div>
           </CardContent>
         </Card>
       </motion.div>
-=======
-            </CardContent>
-          </Card>
-        </motion.div>
-      )}
->>>>>>> 8e331a494fc8c089b7c92afb640adff61feb7cc1
     </motion.div>
   );
 }

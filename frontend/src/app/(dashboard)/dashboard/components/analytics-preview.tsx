@@ -21,31 +21,27 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-const PERFORMANCE_REPORTS = [
-  {
-    title: "Assignments Activity Consolidated Audit",
-    type: "assignments",
-    size: "2.4 MB",
-  },
-  {
-    title: "Clients Transaction Performance Audit",
-    type: "clients",
-    size: "2.1 MB",
-  },
-  {
-    title: "Writers Delivery Performance Audit",
-    type: "writers",
-    size: "1.9 MB",
-  },
-  {
-    title: "Financial Revenue Audits Registry",
-    type: "revenue",
-    size: "4.2 MB",
-  },
-];
+import { useQuery } from "@tanstack/react-query";
+
+interface ReportMetaItem {
+  type: string;
+  title: string;
+  size: string;
+  bytes: number;
+  rowCount: number;
+  generatedAt: string;
+}
 
 export function AnalyticsPreview() {
   const { data, isLoading } = useDashboardStats();
+
+  const { data: reportsMeta = [] } = useQuery<ReportMetaItem[]>({
+    queryKey: ["reports", "meta"],
+    queryFn: async () => {
+      const res = await apiClient.get<{ data: ReportMetaItem[] }>("/reports/meta");
+      return res.data.data;
+    },
+  });
 
   const handleDownloadReport = async (type: string) => {
     try {
@@ -448,9 +444,9 @@ export function AnalyticsPreview() {
           {/* TAB 4: Monthly Reports */}
           <TabsContent value="reports" className="mt-6">
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              {PERFORMANCE_REPORTS.map((report) => (
+              {reportsMeta.map((report) => (
                 <div
-                  key={report.title}
+                  key={report.type}
                   className="border-border bg-card hover:bg-sidebar-accent/30 flex items-center justify-between rounded-xl border p-4 transition-all duration-200"
                 >
                   <div className="flex items-center gap-3">
@@ -462,7 +458,7 @@ export function AnalyticsPreview() {
                         {report.title}
                       </h4>
                       <p className="text-muted-foreground text-xs">
-                        {report.size} • Dynamic CSV Export
+                        {report.size} • {report.rowCount} records • Generated {new Date(report.generatedAt).toLocaleDateString()}
                       </p>
                     </div>
                   </div>

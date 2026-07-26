@@ -209,6 +209,41 @@ final class ChatController extends Controller
         abort(403, 'You cannot view this conversation.');
     }
 
+    public function destroyMessage(Request $request, ChatMessage $message): JsonResponse
+    {
+        $actor = $this->actor($request);
+        if ($message->sender_id !== $actor->getKey() && !$this->chat->isAdmin($actor)) {
+            abort(403, 'You do not have permission to delete this message.');
+        }
+
+        $message->delete();
+
+        return ApiResponse::noContent();
+    }
+
+    public function listDeletedMessages(Request $request): JsonResponse
+    {
+        $this->assertAdmin($this->actor($request));
+
+        $messages = ChatMessage::onlyTrashed()
+            ->with(['sender', 'conversation'])
+            ->orderBy('deleted_at', 'desc')
+            ->get();
+
+        return ApiResponse::collection(ChatMessageResource::collection($messages));
+    }
+
+    public function restoreMessage(Request $request, string $uuid): JsonResponse
+    {
+        $this->assertAdmin($this->actor($request));
+
+        /** @var ChatMessage $message */
+        $message = ChatMessage::onlyTrashed()->where('uuid', $uuid)->firstOrFail();
+        $message->restore();
+
+        return ApiResponse::resource(ChatMessageResource::make($message->load('sender')));
+    }
+
     private function assertAdmin(User $user): void
     {
         abort_unless($this->chat->isAdmin($user), 403, 'Admins only.');

@@ -27,9 +27,7 @@ const AVAILABILITY: {
   { value: "away", label: "On leave", dot: "bg-muted-foreground" },
 ];
 
-function formatPkr(amount: number): string {
-  return `PKR ${Math.round(amount).toLocaleString()}`;
-}
+import { formatCurrency } from "@/config/currency";
 
 interface FormState {
   availability: WriterAvailability;
@@ -117,7 +115,7 @@ export function WriterProfileCard() {
           <Stat
             icon={<Wallet className="size-4" />}
             label="Total earnings"
-            value={formatPkr(user.totalEarnings)}
+            value={formatCurrency(user.totalEarnings)}
           />
           <Stat
             icon={<Star className="size-4" />}

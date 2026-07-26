@@ -51,6 +51,8 @@ export const usersService = {
     if (payload.password) body.password = payload.password;
     if (payload.roles !== undefined) body.roles = payload.roles;
     if (payload.isActive !== undefined) body.is_active = payload.isActive;
+    if (payload.notes !== undefined) body.notes = payload.notes;
+    if (payload.clientFlags !== undefined) body.client_flags = payload.clientFlags;
 
     const { data } = await apiClient.patch<ItemEnvelope>(`/users/${id}`, body);
 

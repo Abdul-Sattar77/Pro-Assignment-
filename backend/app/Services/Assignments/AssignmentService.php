@@ -73,6 +73,8 @@ final class AssignmentService
                 $this->record($assignment, $client, AssignmentEventType::Updated, "PM assigned to {$pm->name}");
             }
 
+            $this->autoGenerateInvoice($assignment, $client);
+
             return $assignment;
         });
     }
@@ -207,7 +209,9 @@ final class AssignmentService
     /** PM approves and delivers to the client. */
     public function deliver(User $actor, Assignment $assignment, ?string $note): Assignment
     {
-        return $this->transition($assignment, AssignmentStatus::Delivered, $actor, AssignmentEventType::Delivered, $note);
+        $updated = $this->transition($assignment, AssignmentStatus::Delivered, $actor, AssignmentEventType::Delivered, $note);
+        $this->autoGenerateInvoice($updated, $actor);
+        return $updated;
     }
 
     /** Client asks for changes on a delivered order. */
@@ -223,7 +227,28 @@ final class AssignmentService
     {
         $this->assertOwnerClient($client, $assignment);
 
-        return $this->transition($assignment, AssignmentStatus::Completed, $client, AssignmentEventType::Completed);
+        $updated = $this->transition($assignment, AssignmentStatus::Completed, $client, AssignmentEventType::Completed, null);
+        $this->autoGenerateInvoice($updated, $client);
+        return $updated;
+    }
+
+    private function autoGenerateInvoice(Assignment $assignment, User $actor): void
+    {
+        $existing = \App\Models\Invoice::query()->where('assignment_id', $assignment->id)->exists();
+        if (!$existing && ((float) ($assignment->client_price ?? 0.0)) > 0.0) {
+            $amount = ((float) $assignment->client_price) - ((float) ($assignment->discount ?? 0.0));
+            if ($amount > 0.0) {
+                \App\Models\Invoice::create([
+                    'invoice_number' => 'INV-'.now()->format('Ymd').'-'.\Illuminate\Support\Str::upper(\Illuminate\Support\Str::random(6)),
+                    'assignment_id' => $assignment->id,
+                    'client_id' => $assignment->client_id,
+                    'amount' => $amount,
+                    'status' => \App\Enums\InvoiceStatus::Pending->value,
+                    'due_date' => now()->addDays(7),
+                    'notes' => 'Auto-generated invoice for assignment #' . $assignment->id,
+                ]);
+            }
+        }
     }
 
     /**

@@ -10,6 +10,7 @@ export interface UserListItem {
   availability?: string;
   expertise?: string | null;
   notes?: string | null;
+  clientFlags?: string[];
   averageRating?: number;
   totalEarnings?: number;
   roles: string[];
@@ -45,6 +46,7 @@ export interface CreateUserPayload {
   availability?: string;
   expertise?: string;
   notes?: string;
+  clientFlags?: string[];
 }
 
 export interface UpdateUserPayload {
@@ -56,4 +58,5 @@ export interface UpdateUserPayload {
   availability?: string;
   expertise?: string;
   notes?: string;
+  clientFlags?: string[];
 }

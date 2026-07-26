@@ -86,6 +86,12 @@ final class UserService
                 $attributes['notes'] = $data['notes'];
             }
 
+            if (array_key_exists('client_flags', $data)) {
+                $attributes['client_flags'] = $data['client_flags'];
+            } elseif (array_key_exists('clientFlags', $data)) {
+                $attributes['client_flags'] = $data['clientFlags'];
+            }
+
             if ($attributes !== []) {
                 $user->update($attributes);
             }

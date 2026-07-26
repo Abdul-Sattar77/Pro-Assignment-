@@ -75,12 +75,26 @@ final class AssignmentRepository extends BaseRepository implements AssignmentRep
             $query->where('priority', $priority);
         }
 
-        // Search (title or subject)
+        // Search (Assignment ID, Client Name, Writer Name, Title, Subject)
         $search = $filters['search'] ?? null;
-        if (is_string($search) && $search !== '') {
-            $query->where(function (Builder $q) use ($search): void {
-                $q->where('title', 'ilike', "%{$search}%")
-                    ->orWhere('subject', 'ilike', "%{$search}%");
+        if (is_string($search) && trim($search) !== '') {
+            $term = trim($search);
+            $cleanNumeric = preg_replace('/[^0-9]/', '', $term);
+
+            $query->where(function (Builder $q) use ($term, $cleanNumeric): void {
+                $q->where('title', 'like', "%{$term}%")
+                    ->orWhere('subject', 'like', "%{$term}%")
+                    ->orWhere('uuid', 'like', "%{$term}%")
+                    ->orWhereHas('client', function (Builder $cq) use ($term): void {
+                        $cq->where('name', 'like', "%{$term}%");
+                    })
+                    ->orWhereHas('writer', function (Builder $wq) use ($term): void {
+                        $wq->where('name', 'like', "%{$term}%");
+                    });
+
+                if ($cleanNumeric !== '') {
+                    $q->orWhere('id', (int) $cleanNumeric);
+                }
             });
         }
 

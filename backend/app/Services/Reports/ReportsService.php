@@ -37,6 +37,44 @@ final class ReportsService
     }
 
     /**
+     * Get dynamic report metadata (titles, calculated CSV byte sizes, and timestamps).
+     */
+    public function getReportsMeta(): array
+    {
+        $types = [
+            'assignments' => 'Assignments Activity Consolidated Audit',
+            'clients' => 'Clients Transaction Performance Audit',
+            'writers' => 'Writers Delivery Performance Audit',
+            'revenue' => 'Financial Revenue Audits Registry',
+            'expenses' => 'Operational Expenses Audit',
+            'profit' => 'Profit Margin & Financial Health Audit',
+        ];
+
+        $reports = [];
+        foreach ($types as $type => $title) {
+            $csv = $this->exportToCsv($type);
+            $bytes = strlen($csv);
+            $sizeStr = $bytes >= 1048576
+                ? round($bytes / 1048576, 1) . ' MB'
+                : max(1, round($bytes / 1024, 1)) . ' KB';
+
+            $data = $this->getReportData($type);
+            $rowCount = count($data['rows'] ?? []);
+
+            $reports[] = [
+                'type' => $type,
+                'title' => $title,
+                'size' => $sizeStr,
+                'bytes' => $bytes,
+                'rowCount' => $rowCount,
+                'generatedAt' => now()->toIso8601String(),
+            ];
+        }
+
+        return $reports;
+    }
+
+    /**
      * Generate a CSV string of the report.
      */
     public function exportToCsv(string $type, ?string $from = null, ?string $to = null): string

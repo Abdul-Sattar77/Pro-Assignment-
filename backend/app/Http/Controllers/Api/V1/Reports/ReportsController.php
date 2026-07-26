@@ -38,6 +38,15 @@ final class ReportsController extends Controller
         return ApiResponse::item($data);
     }
 
+    public function meta(Request $request): JsonResponse
+    {
+        if (!$request->user()?->can('reports.view')) {
+            return ApiResponse::error('FORBIDDEN', 'You do not have access to view reports.', 403);
+        }
+
+        return ApiResponse::collection($this->service->getReportsMeta());
+    }
+
     public function export(Request $request): Response|JsonResponse
     {
         if (!$request->user()?->can('reports.view')) {
@@ -70,8 +79,10 @@ final class ReportsController extends Controller
 
         if ($format === 'pdf') {
             $html = $this->service->exportToPdf($type, $from, $to);
+            $filename = $type . '-report-' . $timestamp . '.html';
             return response($html, 200, [
                 'Content-Type' => 'text/html; charset=UTF-8',
+                'Content-Disposition' => 'inline; filename="' . $filename . '"',
             ]);
         }
 

@@ -9,6 +9,7 @@ import type {
   AppFile,
   FileFilters,
   RenameFilePayload,
+  UpdateFileNotesPayload,
   UploadFilePayload,
 } from "../types";
 
@@ -55,6 +56,20 @@ export function useRenameFile(fileId: string) {
       toast.success("File renamed successfully.");
     },
     onError: (error) => toast.error(error.message || "Failed to rename file."),
+  });
+}
+
+export function useUpdateFileNotes(fileId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation<AppFile, ApiError, UpdateFileNotesPayload>({
+    mutationFn: (payload) => fileService.updateNotes(fileId, payload),
+    onSuccess: (updated) => {
+      queryClient.setQueryData(FILES_QUERY_KEYS.detail(fileId), updated);
+      void queryClient.invalidateQueries({ queryKey: FILES_QUERY_KEYS.all });
+      toast.success("Notes saved.");
+    },
+    onError: (error) => toast.error(error.message || "Failed to save notes."),
   });
 }
 

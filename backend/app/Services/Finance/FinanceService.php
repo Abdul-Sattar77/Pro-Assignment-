@@ -237,15 +237,22 @@ final class FinanceService
         $profitMargin = $revenue > 0 ? round(($profit / $revenue) * 100, 2) : 0;
 
         // 3. Monthly Breakdown (past 12 months)
+        $driver = DB::connection()->getDriverName();
+        $monthSql = match ($driver) {
+            'sqlite' => "strftime('%Y-%m', created_at)",
+            'mysql' => "DATE_FORMAT(created_at, '%Y-%m')",
+            default => "TO_CHAR(created_at, 'YYYY-MM')",
+        };
+
         $monthlyBreakdownQuery = DB::table('payments')
             ->select(
-                DB::raw("TO_CHAR(created_at, 'YYYY-MM') as month"),
+                DB::raw("{$monthSql} as month"),
                 DB::raw("SUM(CASE WHEN status = 'verified' AND payment_type IN ('advance', 'partial', 'balance') THEN amount ELSE 0 END) as revenue"),
                 DB::raw("SUM(CASE WHEN status = 'verified' AND payment_type IN ('writer_payout', 'expense') THEN amount ELSE 0 END) as expenses"),
             )
             ->where('created_at', '>=', Carbon::now()->subMonths(12))
             ->whereNull('deleted_at')
-            ->groupBy(DB::raw("TO_CHAR(created_at, 'YYYY-MM')"))
+            ->groupBy(DB::raw($monthSql))
             ->orderBy('month', 'asc')
             ->get();
 

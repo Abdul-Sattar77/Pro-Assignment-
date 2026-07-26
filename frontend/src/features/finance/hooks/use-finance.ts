@@ -168,3 +168,27 @@ export function useFinanceStats() {
     staleTime: 30 * 1000,
   });
 }
+
+export function usePaymentReminders() {
+  return useQuery<import("../types").PaymentReminder[], ApiError>({
+    queryKey: ["finance", "reminders"],
+    queryFn: () => financeService.listReminders(),
+    staleTime: 30 * 1000,
+  });
+}
+
+export function useSendReminder() {
+  const queryClient = useQueryClient();
+  return useMutation<
+    import("../types").PaymentReminder,
+    ApiError,
+    { invoiceId: string; notes?: string }
+  >({
+    mutationFn: ({ invoiceId, notes }) => financeService.sendReminder(invoiceId, notes),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["finance", "reminders"] });
+      toast.success("Payment reminder sent.");
+    },
+    onError: (error) => toast.error(error.message || "Failed to send reminder."),
+  });
+}

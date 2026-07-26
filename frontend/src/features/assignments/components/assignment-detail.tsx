@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { format } from "date-fns";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2, TrendingUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,6 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { ROUTES } from "@/constants/routes";
 import { useCurrentUser } from "@/features/auth";
+import { formatCurrency } from "@/config/currency";
 import { PRIORITY_META } from "../constants";
 import {
   useAssignment,
@@ -189,7 +190,63 @@ export function AssignmentDetail({ id }: { id: string }) {
             </CardContent>
           </Card>
 
+          {/* Financial Summary — visible to Admin & PM only */}
+          {(isAdmin || user?.roles.includes("project_manager")) && (
+            <Card className="border-emerald-500/20 bg-gradient-to-br from-emerald-500/5 via-transparent to-transparent">
+              <CardHeader>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <TrendingUp className="size-4 text-emerald-600" /> Financial Summary
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                  <div>
+                    <p className="text-muted-foreground font-mono text-[10px] tracking-[0.18em] uppercase">
+                      Client Price
+                    </p>
+                    <p className="mt-1 text-sm font-semibold text-emerald-600 dark:text-emerald-400">
+                      {formatCurrency(assignment.clientPrice ?? 0)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground font-mono text-[10px] tracking-[0.18em] uppercase">
+                      Writer Cost
+                    </p>
+                    <p className="mt-1 text-sm font-semibold text-rose-600 dark:text-rose-400">
+                      {formatCurrency(assignment.writerCost ?? 0)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground font-mono text-[10px] tracking-[0.18em] uppercase">
+                      Additional Costs
+                    </p>
+                    <p className="mt-1 text-sm font-semibold text-rose-500">
+                      {formatCurrency(assignment.additionalCosts ?? 0)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground font-mono text-[10px] tracking-[0.18em] uppercase">
+                      Net Profit
+                    </p>
+                    <p className={`mt-1 text-sm font-bold ${(assignment.netProfit ?? 0) >= 0 ? "text-emerald-600" : "text-rose-600"}`}>
+                      {formatCurrency(assignment.netProfit ?? 0)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground font-mono text-[10px] tracking-[0.18em] uppercase">
+                      Profit Margin
+                    </p>
+                    <p className={`mt-1 text-sm font-bold ${(assignment.profitMargin ?? 0) >= 0 ? "text-emerald-600" : "text-rose-600"}`}>
+                      {assignment.profitMargin ?? 0}%
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           <FilesPanel assignmentId={assignment.id} />
+
 
           <Card>
             <CardHeader>

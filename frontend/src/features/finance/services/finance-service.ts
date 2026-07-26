@@ -132,4 +132,20 @@ export const financeService = {
     );
     return data.data;
   },
+
+  async listReminders(): Promise<import("../types").PaymentReminder[]> {
+    const { data } = await apiClient.get<{
+      data: import("../types").PaymentReminder[];
+      meta?: unknown;
+    }>("/finance/reminders");
+    return Array.isArray(data.data) ? data.data : [];
+  },
+
+  async sendReminder(invoiceId: string, notes?: string): Promise<import("../types").PaymentReminder> {
+    const { data } = await apiClient.post<{ data: import("../types").PaymentReminder }>(
+      `/invoices/${invoiceId}/reminders`,
+      { notes: notes || "Manual payment reminder dispatched by staff." },
+    );
+    return data.data;
+  },
 };

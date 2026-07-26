@@ -13,6 +13,7 @@ import {
   Eye,
   Loader2,
   ExternalLink,
+  StickyNote,
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -28,6 +29,7 @@ import { apiClient } from "@/lib/api-client";
 import { useDeleteFile, useDownloadFile } from "../hooks/use-files";
 import type { AppFile } from "../types";
 import { FileRenameDialog } from "./file-rename-dialog";
+import { FileNotesDialog } from "./file-notes-dialog";
 
 interface FileListProps {
   files: AppFile[];
@@ -41,9 +43,10 @@ export function FileList({ files, isLoading }: FileListProps) {
 
   const [renameTarget, setRenameTarget] = useState<AppFile | null>(null);
   const [previewTarget, setPreviewTarget] = useState<AppFile | null>(null);
+  const [notesTarget, setNotesTarget] = useState<AppFile | null>(null);
 
-  const getFileIcon = (mimeType: string) => {
-    const type = mimeType.toLowerCase();
+  const getFileIcon = (mimeType?: string) => {
+    const type = (mimeType || "").toLowerCase();
     if (
       type.includes("pdf") ||
       type.includes("word") ||
@@ -90,6 +93,11 @@ export function FileList({ files, isLoading }: FileListProps) {
   const handlePreview = (e: React.MouseEvent, file: AppFile) => {
     e.stopPropagation();
     setPreviewTarget(file);
+  };
+
+  const handleNotes = (e: React.MouseEvent, file: AppFile) => {
+    e.stopPropagation();
+    setNotesTarget(file);
   };
 
   // Check if current user is PM of this file's assignment
@@ -145,7 +153,8 @@ export function FileList({ files, isLoading }: FileListProps) {
           </thead>
           <tbody className="divide-border bg-card divide-y">
             {files.map((file) => {
-              const isImage = file.mimeType.startsWith("image/");
+              const mime = file.mimeType || (file as unknown as { mime?: string }).mime || "";
+              const isImage = mime.startsWith("image/");
               const canEdit = canModify(file);
 
               return (
@@ -156,10 +165,17 @@ export function FileList({ files, isLoading }: FileListProps) {
                   {/* File Name */}
                   <td className="text-foreground px-6 py-4 font-medium">
                     <div className="flex max-w-xs items-center gap-3 md:max-w-sm">
-                      {getFileIcon(file.mimeType)}
-                      <span className="truncate" title={file.originalName}>
-                        {file.originalName}
-                      </span>
+                      {getFileIcon(mime)}
+                      <div className="flex min-w-0 flex-col">
+                        <span className="truncate" title={file.originalName}>
+                          {file.originalName}
+                        </span>
+                        {file.version && (
+                          <span className="text-muted-foreground font-mono text-[10px]">
+                            v{file.version}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </td>
 
@@ -221,6 +237,15 @@ export function FileList({ files, isLoading }: FileListProps) {
                       >
                         <Download className="size-4" />
                       </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="size-8 hover:text-indigo-500"
+                        onClick={(e) => handleNotes(e, file)}
+                        title={file.notes ? "Edit Notes" : "Add Notes"}
+                      >
+                        <StickyNote className={`size-4 ${file.notes ? "text-indigo-500" : ""}`} />
+                      </Button>
                       {canEdit && (
                         <>
                           <Button
@@ -259,6 +284,15 @@ export function FileList({ files, isLoading }: FileListProps) {
           file={renameTarget}
           open={renameTarget !== null}
           onOpenChange={(open) => !open && setRenameTarget(null)}
+        />
+      )}
+
+      {/* Notes Dialog */}
+      {notesTarget && (
+        <FileNotesDialog
+          file={notesTarget}
+          open={notesTarget !== null}
+          onOpenChange={(open) => !open && setNotesTarget(null)}
         />
       )}
 

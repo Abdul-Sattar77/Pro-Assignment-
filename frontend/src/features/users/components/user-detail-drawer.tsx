@@ -18,10 +18,20 @@ import {
   BookOpen,
   FileText,
   Building,
+  Loader2,
 } from "lucide-react";
 import { format } from "date-fns";
 import { formatCurrency } from "@/config/currency";
+import { useUpdateUser } from "../hooks/use-users";
 import type { UserListItem } from "../types";
+
+const CLIENT_FLAGS = [
+  { id: "pays_late", label: "Pays Late", color: "bg-rose-500/10 text-rose-600 border-rose-500/30" },
+  { id: "negotiates", label: "Negotiates", color: "bg-amber-500/10 text-amber-600 border-amber-500/30" },
+  { id: "high_value", label: "High Value", color: "bg-emerald-500/10 text-emerald-600 border-emerald-500/30" },
+  { id: "referral", label: "Referral", color: "bg-blue-500/10 text-blue-600 border-blue-500/30" },
+  { id: "strict_professor", label: "Strict Professor", color: "bg-purple-500/10 text-purple-600 border-purple-500/30" },
+] as const;
 
 interface UserDetailDrawerProps {
   user: UserListItem | null;
@@ -29,11 +39,9 @@ interface UserDetailDrawerProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function UserDetailDrawer({
-  user,
-  open,
-  onOpenChange,
-}: UserDetailDrawerProps) {
+export function UserDetailDrawer({ user, open, onOpenChange }: UserDetailDrawerProps) {
+  const updateUser = useUpdateUser();
+
   if (!user) return null;
 
   const isClient = user.roles.includes("client");
@@ -43,6 +51,15 @@ export function UserDetailDrawer({
   const formattedDate = user.createdAt
     ? format(new Date(user.createdAt), "PPP")
     : "Recently registered";
+
+  const currentFlags = user.clientFlags ?? [];
+
+  const handleFlagToggle = (flagId: string) => {
+    const next = currentFlags.includes(flagId)
+      ? currentFlags.filter((f) => f !== flagId)
+      : [...currentFlags, flagId];
+    updateUser.mutate({ id: user.id, payload: { clientFlags: next } });
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -82,7 +99,7 @@ export function UserDetailDrawer({
             {isWriter && <TabsTrigger value="writer">Writer Profile</TabsTrigger>}
             {isPM && <TabsTrigger value="pm">PM Performance</TabsTrigger>}
             {!isClient && !isWriter && !isPM && (
-              <TabsTrigger value="roles">Roles & Notes</TabsTrigger>
+              <TabsTrigger value="roles">Roles &amp; Notes</TabsTrigger>
             )}
           </TabsList>
 
@@ -135,7 +152,7 @@ export function UserDetailDrawer({
               <Card>
                 <CardHeader className="py-3 px-4">
                   <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                    <Building className="size-4 text-primary" /> Client Profile & History
+                    <Building className="size-4 text-primary" /> Client Profile &amp; Flags
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="px-4 pb-4 space-y-3 text-sm">
@@ -145,9 +162,42 @@ export function UserDetailDrawer({
                       <span className="font-semibold text-emerald-600">Verified Client</span>
                     </div>
                     <div>
-                      <span className="text-muted-foreground">Preferred Contact:</span> Email & Chat
+                      <span className="text-muted-foreground">Preferred Contact:</span> Email &amp; Chat
                     </div>
                   </div>
+
+                  {/* Client Flags — editable toggles wired to PATCH /users/{id} */}
+                  <div className="space-y-2 pt-2 border-t">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-foreground">
+                        Structured Client Flags:
+                      </span>
+                      <span className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-normal">
+                        {updateUser.isPending && (
+                          <Loader2 className="size-3 animate-spin" />
+                        )}
+                        Click flag to toggle &amp; save
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {CLIENT_FLAGS.map((flag) => {
+                        const active = currentFlags.includes(flag.id);
+                        return (
+                          <Badge
+                            key={flag.id}
+                            variant={active ? "default" : "outline"}
+                            className={`cursor-pointer select-none transition-all ${
+                              active ? flag.color : "opacity-50 hover:opacity-100"
+                            } ${updateUser.isPending ? "pointer-events-none opacity-60" : ""}`}
+                            onClick={() => handleFlagToggle(flag.id)}
+                          >
+                            {flag.label} {active && "✓"}
+                          </Badge>
+                        );
+                      })}
+                    </div>
+                  </div>
+
                   <div className="rounded-lg border p-3 bg-muted/40 space-y-1 text-xs">
                     <p className="font-medium text-foreground">Assignment History Summary</p>
                     <p className="text-muted-foreground">
@@ -165,7 +215,7 @@ export function UserDetailDrawer({
               <Card>
                 <CardHeader className="py-3 px-4">
                   <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                    <BookOpen className="size-4 text-primary" /> Writer Expertise & Workload
+                    <BookOpen className="size-4 text-primary" /> Writer Expertise &amp; Workload
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="px-4 pb-4 space-y-3">
@@ -217,7 +267,7 @@ export function UserDetailDrawer({
                   <div className="grid grid-cols-2 gap-2 text-xs">
                     <div className="rounded-md border p-3 bg-muted/30">
                       <p className="text-muted-foreground">Role Scope</p>
-                      <p className="font-semibold text-foreground mt-0.5">Order Review & Delivery</p>
+                      <p className="font-semibold text-foreground mt-0.5">Order Review &amp; Delivery</p>
                     </div>
                     <div className="rounded-md border p-3 bg-muted/30">
                       <p className="text-muted-foreground">Active Team Oversight</p>

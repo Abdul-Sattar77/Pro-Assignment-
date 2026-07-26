@@ -24,7 +24,7 @@ return new class extends Migration
             $table->foreignId('client_id')->constrained('users')->restrictOnDelete();
             $table->foreignId('issued_by')->constrained('users')->restrictOnDelete();
             $table->unsignedBigInteger('amount_cents');
-            $table->string('currency', 3)->default('USD');
+            $table->string('currency', 3)->default('PKR');
             $table->string('status')->default(InvoiceStatus::Pending->value);
             $table->string('description')->nullable();
             $table->string('payment_reference')->nullable(); // client's proof/txn ref

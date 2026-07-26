@@ -3,10 +3,12 @@
  * Ensures consistent currency symbol (PKR) and display across Finance,
  * Invoices, Reports, Dashboard, Analytics, Profile, and Exports.
  */
+const defaultCode = process.env.NEXT_PUBLIC_APP_CURRENCY || "PKR";
+
 export const APP_CURRENCY = {
-  code: "PKR",
-  symbol: "PKR ",
-  label: "Pakistani Rupee (PKR)",
+  code: defaultCode,
+  symbol: `${defaultCode} `,
+  label: `${defaultCode}`,
 };
 
 /**
@@ -15,7 +17,7 @@ export const APP_CURRENCY = {
  */
 export function formatCurrency(
   amount: number | string | null | undefined,
-  currency: string = APP_CURRENCY.code,
+  _ignoredCurrency?: string, // Deprecated parameter, keeping for backwards compatibility with existing calls
 ): string {
   const numericAmount = typeof amount === "number" ? amount : Number(amount) || 0;
 
@@ -25,10 +27,7 @@ export function formatCurrency(
   });
 
   const sign = numericAmount < 0 ? "-" : "";
-  // Standardize currency to PKR across all finance modules, invoices, and reports
-  const displayCurrency =
-    !currency || currency === "USD" ? APP_CURRENCY.code : currency;
-  const prefix = `${displayCurrency} `;
+  const prefix = `${APP_CURRENCY.code} `;
 
   return `${sign}${prefix}${formatted}`;
 }

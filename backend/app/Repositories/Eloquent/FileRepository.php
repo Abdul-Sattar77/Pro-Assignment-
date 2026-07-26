@@ -42,21 +42,21 @@ final class FileRepository extends BaseRepository implements FileRepositoryInter
         if (!$isAdmin) {
             if ($actor->hasRole(Role::ProjectManager->value)) {
                 $query->where(function ($q) use ($actor): void {
-                    $q->where('uploaded_by', $actor->getKey())
+                    $q->where('uploader_id', $actor->getKey())
                         ->orWhereHas('assignment', function ($aq) use ($actor): void {
                             $aq->where('project_manager_id', $actor->getKey());
                         });
                 });
             } elseif ($actor->hasRole(Role::Writer->value)) {
                 $query->where(function ($q) use ($actor): void {
-                    $q->where('uploaded_by', $actor->getKey())
+                    $q->where('uploader_id', $actor->getKey())
                         ->orWhereHas('assignment', function ($aq) use ($actor): void {
                             $aq->where('writer_id', $actor->getKey());
                         });
                 });
             } elseif ($actor->hasRole(Role::Client->value)) {
                 $query->where(function ($q) use ($actor): void {
-                    $q->where('uploaded_by', $actor->getKey())
+                    $q->where('uploader_id', $actor->getKey())
                         ->orWhereHas('assignment', function ($aq) use ($actor): void {
                             $aq->where('client_id', $actor->getKey());
                         });
@@ -73,25 +73,25 @@ final class FileRepository extends BaseRepository implements FileRepositoryInter
             $query->where('assignment_id', $assignmentId);
         }
 
-        $uploadedBy = $filters['uploaded_by'] ?? null;
-        if ($uploadedBy !== null) {
-            $query->where('uploaded_by', $uploadedBy);
+        $uploaderId = $filters['uploader_id'] ?? $filters['uploaded_by'] ?? null;
+        if ($uploaderId !== null) {
+            $query->where('uploader_id', $uploaderId);
         }
 
         $typeGroup = $filters['type'] ?? null;
         if (is_string($typeGroup) && $typeGroup !== '') {
             if ($typeGroup === 'document') {
                 $query->where(function ($q): void {
-                    $q->where('mime_type', 'like', 'application/%')
-                        ->orWhere('mime_type', 'like', 'text/%');
+                    $q->where('mime', 'like', 'application/%')
+                        ->orWhere('mime', 'like', 'text/%');
                 });
             } elseif ($typeGroup === 'image') {
-                $query->where('mime_type', 'like', 'image/%');
+                $query->where('mime', 'like', 'image/%');
             } elseif ($typeGroup === 'archive') {
                 $query->where(function ($q): void {
-                    $q->where('mime_type', 'like', '%zip%')
-                        ->orWhere('mime_type', 'like', '%rar%')
-                        ->orWhere('mime_type', 'like', '%tar%');
+                    $q->where('mime', 'like', '%zip%')
+                        ->orWhere('mime', 'like', '%rar%')
+                        ->orWhere('mime', 'like', '%tar%');
                 });
             }
         }
@@ -100,8 +100,10 @@ final class FileRepository extends BaseRepository implements FileRepositoryInter
         $search = $filters['search'] ?? null;
         if (is_string($search) && $search !== '') {
             $query->where(function ($q) use ($search): void {
-                $q->where('original_name', 'ilike', '%'.$search.'%')
-                    ->orWhere('filename', 'ilike', '%'.$search.'%');
+                $q->where('original_name', 'like', '%'.$search.'%')
+                    ->orWhereHas('assignment', function ($aq) use ($search): void {
+                        $aq->where('title', 'like', '%'.$search.'%');
+                    });
             });
         }
 

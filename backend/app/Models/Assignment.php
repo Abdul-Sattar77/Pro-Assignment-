@@ -16,6 +16,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
+
 /**
  * @property AssignmentStatus $status
  * @property ?AssignmentType $type
@@ -29,20 +32,31 @@ use Illuminate\Support\Carbon;
     'word_count', 'referencing_style', 'priority', 'contact_phone',
     'contact_whatsapp', 'description', 'deadline', 'status', 'client_id',
     'project_manager_id', 'writer_id',
-    'client_price', 'writer_cost', 'discount', 'net_profit',
+    'client_price', 'writer_cost', 'additional_costs', 'discount', 'net_profit',
 ])]
 class Assignment extends Model
 {
     use HasUuid;
+    use LogsActivity;
     use SoftDeletes;
 
     protected static function booted(): void
     {
         static::saving(function (Assignment $assignment) {
             $assignment->net_profit = ((float) ($assignment->client_price ?? 0.0))
+                - ((float) ($assignment->discount ?? 0.0))
                 - ((float) ($assignment->writer_cost ?? 0.0))
-                - ((float) ($assignment->discount ?? 0.0));
+                - ((float) ($assignment->additional_costs ?? 0.0));
         });
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['title', 'status', 'client_id', 'writer_id', 'project_manager_id', 'client_price', 'writer_cost', 'additional_costs', 'discount', 'net_profit', 'deadline'])
+            ->logOnlyDirty()
+            ->dontLogEmptyChanges()
+            ->useLogName('assignment');
     }
 
     /**
