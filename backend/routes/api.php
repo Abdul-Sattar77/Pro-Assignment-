@@ -28,6 +28,9 @@ use App\Http\Controllers\Api\V1\Settings\SettingController;
 use App\Http\Controllers\Api\V1\Tasks\TaskController;
 use App\Http\Controllers\Api\V1\Users\UserController;
 use App\Http\Controllers\Api\V1\Users\WriterRatingController;
+use App\Http\Controllers\Api\V1\WhatsApp\WhatsAppInboxController;
+use App\Http\Controllers\Api\V1\WhatsApp\WhatsAppWebhookController;
+use App\Http\Middleware\VerifyWhatsAppSignature;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
@@ -87,6 +90,40 @@ Route::prefix('v1')->group(function (): void {
         Route::get('admin/conversations/{conversation}/messages', [ChatController::class, 'adminMessages'])->name('admin.messages');
         Route::get('admin/policies', [ChatController::class, 'policies'])->name('admin.policies.index');
         Route::put('admin/policies', [ChatController::class, 'updatePolicies'])->name('admin.policies.update');
+    });
+
+    // ---- WhatsApp Business (Meta Cloud API) ----
+    //
+    // The webhook pair is public by necessity — Meta's servers call it.
+    // Authenticity comes from the verify token (GET handshake) and the
+    // X-Hub-Signature-256 HMAC (POST), not from session auth.
+    Route::prefix('whatsapp')->name('whatsapp.')->group(function (): void {
+        Route::get('webhook', [WhatsAppWebhookController::class, 'verify'])->name('webhook.verify');
+        Route::post('webhook', [WhatsAppWebhookController::class, 'handle'])
+            ->middleware(VerifyWhatsAppSignature::class)
+            ->name('webhook.handle');
+    });
+
+    // Portal inbox. Every route is policy-gated; there is no hard-delete
+    // endpoint anywhere in this group by design.
+    Route::middleware('auth:sanctum')->prefix('whatsapp')->name('whatsapp.')->group(function (): void {
+        Route::get('conversations', [WhatsAppInboxController::class, 'index'])->name('conversations.index');
+        Route::get('conversations/{contact}', [WhatsAppInboxController::class, 'show'])->name('conversations.show');
+        Route::get('conversations/{contact}/messages', [WhatsAppInboxController::class, 'messages'])->name('conversations.messages');
+        Route::post('conversations/{contact}/messages', [WhatsAppInboxController::class, 'send'])->name('conversations.send');
+        Route::post('conversations/{contact}/template', [WhatsAppInboxController::class, 'sendTemplate'])->name('conversations.template');
+        Route::post('conversations/{contact}/assign', [WhatsAppInboxController::class, 'assign'])->name('conversations.assign');
+        Route::post('conversations/{contact}/archive', [WhatsAppInboxController::class, 'archive'])->name('conversations.archive');
+        Route::post('conversations/{contact}/read', [WhatsAppInboxController::class, 'markRead'])->name('conversations.read');
+
+        // Soft hide only — the row survives and stays visible to admins.
+        Route::delete('messages/{message}', [WhatsAppInboxController::class, 'hideMessage'])->name('messages.hide');
+        Route::get('messages/{message}/download', [WhatsAppInboxController::class, 'download'])->name('messages.download');
+
+        // Admin oversight
+        Route::get('admin/hidden-messages', [WhatsAppInboxController::class, 'hiddenMessages'])->name('admin.hidden-messages');
+        Route::post('admin/messages/{uuid}/restore', [WhatsAppInboxController::class, 'restoreMessage'])->name('admin.messages.restore');
+        Route::get('admin/audit-log', [WhatsAppInboxController::class, 'auditLog'])->name('admin.audit-log');
     });
 
     // ---- User Management (admin provisioning) ----

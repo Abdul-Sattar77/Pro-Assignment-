@@ -33,6 +33,10 @@ final class RolePermissionSeeder extends Seeder
         'files.view', 'files.upload', 'files.delete',
         // Messaging
         'messages.view', 'messages.send',
+        // WhatsApp Business inbox. `whatsapp.delete` hides a message from the
+        // inbox only (soft delete) — it never removes the row, and admins keep
+        // full visibility via `whatsapp.audit`.
+        'whatsapp.view', 'whatsapp.send', 'whatsapp.assign', 'whatsapp.delete', 'whatsapp.audit',
         // Finance
         'finance.view', 'invoices.manage', 'payments.verify',
         // Reporting
@@ -87,6 +91,24 @@ final class RolePermissionSeeder extends Seeder
                 'calendar.view', 'calendar.manage',
                 'complaints.view', 'complaints.manage',
                 'document_templates.view', 'document_templates.manage',
+            ],
+
+            // Sales: lead conversion + the WhatsApp Business inbox. No
+            // assignment workflow and no finance — deliberately narrower than
+            // ProjectManager. `whatsapp.delete` is a soft delete (hide from the
+            // inbox); `whatsapp.audit` is withheld so sales cannot browse other
+            // reps' threads wholesale or see deleted history.
+            Role::Sales->value => [
+                'users.view',
+                'leads.view', 'leads.manage',
+                'assignments.view',
+                'files.view', 'files.upload',
+                'messages.view', 'messages.send',
+                'whatsapp.view', 'whatsapp.send', 'whatsapp.assign', 'whatsapp.delete',
+                'tasks.view', 'tasks.manage',
+                'calendar.view', 'calendar.manage',
+                'complaints.view',
+                'document_templates.view',
             ],
 
             Role::Writer->value => [

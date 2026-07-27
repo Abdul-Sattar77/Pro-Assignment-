@@ -23,6 +23,7 @@ export const ROUTES = {
   newOrder: "/assignments/new",
   leads: "/leads",
   messaging: "/messages",
+  whatsapp: "/whatsapp",
   files: "/files",
   finance: "/finance",
   reports: "/reports",
