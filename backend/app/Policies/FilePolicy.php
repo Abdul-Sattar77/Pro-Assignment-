@@ -29,6 +29,13 @@ final class FilePolicy
             || ($assignment->writer_id !== null && $actor->getKey() === $assignment->writer_id);
     }
 
+    public function update(User $actor, File $file): bool
+    {
+        return $actor->hasRole(Role::Admin->value)
+            || $actor->hasRole(Role::ProjectManager->value)
+            || $actor->getKey() === $file->uploader_id;
+    }
+
     public function delete(User $actor, File $file): bool
     {
         return $actor->hasRole(Role::Admin->value)

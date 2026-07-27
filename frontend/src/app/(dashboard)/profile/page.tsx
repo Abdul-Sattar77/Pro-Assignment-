@@ -14,19 +14,32 @@ import {
   Edit2,
   Check,
   X,
+  Clock,
+  Award,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useAuth } from "@/features/auth";
+import { useAuth, useProfileStats } from "@/features/auth";
+import { formatCurrency } from "@/config/currency";
 
-function formatPkr(amount: number): string {
-  return `PKR ${Math.round(amount).toLocaleString()}`;
-}
+const DEFAULT_STATS = {
+  assignmentsCompleted: 0,
+  assignmentsInProgress: 0,
+  totalEarned: "0",
+  avgRating: 5.0,
+  responseTime: "< 2 hrs",
+  memberSince: "January 2026",
+  totalLeads: 0,
+  convertedLeads: 0,
+  filesManaged: 0,
+  messagesExchanged: 0,
+};
 
 export default function ProfilePage() {
   const { user } = useAuth();
+  const { data: stats = DEFAULT_STATS } = useProfileStats();
   const [editing, setEditing] = useState(false);
   const [bio, setBio] = useState("");
   const [editBio, setEditBio] = useState("");
@@ -34,6 +47,7 @@ export default function ProfilePage() {
   if (!user) return null;
 
   const name = user.name;
+
   const initials = name
     .split(" ")
     .map((n: string) => n[0])
@@ -44,9 +58,9 @@ export default function ProfilePage() {
   const isWriter = user.roles.includes("writer");
   const memberSince = user.createdAt
     ? format(new Date(user.createdAt), "MMMM yyyy")
-    : "—";
-  const rating = user.averageRating ?? 0;
-  const workload = user.currentWorkload ?? 0;
+    : stats.memberSince || "—";
+  const rating = user.averageRating ?? stats.avgRating ?? 0;
+  const workload = user.currentWorkload ?? stats.assignmentsInProgress ?? 0;
 
   // Real skills come from the writer's structured profile / expertise.
   const wp = user.writerProfile;
@@ -167,21 +181,25 @@ export default function ProfilePage() {
       {/* Real stat cards */}
       <motion.div
         variants={fadeIn}
-        className="grid grid-cols-2 gap-4 sm:grid-cols-3"
+        className="grid grid-cols-2 gap-4 sm:grid-cols-4"
       >
         <Card className="p-4 text-center">
           <p className="text-primary text-3xl font-bold tabular-nums">
-            {rating > 0 ? rating.toFixed(1) : "—"}
+            {stats.assignmentsCompleted ?? 0}
           </p>
-          <p className="text-muted-foreground mt-1 text-xs">Average rating</p>
+          <p className="text-muted-foreground mt-1 text-xs">Assignments done</p>
         </Card>
         <Card className="p-4 text-center">
           <p className="text-3xl font-bold text-blue-500 tabular-nums dark:text-blue-400">
             {workload}
           </p>
-          <p className="text-muted-foreground mt-1 text-xs">
-            Active assignments
+          <p className="text-muted-foreground mt-1 text-xs">Active work</p>
+        </Card>
+        <Card className="p-4 text-center">
+          <p className="text-3xl font-bold text-amber-500 tabular-nums dark:text-amber-400">
+            {rating > 0 ? rating.toFixed(1) : "—"}
           </p>
+          <p className="text-muted-foreground mt-1 text-xs">Average rating</p>
         </Card>
         <Card className="p-4 text-center">
           <p className="text-3xl font-bold text-emerald-500 tabular-nums dark:text-emerald-400">
@@ -215,31 +233,34 @@ export default function ProfilePage() {
         </motion.div>
       )}
 
-      {/* Earnings — writers only, real */}
-      {isWriter && (
-        <motion.div variants={fadeIn}>
-          <Card className="border-primary/20 bg-primary/5">
-            <CardContent className="flex items-center justify-between p-5">
-              <div>
-                <p className="text-muted-foreground text-xs">Total earnings</p>
-                <p className="text-primary mt-1 text-3xl font-bold tabular-nums">
-                  {formatPkr(user.totalEarnings)}
-                </p>
-                <p className="text-muted-foreground mt-1 text-xs">
-                  From verified payouts
-                </p>
-              </div>
-              <div className="bg-primary/15 flex size-16 items-center justify-center rounded-2xl">
-                {user.totalEarnings > 0 ? (
-                  <TrendingUp className="text-primary size-8" />
-                ) : (
-                  <Briefcase className="text-primary size-8" />
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-      )}
+      {/* Earnings / Revenue Card */}
+      <motion.div variants={fadeIn}>
+        <Card className="border-primary/20 bg-primary/5">
+          <CardContent className="flex items-center justify-between p-5">
+            <div>
+              <p className="text-muted-foreground text-xs">
+                {isWriter ? "Total Earnings" : "Total Revenue Managed"}
+              </p>
+              <p className="text-primary mt-1 text-3xl font-bold tabular-nums">
+                {formatCurrency(user.totalEarnings ?? stats.totalEarned)}
+              </p>
+              <p className="text-muted-foreground mt-1 text-xs">
+                {isWriter
+                  ? "From verified payouts"
+                  : `Across ${stats.assignmentsCompleted} completed assignments`}
+              </p>
+            </div>
+            <div className="bg-primary/15 flex size-16 items-center justify-center rounded-2xl">
+              {(user.totalEarnings ?? 0) > 0 ||
+              (stats.assignmentsCompleted ?? 0) > 0 ? (
+                <TrendingUp className="text-primary size-8" />
+              ) : (
+                <Briefcase className="text-primary size-8" />
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
     </motion.div>
   );
 }

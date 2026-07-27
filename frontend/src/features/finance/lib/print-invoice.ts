@@ -1,5 +1,5 @@
 import { formatMoney } from "../constants";
-import type { Invoice } from "../types";
+import { invoiceClientName, type Invoice } from "../types";
 
 /** Escape user-supplied strings before injecting into the print HTML. */
 function esc(value: string): string {
@@ -82,7 +82,7 @@ export function printInvoice(invoice: Invoice): void {
 
   ${
     invoice.client
-      ? `<div class="section"><h2>Billed to</h2><div>${esc(invoice.client)}</div></div>`
+      ? `<div class="section"><h2>Billed to</h2><div>${esc(invoiceClientName(invoice.client))}</div></div>`
       : ""
   }
   ${

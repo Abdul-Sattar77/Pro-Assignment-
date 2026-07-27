@@ -14,6 +14,8 @@ export type InvoiceAction = "submit_payment" | "verify" | "cancel";
 export interface Invoice {
   id: string;
   number: string;
+  amount: number;
+  formattedAmount?: string;
   amountCents: number;
   paidAmountCents?: number;
   dueAmountCents?: number;
@@ -22,7 +24,7 @@ export interface Invoice {
   statusLabel: string;
   description: string | null;
   paymentReference?: string | null;
-  client?: string;
+  client?: { id: string; name: string; email: string } | string | null;
   assignment?: { id: string; title: string } | null;
   actions: InvoiceAction[];
   createdAt: string | null;
@@ -56,7 +58,8 @@ export const PAYMENT_STATUS = {
   REJECTED: "rejected",
 } as const;
 
-export type PaymentStatus = (typeof PAYMENT_STATUS)[keyof typeof PAYMENT_STATUS];
+export type PaymentStatus =
+  (typeof PAYMENT_STATUS)[keyof typeof PAYMENT_STATUS];
 
 export const PAYMENT_TYPE = {
   ADVANCE: "advance",
@@ -166,4 +169,28 @@ export interface CreateInvoicePayload {
   assignmentId: string;
   amount: number;
   description?: string;
+  currency?: string;
+}
+
+/** Invoice.client may be a plain name or an object; normalise to a display name. */
+export function invoiceClientName(client: Invoice["client"]): string {
+  if (!client) return "—";
+  return typeof client === "string" ? client : client.name;
+}
+
+export interface PaymentReminder {
+  id: string;
+  invoiceId: string;
+  type: string;
+  status: string;
+  notes: string | null;
+  sentAt: string | null;
+  createdAt: string | null;
+  invoice?: { id: string; number: string; amount: number } | null;
+  client?: { id: string; name: string; email: string } | null;
+}
+
+export interface SendReminderPayload {
+  invoiceId: string;
+  notes?: string;
 }

@@ -86,8 +86,10 @@ export const financeService = {
   async listPayments(filters: PaymentFilters): Promise<PaymentsPage> {
     const params: Record<string, string | number> = {};
     if (filters.status) params["filter[status]"] = filters.status;
-    if (filters.paymentType) params["filter[payment_type]"] = filters.paymentType;
-    if (filters.assignmentId) params["filter[assignment_id]"] = filters.assignmentId;
+    if (filters.paymentType)
+      params["filter[payment_type]"] = filters.paymentType;
+    if (filters.assignmentId)
+      params["filter[assignment_id]"] = filters.assignmentId;
     if (filters.userId) params["filter[user_id]"] = filters.userId;
     if (filters.sort) params.sort = filters.sort;
     if (filters.page) params.page = filters.page;
@@ -130,6 +132,26 @@ export const financeService = {
     const { data } = await apiClient.get<{ data: FinanceStats }>(
       "/finance/stats",
     );
+    return data.data;
+  },
+
+  async listReminders(): Promise<import("../types").PaymentReminder[]> {
+    const { data } = await apiClient.get<{
+      data: import("../types").PaymentReminder[];
+      meta?: unknown;
+    }>("/finance/reminders");
+    return Array.isArray(data.data) ? data.data : [];
+  },
+
+  async sendReminder(
+    invoiceId: string,
+    notes?: string,
+  ): Promise<import("../types").PaymentReminder> {
+    const { data } = await apiClient.post<{
+      data: import("../types").PaymentReminder;
+    }>(`/invoices/${invoiceId}/reminders`, {
+      notes: notes || "Manual payment reminder dispatched by staff.",
+    });
     return data.data;
   },
 };

@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\V1\Files\FileController;
 use App\Http\Controllers\Api\V1\Finance\FinanceController;
 use App\Http\Controllers\Api\V1\Finance\InvoiceController;
 use App\Http\Controllers\Api\V1\Finance\PaymentController;
+use App\Http\Controllers\Api\V1\Finance\PaymentReminderController;
 use App\Http\Controllers\Api\V1\Leads\LeadController;
 use App\Http\Controllers\Api\V1\Leads\LeadQuoteController;
 use App\Http\Controllers\Api\V1\Messages\MessageController;
@@ -164,9 +165,19 @@ Route::prefix('v1')->group(function (): void {
 
     // ---- Files (authorized binary access) ----
     Route::middleware('auth:sanctum')->prefix('files')->name('files.')->group(function (): void {
+        Route::get('/', [FileController::class, 'indexAll'])->name('index');
         Route::post('/', [FileController::class, 'uploadGeneral'])->name('store');
+        Route::get('{file}', [FileController::class, 'show'])->name('show');
+        Route::patch('{file}', [FileController::class, 'update'])->name('update');
         Route::get('{file}/download', [FileController::class, 'download'])->name('download');
         Route::delete('{file}', [FileController::class, 'destroy'])->name('destroy');
+    });
+
+    // ---- Reports ----
+    Route::middleware('auth:sanctum')->prefix('reports')->name('reports.')->group(function (): void {
+        Route::get('/', [ReportsController::class, 'index'])->name('index');
+        Route::get('meta', [ReportsController::class, 'meta'])->name('meta');
+        Route::get('export', [ReportsController::class, 'export'])->name('export');
     });
 
     // ---- Finance (invoices & payments — main) ----
@@ -178,6 +189,8 @@ Route::prefix('v1')->group(function (): void {
         Route::post('invoices/{invoice}/submit-payment', [InvoiceController::class, 'submitPayment'])->name('invoices.submit-payment');
         Route::post('invoices/{invoice}/verify', [InvoiceController::class, 'verify'])->name('invoices.verify');
         Route::post('invoices/{invoice}/cancel', [InvoiceController::class, 'cancel'])->name('invoices.cancel');
+        Route::get('finance/reminders', [PaymentReminderController::class, 'index'])->name('finance.reminders.index');
+        Route::post('invoices/{invoice}/reminders', [PaymentReminderController::class, 'trigger'])->name('invoices.reminders.trigger');
     });
 
     // ---- Payments subsystem (admin panel; net-new) ----
@@ -195,6 +208,22 @@ Route::prefix('v1')->group(function (): void {
         Route::get('unread-count', [NotificationController::class, 'unreadCount'])->name('unread-count');
         Route::post('read-all', [NotificationController::class, 'markAllRead'])->name('read-all');
         Route::post('{id}/read', [NotificationController::class, 'markRead'])->name('read');
+    });
+
+    // ---- Chat & Direct Messages ----
+    Route::middleware('auth:sanctum')->prefix('chat')->name('chat.')->group(function (): void {
+        Route::get('contacts', [ChatController::class, 'contacts'])->name('contacts');
+        Route::get('conversations', [ChatController::class, 'index'])->name('conversations.index');
+        Route::post('conversations', [ChatController::class, 'start'])->name('conversations.start');
+        Route::get('conversations/{conversation}', [ChatController::class, 'show'])->name('conversations.show');
+        Route::post('conversations/{conversation}/messages', [ChatController::class, 'send'])->name('messages.send');
+        Route::delete('messages/{message}', [ChatController::class, 'destroyMessage'])->name('messages.destroy');
+    });
+
+    // ---- Admin Deleted Messages Audit & Restore ----
+    Route::middleware('auth:sanctum')->prefix('admin')->group(function (): void {
+        Route::get('deleted-messages', [ChatController::class, 'listDeletedMessages'])->name('admin.deleted-messages.index');
+        Route::post('deleted-messages/{uuid}/restore', [ChatController::class, 'restoreMessage'])->name('admin.deleted-messages.restore');
     });
 
     // ---- Reports & Export ----

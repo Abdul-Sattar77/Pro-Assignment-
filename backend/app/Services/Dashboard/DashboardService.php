@@ -225,7 +225,7 @@ final class DashboardService
             ->map(fn ($u) => [
                 'name' => $u->name,
                 'active' => (int) ($activeByClient[$u->id] ?? 0),
-                'spend' => 'PKR '.number_format((float) ($clientSpends[$u->id] ?? 0)),
+                'spend' => config('finance.currency', 'PKR') . ' ' . number_format((float) ($clientSpends[$u->id] ?? 0)),
                 'lastActive' => $u->updated_at?->diffForHumans() ?? '—',
             ])
             ->sortByDesc('active')

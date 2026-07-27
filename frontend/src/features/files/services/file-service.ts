@@ -59,6 +59,17 @@ export const fileService = {
     return data.data;
   },
 
+  async updateNotes(
+    id: string,
+    payload: { notes: string; version: number },
+  ): Promise<AppFile> {
+    const { data } = await apiClient.patch<Envelope<AppFile>>(`/files/${id}`, {
+      notes: payload.notes,
+      version: payload.version,
+    });
+    return data.data;
+  },
+
   async delete(id: string): Promise<void> {
     await apiClient.delete(`/files/${id}`);
   },

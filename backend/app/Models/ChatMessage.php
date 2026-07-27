@@ -9,10 +9,12 @@ use App\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 
 /**
- * A single direct-chat message: text and/or one attachment (file/voice/image/
- * video) stored on a private disk and served via an authorized download route.
+ * A single direct-chat message with soft-delete audit support.
  *
  * @property ChatMessageType $type
  * @property string|null $path
@@ -26,6 +28,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class ChatMessage extends Model
 {
     use HasUuid;
+    use LogsActivity;
+    use SoftDeletes;
 
     protected function casts(): array
     {
@@ -33,6 +37,15 @@ class ChatMessage extends Model
             'type' => ChatMessageType::class,
             'size' => 'integer',
         ];
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['conversation_id', 'sender_id', 'type', 'body', 'original_name'])
+            ->logOnlyDirty()
+            ->dontLogEmptyChanges()
+            ->useLogName('chat_message');
     }
 
     /** @return BelongsTo<ChatConversation, $this> */

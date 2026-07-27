@@ -19,8 +19,7 @@ use Illuminate\Http\UploadedFile;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
- * File endpoints scoped to an assignment. Thin: authorize → service → resource.
- * Binaries are streamed from an authorized download route (no public URLs).
+ * File management controller for workspace and assignment files.
  */
 final class FileController extends Controller
 {
@@ -32,9 +31,58 @@ final class FileController extends Controller
     {
         $this->authorize('view', $assignment);
 
-        $files = $assignment->files()->with('uploader')->get();
+        $files = $assignment->files()->with(['uploader', 'assignment'])->get();
 
         return ApiResponse::collection(FileResource::collection($files));
+    }
+
+    public function indexAll(Request $request): JsonResponse
+    {
+        /** @var User $actor */
+        $actor = $request->user();
+
+        $filters = [
+            'search' => $request->query('search'),
+            'type' => $request->query('type'),
+            'uploaded_by' => $request->query('uploaded_by'),
+            'sort_by' => $request->query('sort_by'),
+            'sort_order' => $request->query('sort_order'),
+        ];
+
+        $files = $this->files->listAll($actor, array_filter($filters, fn ($v) => $v !== null && $v !== ''));
+
+        return ApiResponse::collection(FileResource::collection($files));
+    }
+
+    public function show(Request $request, File $file): JsonResponse
+    {
+        $this->authorize('view', $file);
+
+        return ApiResponse::resource(FileResource::make($file->load(['uploader', 'assignment'])));
+    }
+
+    public function update(Request $request, File $file): JsonResponse
+    {
+        $this->authorize('update', $file);
+
+        $validated = $request->validate([
+            'original_name' => ['sometimes', 'string', 'max:255'],
+            'name' => ['sometimes', 'string', 'max:255'],
+            'note' => ['sometimes', 'nullable', 'string'],
+            'notes' => ['sometimes', 'nullable', 'string'],
+            'version' => ['sometimes', 'integer', 'min:1'],
+        ]);
+
+        if (isset($validated['name']) && !isset($validated['original_name'])) {
+            $validated['original_name'] = $validated['name'];
+        }
+        if (isset($validated['notes']) && !isset($validated['note'])) {
+            $validated['note'] = $validated['notes'];
+        }
+
+        $file->update($validated);
+
+        return ApiResponse::resource(FileResource::make($file->fresh(['uploader', 'assignment'])));
     }
 
     public function store(StoreFileRequest $request, Assignment $assignment): JsonResponse
@@ -50,7 +98,7 @@ final class FileController extends Controller
 
         $file = $this->files->upload($assignment, $actor, $upload, $note);
 
-        return ApiResponse::resource(FileResource::make($file->load('uploader')), 201);
+        return ApiResponse::resource(FileResource::make($file->load(['uploader', 'assignment'])), 201);
     }
 
     public function uploadGeneral(StoreFileRequest $request): JsonResponse
@@ -63,7 +111,7 @@ final class FileController extends Controller
 
         $file = $this->files->uploadGeneral($actor, $upload);
 
-        return ApiResponse::resource(FileResource::make($file->load('uploader')), 201);
+        return ApiResponse::resource(FileResource::make($file->load(['uploader', 'assignment'])), 201);
     }
 
     public function download(Request $request, File $file): StreamedResponse

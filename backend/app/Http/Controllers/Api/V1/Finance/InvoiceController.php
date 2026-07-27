@@ -77,7 +77,7 @@ final class InvoiceController extends Controller
             [
                 'clientId' => $clientId,
                 'amountCents' => (int) round(((float) $validated['amount']) * 100),
-                'currency' => $validated['currency'] ?? 'USD',
+                'currency' => $validated['currency'] ?? config('finance.currency', 'PKR'),
                 'description' => $validated['description'] ?? null,
             ],
             $assignmentId,

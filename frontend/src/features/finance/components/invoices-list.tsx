@@ -8,7 +8,12 @@ import {
   INVOICE_SORT_OPTIONS,
   formatMoney,
 } from "../constants";
-import { INVOICE_STATUS, type Invoice, type InvoiceStatus } from "../types";
+import {
+  INVOICE_STATUS,
+  invoiceClientName,
+  type Invoice,
+  type InvoiceStatus,
+} from "../types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -185,7 +190,7 @@ export function InvoicesList() {
                   <TableCell className="font-mono font-medium">
                     {invoice.number}
                   </TableCell>
-                  <TableCell>{invoice.client || "N/A"}</TableCell>
+                  <TableCell>{invoiceClientName(invoice.client)}</TableCell>
                   <TableCell className="max-w-xs truncate">
                     {invoice.assignment?.title || "N/A"}
                   </TableCell>
@@ -193,10 +198,16 @@ export function InvoicesList() {
                     {formatMoney(invoice.amountCents, invoice.currency)}
                   </TableCell>
                   <TableCell className="text-muted-foreground text-sm">
-                    {formatMoney(invoice.paidAmountCents ?? 0, invoice.currency)}
+                    {formatMoney(
+                      invoice.paidAmountCents ?? 0,
+                      invoice.currency,
+                    )}
                   </TableCell>
-                  <TableCell className="font-medium text-rose-600 dark:text-rose-400 text-sm">
-                    {formatMoney(invoice.dueAmountCents ?? invoice.amountCents, invoice.currency)}
+                  <TableCell className="text-sm font-medium text-rose-600 dark:text-rose-400">
+                    {formatMoney(
+                      invoice.dueAmountCents ?? invoice.amountCents,
+                      invoice.currency,
+                    )}
                   </TableCell>
                   <TableCell>
                     {invoice.createdAt ? (

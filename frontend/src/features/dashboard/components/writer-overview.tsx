@@ -27,16 +27,14 @@ const fade = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: easeOut } },
 };
 
+import { formatCurrency } from "@/config/currency";
+
 const ACTIVE_STATUSES: string[] = [
   ASSIGNMENT_STATUS.ASSIGNED,
   ASSIGNMENT_STATUS.IN_PROGRESS,
   ASSIGNMENT_STATUS.REVISION_REQUESTED,
   ASSIGNMENT_STATUS.SUBMITTED,
 ];
-
-function formatPkr(amount: number): string {
-  return `PKR ${Math.round(amount).toLocaleString()}`;
-}
 
 /**
  * Real writer dashboard, built entirely from writer-scoped endpoints
@@ -141,7 +139,7 @@ export function WriterOverview() {
             <div>
               <p className="text-muted-foreground text-xs">Total earnings</p>
               <p className="text-primary mt-1 text-3xl font-bold tabular-nums">
-                {formatPkr(user?.totalEarnings ?? 0)}
+                {formatCurrency(user?.totalEarnings ?? 0)}
               </p>
               <p className="text-muted-foreground mt-1 text-xs">
                 From verified payouts

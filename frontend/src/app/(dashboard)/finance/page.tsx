@@ -13,6 +13,7 @@ import {
   FinanceSummaryTiles,
   InvoicesTable,
   PaymentsList,
+  PaymentRemindersList,
 } from "@/features/finance";
 
 /**
@@ -58,12 +59,16 @@ export default function FinancePage() {
           <TabsList className="mb-4">
             <TabsTrigger value="invoices">Invoices</TabsTrigger>
             <TabsTrigger value="payments">Payments & Transactions</TabsTrigger>
+            <TabsTrigger value="reminders">Payment Reminders</TabsTrigger>
           </TabsList>
           <TabsContent value="invoices" className="space-y-4">
             <InvoicesTable />
           </TabsContent>
           <TabsContent value="payments" className="space-y-4">
             <PaymentsList />
+          </TabsContent>
+          <TabsContent value="reminders" className="space-y-4">
+            <PaymentRemindersList />
           </TabsContent>
         </Tabs>
       </motion.div>

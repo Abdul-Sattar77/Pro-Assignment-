@@ -18,10 +18,40 @@ import {
   BookOpen,
   FileText,
   Building,
+  Loader2,
 } from "lucide-react";
 import { format } from "date-fns";
 import { formatCurrency } from "@/config/currency";
+import { useUpdateUser } from "../hooks/use-users";
 import type { UserListItem } from "../types";
+
+const CLIENT_FLAGS = [
+  {
+    id: "pays_late",
+    label: "Pays Late",
+    color: "bg-rose-500/10 text-rose-600 border-rose-500/30",
+  },
+  {
+    id: "negotiates",
+    label: "Negotiates",
+    color: "bg-amber-500/10 text-amber-600 border-amber-500/30",
+  },
+  {
+    id: "high_value",
+    label: "High Value",
+    color: "bg-emerald-500/10 text-emerald-600 border-emerald-500/30",
+  },
+  {
+    id: "referral",
+    label: "Referral",
+    color: "bg-blue-500/10 text-blue-600 border-blue-500/30",
+  },
+  {
+    id: "strict_professor",
+    label: "Strict Professor",
+    color: "bg-purple-500/10 text-purple-600 border-purple-500/30",
+  },
+] as const;
 
 interface UserDetailDrawerProps {
   user: UserListItem | null;
@@ -34,6 +64,8 @@ export function UserDetailDrawer({
   open,
   onOpenChange,
 }: UserDetailDrawerProps) {
+  const updateUser = useUpdateUser();
+
   if (!user) return null;
 
   const isClient = user.roles.includes("client");
@@ -43,6 +75,15 @@ export function UserDetailDrawer({
   const formattedDate = user.createdAt
     ? format(new Date(user.createdAt), "PPP")
     : "Recently registered";
+
+  const currentFlags = user.clientFlags ?? [];
+
+  const handleFlagToggle = (flagId: string) => {
+    const next = currentFlags.includes(flagId)
+      ? currentFlags.filter((f) => f !== flagId)
+      : [...currentFlags, flagId];
+    updateUser.mutate({ id: user.id, payload: { clientFlags: next } });
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -92,7 +133,7 @@ export function UserDetailDrawer({
             )}
             {isPM && <TabsTrigger value="pm">PM Performance</TabsTrigger>}
             {!isClient && !isWriter && !isPM && (
-              <TabsTrigger value="roles">Roles & Notes</TabsTrigger>
+              <TabsTrigger value="roles">Roles &amp; Notes</TabsTrigger>
             )}
           </TabsList>
 
@@ -150,7 +191,7 @@ export function UserDetailDrawer({
                 <CardHeader className="px-4 py-3">
                   <CardTitle className="flex items-center gap-2 text-sm font-semibold">
                     <Building className="text-primary size-4" /> Client Profile
-                    & History
+                    &amp; Flags
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3 px-4 pb-4 text-sm">
@@ -167,9 +208,44 @@ export function UserDetailDrawer({
                       <span className="text-muted-foreground">
                         Preferred Contact:
                       </span>{" "}
-                      Email & Chat
+                      Email &amp; Chat
                     </div>
                   </div>
+
+                  {/* Client Flags — editable toggles wired to PATCH /users/{id} */}
+                  <div className="space-y-2 border-t pt-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-foreground text-xs font-semibold">
+                        Structured Client Flags:
+                      </span>
+                      <span className="text-muted-foreground flex items-center gap-1.5 text-[10px] font-normal">
+                        {updateUser.isPending && (
+                          <Loader2 className="size-3 animate-spin" />
+                        )}
+                        Click flag to toggle &amp; save
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {CLIENT_FLAGS.map((flag) => {
+                        const active = currentFlags.includes(flag.id);
+                        return (
+                          <Badge
+                            key={flag.id}
+                            variant={active ? "default" : "outline"}
+                            className={`cursor-pointer transition-all select-none ${
+                              active
+                                ? flag.color
+                                : "opacity-50 hover:opacity-100"
+                            } ${updateUser.isPending ? "pointer-events-none opacity-60" : ""}`}
+                            onClick={() => handleFlagToggle(flag.id)}
+                          >
+                            {flag.label} {active && "✓"}
+                          </Badge>
+                        );
+                      })}
+                    </div>
+                  </div>
+
                   <div className="bg-muted/40 space-y-1 rounded-lg border p-3 text-xs">
                     <p className="text-foreground font-medium">
                       Assignment History Summary
@@ -191,7 +267,7 @@ export function UserDetailDrawer({
                 <CardHeader className="px-4 py-3">
                   <CardTitle className="flex items-center gap-2 text-sm font-semibold">
                     <BookOpen className="text-primary size-4" /> Writer
-                    Expertise & Workload
+                    Expertise &amp; Workload
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3 px-4 pb-4">
@@ -266,7 +342,7 @@ export function UserDetailDrawer({
                     <div className="bg-muted/30 rounded-md border p-3">
                       <p className="text-muted-foreground">Role Scope</p>
                       <p className="text-foreground mt-0.5 font-semibold">
-                        Order Review & Delivery
+                        Order Review &amp; Delivery
                       </p>
                     </div>
                     <div className="bg-muted/30 rounded-md border p-3">

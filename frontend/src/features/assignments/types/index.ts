@@ -111,8 +111,11 @@ export interface Assignment {
   notes?: string | null;
   clientPrice?: number;
   writerCost?: number;
+  additionalCosts?: number;
   discount?: number;
+  totalCost?: number;
   netProfit?: number;
+  profitMargin?: number;
   client?: PersonRef;
   writer?: PersonRef | null;
   projectManager?: PersonRef | null;

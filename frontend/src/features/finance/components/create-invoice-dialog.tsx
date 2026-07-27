@@ -52,7 +52,12 @@ export function CreateInvoiceDialog({
     const value = Number.parseFloat(amount);
     if (!assignmentId || Number.isNaN(value) || value <= 0) return;
     create.mutate(
-      { assignmentId, amount: value, description: description || undefined },
+      {
+        assignmentId,
+        amount: value,
+        currency: APP_CURRENCY.code,
+        description: description || undefined,
+      },
       {
         onSuccess: () => {
           onOpenChange(false);

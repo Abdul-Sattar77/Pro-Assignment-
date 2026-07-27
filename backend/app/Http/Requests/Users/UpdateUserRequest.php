@@ -41,6 +41,8 @@ final class UpdateUserRequest extends FormRequest
             'availability' => ['sometimes', 'string', 'in:available,busy,away'],
             'expertise' => ['sometimes', 'nullable', 'string', 'max:5000'],
             'notes' => ['sometimes', 'nullable', 'string', 'max:5000'],
+            'client_flags' => ['sometimes', 'nullable', 'array'],
+            'clientFlags' => ['sometimes', 'nullable', 'array'],
         ];
     }
 }

@@ -1,12 +1,10 @@
 "use client";
 
 import { useEffect, type ReactNode } from "react";
-import Lenis from "lenis";
 
 /**
- * Buttery inertial smooth-scroll for the marketing site (Lenis). Mounted only
- * in the public layout — the app portal keeps native scrolling. Respects
- * prefers-reduced-motion and drives anchor links (#services) through Lenis.
+ * Smooth-scroll handler for the marketing site. Mounted only in public layout.
+ * Uses native CSS smooth scrolling and handles anchor links cleanly without external bundle dependencies.
  */
 export function SmoothScroll({ children }: { children: ReactNode }) {
   useEffect(() => {
@@ -17,23 +15,12 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
       return;
     }
 
-    const lenis = new Lenis({
-      duration: 1.1,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      smoothWheel: true,
-      anchors: true,
-    });
-
-    let raf = 0;
-    const loop = (time: number) => {
-      lenis.raf(time);
-      raf = requestAnimationFrame(loop);
-    };
-    raf = requestAnimationFrame(loop);
+    const html = document.documentElement;
+    const prevBehavior = html.style.scrollBehavior;
+    html.style.scrollBehavior = "smooth";
 
     return () => {
-      cancelAnimationFrame(raf);
-      lenis.destroy();
+      html.style.scrollBehavior = prevBehavior;
     };
   }, []);
 

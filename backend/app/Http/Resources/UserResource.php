@@ -33,6 +33,7 @@ final class UserResource extends JsonResource
             'expertise' => $this->expertise,
             'writerProfile' => $this->writer_profile,
             'notes' => $this->notes,
+            'clientFlags' => $this->client_flags ?? [],
             'averageRating' => $this->average_rating,
             'totalEarnings' => $this->total_earnings,
             // Computed only for the user's own record (auth/me, profile update)

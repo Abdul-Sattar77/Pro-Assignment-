@@ -37,7 +37,7 @@ import {
 } from "../constants";
 import { useInvoiceAction, useInvoices } from "../hooks/use-finance";
 import { printInvoice } from "../lib/print-invoice";
-import type { Invoice, InvoiceStatus } from "../types";
+import { invoiceClientName, type Invoice, type InvoiceStatus } from "../types";
 import { PaymentDialog } from "./payment-dialog";
 
 const ALL = "all";
@@ -145,7 +145,7 @@ export function InvoicesTable() {
                   )}
                   {invoice.client && (
                     <p className="text-muted-foreground text-xs">
-                      {invoice.client}
+                      {invoiceClientName(invoice.client)}
                     </p>
                   )}
                 </TableCell>

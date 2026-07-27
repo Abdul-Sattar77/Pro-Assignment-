@@ -1,8 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Search } from "lucide-react";
+import { Search, Upload, RefreshCw } from "lucide-react";
+import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -10,169 +13,90 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { FileCard } from "./file-card";
-import { FileUpload } from "./file-upload";
-import type { AssignmentFile } from "../types";
-
-const MOCK_FILES: AssignmentFile[] = [
-  {
-    id: "f1",
-    name: "Assignment_Brief_A101.pdf",
-    size: 245760,
-    type: "pdf",
-    uploadedBy: "client",
-    uploaderName: "John Client",
-    assignmentId: "A-101",
-    assignmentTitle: "Assignment #A-101",
-    uploadedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
-    url: "#",
-  },
-  {
-    id: "f2",
-    name: "Draft_Essay_v1.docx",
-    size: 512000,
-    type: "docx",
-    uploadedBy: "writer",
-    uploaderName: "Sara Writer",
-    assignmentId: "A-101",
-    assignmentTitle: "Assignment #A-101",
-    uploadedAt: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString(),
-    url: "#",
-  },
-  {
-    id: "f3",
-    name: "Research_Requirements.pdf",
-    size: 180000,
-    type: "pdf",
-    uploadedBy: "client",
-    uploaderName: "Mike Client",
-    assignmentId: "A-102",
-    assignmentTitle: "Assignment #A-102",
-    uploadedAt: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(),
-    url: "#",
-  },
-  {
-    id: "f4",
-    name: "Research_Outline.docx",
-    size: 98304,
-    type: "docx",
-    uploadedBy: "writer",
-    uploaderName: "Sara Writer",
-    assignmentId: "A-102",
-    assignmentTitle: "Assignment #A-102",
-    uploadedAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
-    url: "#",
-  },
-  {
-    id: "f5",
-    name: "Case_Study_Brief.pdf",
-    size: 320000,
-    type: "pdf",
-    uploadedBy: "client",
-    uploaderName: "Mike Client",
-    assignmentId: "A-103",
-    assignmentTitle: "Assignment #A-103",
-    uploadedAt: new Date(Date.now() - 1000 * 60 * 60 * 72).toISOString(),
-    url: "#",
-  },
-  {
-    id: "f6",
-    name: "Revision_Notes.docx",
-    size: 65536,
-    type: "docx",
-    uploadedBy: "pm",
-    uploaderName: "Project Manager",
-    assignmentId: "A-101",
-    assignmentTitle: "Assignment #A-101",
-    uploadedAt: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
-    url: "#",
-  },
-];
+import { cn } from "@/lib/utils";
+import { useFiles } from "../hooks/use-files";
+import { FILES_QUERY_KEYS } from "../constants";
+import { FileList } from "./file-list";
+import { UploadDialog } from "./upload-dialog";
 
 export function FilesList() {
-  const [files, setFiles] = useState<AssignmentFile[]>(MOCK_FILES);
+  const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState("all");
+  const [type, setType] = useState<string>("all");
+  const [uploadOpen, setUploadOpen] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  function handleDelete(id: string) {
-    setFiles((prev) => prev.filter((f) => f.id !== id));
-  }
+  const filters = {
+    search: search.trim() || undefined,
+    type:
+      type === "all" ? undefined : (type as "document" | "image" | "archive"),
+  };
 
-  function handleUpload(file: File) {
-    const ext = file.name.split(".").pop()?.toLowerCase();
-    const type =
-      ext === "pdf"
-        ? "pdf"
-        : ext === "docx"
-          ? "docx"
-          : ext === "xlsx"
-            ? "xlsx"
-            : ext === "jpg" || ext === "png"
-              ? "image"
-              : "other";
-    const newFile: AssignmentFile = {
-      id: Date.now().toString(),
-      name: file.name,
-      size: file.size,
-      type,
-      uploadedBy: "pm",
-      uploaderName: "Project Manager",
-      assignmentId: "A-101",
-      assignmentTitle: "Assignment #A-101",
-      uploadedAt: new Date().toISOString(),
-      url: "#",
-    };
-    setFiles((prev) => [newFile, ...prev]);
-  }
+  const {
+    data: files = [],
+    isLoading,
+    isFetching,
+    refetch,
+  } = useFiles(filters);
 
-  const filtered = files.filter((f) => {
-    const matchSearch =
-      f.name.toLowerCase().includes(search.toLowerCase()) ||
-      f.assignmentTitle.toLowerCase().includes(search.toLowerCase());
-    const matchFilter = filter === "all" || f.uploadedBy === filter;
-    return matchSearch && matchFilter;
-  });
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    await queryClient.invalidateQueries({ queryKey: FILES_QUERY_KEYS.all });
+    await refetch();
+    setIsRefreshing(false);
+    toast.success("Files list refreshed.");
+  };
 
   return (
     <div className="space-y-6">
-      <FileUpload onUpload={handleUpload} />
-
-      <div className="flex gap-3">
-        <div className="relative flex-1">
-          <Search className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
-          <Input
-            placeholder="Search files..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-9"
-          />
-        </div>
-        <Select value={filter} onValueChange={setFilter}>
-          <SelectTrigger className="w-40">
-            <SelectValue placeholder="Filter by" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All files</SelectItem>
-            <SelectItem value="client">Client</SelectItem>
-            <SelectItem value="writer">Writer</SelectItem>
-            <SelectItem value="pm">My uploads</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="space-y-2">
-        {filtered.length === 0 ? (
-          <div className="text-muted-foreground py-12 text-center text-sm">
-            No files found.
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-1 items-center gap-3">
+          <div className="relative max-w-sm flex-1">
+            <Search className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
+            <Input
+              placeholder="Search files by name..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-9"
+            />
           </div>
-        ) : (
-          filtered.map((file) => (
-            <FileCard key={file.id} file={file} onDelete={handleDelete} />
-          ))
-        )}
+          <Select value={type} onValueChange={setType}>
+            <SelectTrigger className="w-40">
+              <SelectValue placeholder="Category" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All types</SelectItem>
+              <SelectItem value="document">Documents</SelectItem>
+              <SelectItem value="image">Images</SelectItem>
+              <SelectItem value="archive">Archives</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => void handleRefresh()}
+            disabled={isFetching || isRefreshing}
+          >
+            <RefreshCw
+              className={cn(
+                "mr-1.5 size-4",
+                (isFetching || isRefreshing) && "animate-spin",
+              )}
+            />{" "}
+            Refresh
+          </Button>
+          <Button size="sm" onClick={() => setUploadOpen(true)}>
+            <Upload className="mr-1.5 size-4" /> Upload File
+          </Button>
+        </div>
       </div>
 
-      <p className="text-muted-foreground text-xs">{filtered.length} files</p>
+      <FileList files={files} isLoading={isLoading} />
+
+      <UploadDialog open={uploadOpen} onOpenChange={setUploadOpen} />
     </div>
   );
 }

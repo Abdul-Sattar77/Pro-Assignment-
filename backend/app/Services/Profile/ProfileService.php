@@ -68,7 +68,7 @@ final class ProfileService
 
         $totalLeads = \App\Models\Lead::query()->count();
         $convertedLeads = \App\Models\Lead::query()->where('status', 'converted')->count();
-        $filesManaged = \App\Models\File::query()->where('uploaded_by', $userId)->count();
+        $filesManaged = \App\Models\File::query()->where('uploader_id', $userId)->count();
         $messagesExchanged = \App\Models\ChatMessage::query()->where('sender_id', $userId)->count();
 
         $earnedSum = (float) \App\Models\Payment::query()

@@ -61,10 +61,15 @@ final class AssignmentResource extends JsonResource
                 'name' => $this->projectManager->name,
             ]),
             'notes' => $this->notes,
-            'clientPrice' => $this->client_price,
-            'writerCost' => $this->writer_cost,
-            'discount' => $this->discount,
-            'netProfit' => $this->net_profit,
+            'clientPrice' => (float) ($this->client_price ?? 0),
+            'writerCost' => (float) ($this->writer_cost ?? 0),
+            'additionalCosts' => (float) ($this->additional_costs ?? 0),
+            'discount' => (float) ($this->discount ?? 0),
+            'totalCost' => (float) (($this->writer_cost ?? 0) + ($this->additional_costs ?? 0)),
+            'netProfit' => (float) ($this->net_profit ?? 0),
+            'profitMargin' => ($this->client_price ?? 0) > 0
+                ? round((($this->net_profit ?? 0) / $this->client_price) * 100, 2)
+                : 0,
             'events' => AssignmentEventResource::collection($this->whenLoaded('events')),
             'attachments' => AssignmentAttachmentResource::collection($this->whenLoaded('attachments')),
             'actions' => $viewer === null

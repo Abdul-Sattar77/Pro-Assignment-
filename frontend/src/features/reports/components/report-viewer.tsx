@@ -62,8 +62,7 @@ export function ReportViewer() {
 
     const headerLower = header.toLowerCase();
     if (
-      (headerLower.includes("pkr") ||
-        headerLower.includes("price") ||
+      (headerLower.includes("price") ||
         headerLower.includes("cost") ||
         headerLower.includes("earnings") ||
         headerLower.includes("paid") ||
@@ -71,7 +70,11 @@ export function ReportViewer() {
         headerLower.includes("discount") ||
         headerLower.includes("revenue") ||
         headerLower.includes("inflow") ||
-        headerLower.includes("outflow")) &&
+        headerLower.includes("outflow") ||
+        headerLower.includes("amount") ||
+        headerLower.includes("spend") ||
+        headerLower.includes("value") ||
+        headerLower.includes("(")) &&
       typeof val === "number"
     ) {
       return formatCurrency(val);

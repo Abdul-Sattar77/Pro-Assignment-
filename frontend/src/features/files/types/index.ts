@@ -36,10 +36,19 @@ export interface AppFile {
   size: number;
   humanSize: string;
   mimeType: string;
-  downloadUrl: string;
+  mime?: string;
+  downloadUrl?: string;
+  notes?: string | null;
+  note?: string | null;
+  version?: number;
   createdAt: string;
   assignment?: FileRef | null;
   uploader?: FileUploaderRef | null;
+}
+
+export interface UpdateFileNotesPayload {
+  notes: string;
+  version: number;
 }
 
 export interface FileFilters {
