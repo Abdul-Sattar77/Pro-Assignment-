@@ -24,6 +24,7 @@ export const ROUTES = {
   leads: "/leads",
   messaging: "/messages",
   whatsapp: "/whatsapp",
+  email: "/email",
   files: "/files",
   finance: "/finance",
   reports: "/reports",

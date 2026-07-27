@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\V1\Chat\ChatController;
 use App\Http\Controllers\Api\V1\Complaints\ComplaintController;
 use App\Http\Controllers\Api\V1\Dashboard\DashboardController;
 use App\Http\Controllers\Api\V1\Documents\DocumentTemplateController;
+use App\Http\Controllers\Api\V1\Email\EmailInboxController;
 use App\Http\Controllers\Api\V1\Files\FileController;
 use App\Http\Controllers\Api\V1\Finance\FinanceController;
 use App\Http\Controllers\Api\V1\Finance\InvoiceController;
@@ -124,6 +125,30 @@ Route::prefix('v1')->group(function (): void {
         Route::get('admin/hidden-messages', [WhatsAppInboxController::class, 'hiddenMessages'])->name('admin.hidden-messages');
         Route::post('admin/messages/{uuid}/restore', [WhatsAppInboxController::class, 'restoreMessage'])->name('admin.messages.restore');
         Route::get('admin/audit-log', [WhatsAppInboxController::class, 'auditLog'])->name('admin.audit-log');
+    });
+
+    // ---- Shared email inbox (Gmail / Google Workspace) ----
+    //
+    // Mail arrives by scheduled pull (`email:sync`), not a webhook, so there
+    // is no public endpoint here. Every route is policy-gated and there is no
+    // hard-delete endpoint anywhere in this group by design.
+    Route::middleware('auth:sanctum')->prefix('email')->name('email.')->group(function (): void {
+        Route::get('threads', [EmailInboxController::class, 'index'])->name('threads.index');
+        Route::get('threads/{thread}', [EmailInboxController::class, 'show'])->name('threads.show');
+        Route::get('threads/{thread}/messages', [EmailInboxController::class, 'messages'])->name('threads.messages');
+        Route::post('threads/{thread}/messages', [EmailInboxController::class, 'send'])->name('threads.send');
+        Route::post('threads/{thread}/assign', [EmailInboxController::class, 'assign'])->name('threads.assign');
+        Route::post('threads/{thread}/archive', [EmailInboxController::class, 'archive'])->name('threads.archive');
+        Route::post('threads/{thread}/read', [EmailInboxController::class, 'markRead'])->name('threads.read');
+
+        // Soft hide only — the row survives and stays visible to admins.
+        Route::delete('messages/{message}', [EmailInboxController::class, 'hideMessage'])->name('messages.hide');
+        Route::get('attachments/{attachment}/download', [EmailInboxController::class, 'downloadAttachment'])->name('attachments.download');
+
+        // Admin oversight
+        Route::get('admin/hidden-messages', [EmailInboxController::class, 'hiddenMessages'])->name('admin.hidden-messages');
+        Route::post('admin/messages/{uuid}/restore', [EmailInboxController::class, 'restoreMessage'])->name('admin.messages.restore');
+        Route::get('admin/audit-log', [EmailInboxController::class, 'auditLog'])->name('admin.audit-log');
     });
 
     // ---- User Management (admin provisioning) ----

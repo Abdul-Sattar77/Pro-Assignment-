@@ -37,6 +37,9 @@ final class RolePermissionSeeder extends Seeder
         // inbox only (soft delete) — it never removes the row, and admins keep
         // full visibility via `whatsapp.audit`.
         'whatsapp.view', 'whatsapp.send', 'whatsapp.assign', 'whatsapp.delete', 'whatsapp.audit',
+        // Shared email inbox (Gmail). Same two-tier model as WhatsApp:
+        // `email.delete` hides from the inbox only; `email.audit` is admin.
+        'email.view', 'email.send', 'email.assign', 'email.delete', 'email.audit',
         // Finance
         'finance.view', 'invoices.manage', 'payments.verify',
         // Reporting
@@ -105,6 +108,7 @@ final class RolePermissionSeeder extends Seeder
                 'files.view', 'files.upload',
                 'messages.view', 'messages.send',
                 'whatsapp.view', 'whatsapp.send', 'whatsapp.assign', 'whatsapp.delete',
+                'email.view', 'email.send', 'email.assign', 'email.delete',
                 'tasks.view', 'tasks.manage',
                 'calendar.view', 'calendar.manage',
                 'complaints.view',

@@ -29,6 +29,12 @@ Broadcast::channel(
     fn (User $user): bool => $user->can('whatsapp.view'),
 );
 
+/** The shared email inbox — same team-queue reasoning as WhatsApp above. */
+Broadcast::channel(
+    'email.inbox',
+    fn (User $user): bool => $user->can('email.view'),
+);
+
 /** A user's personal call-signaling channel — only they may subscribe. */
 Broadcast::channel(
     'calls.{userUuid}',
