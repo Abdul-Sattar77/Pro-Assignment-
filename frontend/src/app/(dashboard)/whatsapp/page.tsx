@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
 import {
   Archive,
   Inbox,
@@ -11,10 +10,6 @@ import {
   ShieldAlert,
   X,
 } from "lucide-react";
-import { PageHeader } from "@/components/layout/page-header";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { fadeIn, staggerContainer } from "@/animations/variants";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/features/auth";
 import {
@@ -24,23 +19,23 @@ import {
   useWhatsAppConversations,
   useWhatsAppRealtime,
 } from "@/features/whatsapp";
+import { WA, doodleStyle } from "@/features/whatsapp/theme";
 
 type Tab = "inbox" | "archived" | "oversight";
 
 /**
  * WhatsApp Business inbox.
  *
- * Customers keep using WhatsApp exactly as before; every message they send to
- * the business number lands here in real time. Admins additionally get the
- * oversight tab: hidden messages and the full activity log.
+ * Deliberately styled as WhatsApp Web rather than the portal's design system:
+ * sales staff move between this screen and real WhatsApp constantly, and the
+ * familiarity is the point. Palette lives in features/whatsapp/theme.ts.
  */
 export default function WhatsAppPage() {
   const { user } = useAuth();
   const [tab, setTab] = useState<Tab>("inbox");
   const [search, setSearch] = useState("");
   // Only the id is state; the conversation itself is derived from the list, so
-  // the open thread's header (unread badge, service window) stays in step with
-  // each refresh without an effect syncing two copies.
+  // the open thread's header stays in step with each refresh.
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -49,11 +44,10 @@ export default function WhatsAppPage() {
   const canHide = user?.permissions?.includes("whatsapp.delete") ?? false;
 
   const archived = tab === "archived";
-  const {
-    data: conversations = [],
-    isPending,
-    refetch,
-  } = useWhatsAppConversations(archived, search);
+  const { data: conversations = [], isPending } = useWhatsAppConversations(
+    archived,
+    search,
+  );
 
   const selected = conversations.find((c) => c.id === selectedId) ?? null;
 
@@ -73,126 +67,158 @@ export default function WhatsAppPage() {
   }
 
   const tabs: { key: Tab; label: string; icon: typeof Inbox }[] = [
-    { key: "inbox", label: "Inbox", icon: Inbox },
+    { key: "inbox", label: "Chats", icon: Inbox },
     { key: "archived", label: "Archived", icon: Archive },
     ...(canAudit
       ? [{ key: "oversight" as Tab, label: "Oversight", icon: ShieldAlert }]
       : []),
   ];
 
+  if (tab === "oversight") {
+    return (
+      <div className="space-y-4">
+        <Tabs tabs={tabs} active={tab} onChange={setTab} />
+        <WhatsAppAdminOversight />
+      </div>
+    );
+  }
+
   return (
-    <motion.div
-      variants={staggerContainer}
-      initial="hidden"
-      animate="visible"
-      className="space-y-6"
-    >
-      <motion.div variants={fadeIn}>
-        <PageHeader
-          title="WhatsApp"
-          description="Messages from your WhatsApp Business number. Customers keep using WhatsApp as normal — every message is stored and audited here."
-          actions={
-            <div className="flex items-center gap-1 rounded-lg border p-1">
-              {tabs.map(({ key, label, icon: Icon }) => (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => setTab(key)}
-                  className={cn(
-                    "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm transition-colors",
-                    tab === key
-                      ? "bg-emerald-600 text-white"
-                      : "hover:bg-muted text-muted-foreground",
-                  )}
-                >
-                  <Icon className="size-3.5" />
-                  {label}
-                </button>
-              ))}
-            </div>
-          }
-        />
-      </motion.div>
+    <div className="space-y-3">
+      <Tabs tabs={tabs} active={tab} onChange={setTab} />
 
       {error && (
-        <motion.div
-          variants={fadeIn}
-          className="flex items-start justify-between gap-3 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3"
-        >
+        <div className="flex items-start justify-between gap-3 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3">
           <p className="text-sm">{error}</p>
           <button type="button" onClick={() => setError(null)}>
             <X className="size-4" />
           </button>
-        </motion.div>
+        </div>
       )}
 
-      {tab === "oversight" ? (
-        <motion.div variants={fadeIn}>
-          <WhatsAppAdminOversight />
-        </motion.div>
-      ) : (
-        <motion.div
-          variants={fadeIn}
-          className="grid h-[calc(100vh-16rem)] min-h-[32rem] grid-cols-1 gap-4 lg:grid-cols-[22rem_1fr]"
+      {/* Two-panel WhatsApp Web layout. */}
+      <div
+        className={cn(
+          "grid h-[calc(100vh-13rem)] min-h-125 grid-cols-1 overflow-hidden rounded-lg border shadow-sm md:grid-cols-[minmax(20rem,30%)_1fr]",
+          WA.border,
+        )}
+      >
+        {/* ---- Chat list ---- */}
+        <div
+          className={cn(
+            "flex min-h-0 flex-col border-r",
+            WA.panel,
+            WA.border,
+            // On narrow screens show one pane at a time.
+            selected && "hidden md:flex",
+          )}
         >
-          {/* Thread list */}
-          <div className="flex min-h-0 flex-col rounded-xl border">
-            <div className="border-b p-2">
-              <div className="relative">
-                <Search className="text-muted-foreground absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2" />
-                <Input
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Search name or number…"
-                  className="h-9 pl-8"
-                />
-              </div>
-            </div>
-
-            <div className="min-h-0 flex-1 overflow-y-auto">
-              {isPending ? (
-                <div className="flex justify-center py-10">
-                  <Loader2 className="text-muted-foreground size-5 animate-spin" />
-                </div>
-              ) : (
-                <WhatsAppConversationList
-                  conversations={conversations}
-                  selectedId={selectedId}
-                  onSelect={(c) => setSelectedId(c.id)}
-                />
-              )}
-            </div>
-
-            <div className="border-t p-2">
-              <Button
-                size="sm"
-                variant="ghost"
-                className="w-full"
-                onClick={() => void refetch()}
-              >
-                Refresh
-              </Button>
+          <div className={cn("shrink-0 px-3 py-2", WA.header)}>
+            <div className="relative">
+              <Search
+                className={cn(
+                  "absolute top-1/2 left-3 size-4 -translate-y-1/2",
+                  WA.muted,
+                )}
+              />
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search or start a new chat"
+                className={cn(
+                  "h-9 w-full rounded-lg pr-3 pl-10 text-[14px]",
+                  "placeholder:text-[#8696a0] focus-visible:outline-none",
+                  WA.panel,
+                  WA.text,
+                )}
+              />
             </div>
           </div>
 
-          {/* Thread */}
-          <div className="min-h-0 rounded-xl border">
-            {selected ? (
-              <WhatsAppThread
-                key={selected.id}
-                conversation={selected}
-                canHide={canHide}
-                onError={setError}
-              />
-            ) : (
-              <div className="text-muted-foreground flex h-full flex-col items-center justify-center gap-2 text-center">
-                <MessageCircle className="size-10 opacity-30" />
-                <p className="text-sm">Select a conversation to view it.</p>
+          <div className="min-h-0 flex-1 overflow-y-auto">
+            {isPending ? (
+              <div className="flex justify-center py-10">
+                <Loader2 className={cn("size-5 animate-spin", WA.muted)} />
               </div>
+            ) : (
+              <WhatsAppConversationList
+                conversations={conversations}
+                selectedId={selectedId}
+                onSelect={(c) => setSelectedId(c.id)}
+              />
             )}
           </div>
-        </motion.div>
-      )}
-    </motion.div>
+        </div>
+
+        {/* ---- Thread ---- */}
+        <div className={cn("relative min-h-0", !selected && "hidden md:block")}>
+          {selected ? (
+            <WhatsAppThread
+              key={selected.id}
+              conversation={selected}
+              canHide={canHide}
+              onError={setError}
+            />
+          ) : (
+            <div
+              className={cn(
+                "relative flex h-full flex-col items-center justify-center gap-3 text-center",
+                WA.chat,
+              )}
+            >
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-0 opacity-[0.06] dark:opacity-[0.04] dark:invert"
+                style={doodleStyle}
+              />
+              <MessageCircle
+                className={cn("relative size-16 opacity-25", WA.muted)}
+              />
+              <div className="relative">
+                <p className={cn("text-[20px] font-light", WA.text)}>
+                  Portal WhatsApp
+                </p>
+                <p className={cn("mt-1 max-w-sm text-[13px]", WA.muted)}>
+                  Select a chat to read and reply. Customers keep using WhatsApp
+                  normally — every message is stored and audited here.
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** Portal-level tab strip sitting above the WhatsApp surface. */
+function Tabs({
+  tabs,
+  active,
+  onChange,
+}: {
+  tabs: { key: Tab; label: string; icon: typeof Inbox }[];
+  active: Tab;
+  onChange: (t: Tab) => void;
+}) {
+  return (
+    <div className="flex items-center gap-1">
+      {tabs.map(({ key, label, icon: Icon }) => (
+        <button
+          key={key}
+          type="button"
+          onClick={() => onChange(key)}
+          className={cn(
+            "flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm transition-colors",
+            active === key
+              ? "bg-[#00a884] text-white"
+              : "text-muted-foreground hover:bg-muted",
+          )}
+        >
+          <Icon className="size-3.5" />
+          {label}
+        </button>
+      ))}
+    </div>
   );
 }
