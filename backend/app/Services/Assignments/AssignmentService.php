@@ -162,7 +162,9 @@ final class AssignmentService
             "Assigned to {$writer->name}",
             [
                 'writer_id' => $writer->getKey(),
-                'project_manager_id' => $assignment->project_manager_id ?? $actor->getKey(),
+                // Only auto-set PM from the actor if actor is actually a PM (not admin)
+                'project_manager_id' => $assignment->project_manager_id
+                    ?? ($actor->hasRole(Role::ProjectManager->value) ? $actor->getKey() : null),
             ],
         );
     }
@@ -269,7 +271,7 @@ final class AssignmentService
             $actions[] = 'assign_manager';
         }
 
-        if ($isPm && in_array($status, [AssignmentStatus::PendingAssignment, AssignmentStatus::Assigned], true) && $assignment->project_manager_id !== null) {
+        if (($isPm || $isAdmin) && in_array($status, [AssignmentStatus::PendingAssignment, AssignmentStatus::Assigned], true)) {
             $actions[] = 'assign';
         }
 
@@ -342,9 +344,11 @@ final class AssignmentService
     private function notify(Assignment $assignment, AssignmentEventType $event, User $actor): void
     {
         $recipients = match ($event) {
+            // Writer is notified when assigned or returned; PM is ALSO notified on revision
             AssignmentEventType::WriterAssigned,
-            AssignmentEventType::ReturnedToWriter,
-            AssignmentEventType::RevisionRequested => [$assignment->writer],
+            AssignmentEventType::ReturnedToWriter => [$assignment->writer],
+            // Issue #5 fix: notify BOTH the writer AND the PM on revision requests
+            AssignmentEventType::RevisionRequested => [$assignment->writer, $assignment->projectManager],
             AssignmentEventType::WriterAccepted,
             AssignmentEventType::WriterRejected,
             AssignmentEventType::WorkSubmitted => [$assignment->projectManager],

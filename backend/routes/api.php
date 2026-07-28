@@ -178,6 +178,8 @@ Route::prefix('v1')->group(function (): void {
         Route::post('invoices/{invoice}/submit-payment', [InvoiceController::class, 'submitPayment'])->name('invoices.submit-payment');
         Route::post('invoices/{invoice}/verify', [InvoiceController::class, 'verify'])->name('invoices.verify');
         Route::post('invoices/{invoice}/cancel', [InvoiceController::class, 'cancel'])->name('invoices.cancel');
+        // Issue #3 fix: send payment reminder email + in-app notification to the client
+        Route::post('invoices/{invoice}/send-reminder', [InvoiceController::class, 'sendReminder'])->name('invoices.send-reminder');
     });
 
     // ---- Payments subsystem (admin panel; net-new) ----
