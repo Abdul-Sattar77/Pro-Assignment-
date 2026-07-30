@@ -132,8 +132,8 @@ final class DashboardService
         $volumeByMonth = DB::table('assignments')
             ->whereNull('deleted_at')
             ->where('created_at', '>=', $sixMonthsAgo)
-            ->selectRaw("TO_CHAR(created_at, 'YYYY-MM') AS ym, COUNT(*) AS total")
-            ->groupByRaw("TO_CHAR(created_at, 'YYYY-MM')")
+            ->selectRaw("strftime('%Y-%m', created_at) AS ym, COUNT(*) AS total")
+            ->groupByRaw("strftime('%Y-%m', created_at)")
             ->pluck('total', 'ym');
 
         $inflowByMonth = DB::table('payments')
@@ -141,8 +141,8 @@ final class DashboardService
             ->where('created_at', '>=', $sixMonthsAgo)
             ->where('status', PaymentStatus::Verified->value)
             ->whereIn('payment_type', $inflowTypes)
-            ->selectRaw("TO_CHAR(created_at, 'YYYY-MM') AS ym, SUM(amount) AS total")
-            ->groupByRaw("TO_CHAR(created_at, 'YYYY-MM')")
+            ->selectRaw("strftime('%Y-%m', created_at) AS ym, SUM(amount) AS total")
+            ->groupByRaw("strftime('%Y-%m', created_at)")
             ->pluck('total', 'ym');
 
         $months = [];

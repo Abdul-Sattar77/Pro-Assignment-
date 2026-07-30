@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import {
   FileText,
   FileArchive,
@@ -18,6 +18,8 @@ import {
   useUploadAttachment,
 } from "../hooks/use-assignments";
 import type { AssignmentAttachment } from "../types";
+import { assignmentsService } from "../services/assignments-service";
+import { toast } from "sonner";
 
 function fileIcon(mime: string | null) {
   if (!mime) return <FileText className="size-4" />;
@@ -53,6 +55,7 @@ export function AttachmentList({
   const upload = useUploadAttachment(assignmentId);
   const remove = useDeleteAttachment(assignmentId);
 
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
   const files = attachments.filter((a) => a.type === "file");
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -61,6 +64,22 @@ export function AttachmentList({
     upload.mutate({ file, type: "file" });
     // Reset so the same file can be re-uploaded if needed
     event.target.value = "";
+  };
+
+  const handleDownload = async (file: AssignmentAttachment) => {
+    if (!file.originalName) return;
+    setDownloadingId(file.id);
+    try {
+      await assignmentsService.downloadAttachment(
+        assignmentId,
+        file.id,
+        file.originalName,
+      );
+    } catch (err) {
+      toast.error("Couldn't download that attachment. Please try again.");
+    } finally {
+      setDownloadingId(null);
+    }
   };
 
   return (
@@ -94,13 +113,21 @@ export function AttachmentList({
                 </p>
               </div>
               <div className="flex items-center gap-1.5">
-                <Button variant="ghost" size="icon" className="size-8" asChild>
-                  <a href={file.url} download={file.originalName ?? undefined}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="size-8"
+                  disabled={downloadingId === file.id}
+                  onClick={() => handleDownload(file)}
+                >
+                  {downloadingId === file.id ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
                     <Download className="size-4" />
-                    <span className="sr-only">
-                      Download {file.originalName}
-                    </span>
-                  </a>
+                  )}
+                  <span className="sr-only">
+                    Download {file.originalName}
+                  </span>
                 </Button>
                 {canDelete && (
                   <Button
