@@ -17,7 +17,13 @@ final class DashboardController extends Controller
         if ($actor === null || (!$actor->hasRole('admin') && !$actor->hasRole('project_manager'))) {
             return ApiResponse::error('FORBIDDEN', 'Only administrators and project managers have access to dashboard insights.', 403);
         }
-        $data = $this->service->getAdminDashboardData();
+        // Admins see org-wide figures; a project manager sees only the work
+        // they manage (counts + recent feed scoped to their assignments).
+        $pmScope = (!$actor->hasRole('admin') && $actor->hasRole('project_manager'))
+            ? $actor->getKey()
+            : null;
+
+        $data = $this->service->getAdminDashboardData($pmScope);
         return ApiResponse::item($data);
     }
 }

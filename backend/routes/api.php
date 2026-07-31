@@ -52,10 +52,15 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('v1')->group(function (): void {
     // ---- Identity & Authentication ----
     Route::prefix('auth')->group(function (): void {
-        Route::post('register', [AuthController::class, 'register'])->name('auth.register');
-        Route::post('login', [AuthController::class, 'login'])->name('auth.login');
-        Route::post('forgot-password', [PasswordResetController::class, 'forgot'])->name('auth.forgot-password');
-        Route::post('reset-password', [PasswordResetController::class, 'reset'])->name('auth.reset-password');
+        // Rate-limited to blunt brute-force / abuse of the public auth surface.
+        Route::post('register', [AuthController::class, 'register'])
+            ->middleware('throttle:5,1')->name('auth.register');
+        Route::post('login', [AuthController::class, 'login'])
+            ->middleware('throttle:6,1')->name('auth.login');
+        Route::post('forgot-password', [PasswordResetController::class, 'forgot'])
+            ->middleware('throttle:3,1')->name('auth.forgot-password');
+        Route::post('reset-password', [PasswordResetController::class, 'reset'])
+            ->middleware('throttle:6,1')->name('auth.reset-password');
 
         Route::middleware('auth:sanctum')->group(function (): void {
             Route::post('logout', [AuthController::class, 'logout'])->name('auth.logout');

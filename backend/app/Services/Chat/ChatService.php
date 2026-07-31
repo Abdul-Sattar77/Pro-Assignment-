@@ -12,6 +12,7 @@ use App\Models\ChatConversation;
 use App\Models\ChatMessage;
 use App\Models\ChatPolicy;
 use App\Models\User;
+use App\Notifications\NewChatMessageNotification;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
@@ -199,6 +200,21 @@ final class ChatService
             // polling is the fallback.
             try {
                 broadcast(new ChatMessageSent($message))->toOthers();
+            } catch (\Throwable $e) {
+                report($e);
+            }
+
+            // In-app + email alert to the other participant(s) so they're
+            // reached even when offline (broadcast only hits open sockets).
+            // Isolated like the broadcast above — a mail/SMTP failure must not
+            // roll back the message we just committed.
+            try {
+                $conversation->participants()
+                    ->where('users.id', '!=', $sender->getKey())
+                    ->get()
+                    ->each(fn (User $recipient) => $recipient->notify(
+                        new NewChatMessageNotification($message),
+                    ));
             } catch (\Throwable $e) {
                 report($e);
             }

@@ -69,6 +69,7 @@ final class AssignmentService
             ]);
 
             $this->record($assignment, $client, AssignmentEventType::Created);
+            $this->notify($assignment, AssignmentEventType::Created, $client);
             if ($pm) {
                 $this->record($assignment, $client, AssignmentEventType::Updated, "PM assigned to {$pm->name}");
             }
@@ -380,7 +381,11 @@ final class AssignmentService
             AssignmentEventType::Delivered => [$assignment->client],
             AssignmentEventType::Completed => [$assignment->writer, $assignment->projectManager],
             AssignmentEventType::Cancelled => [$assignment->writer, $assignment->client, $assignment->projectManager],
-            AssignmentEventType::Created,
+            // New order: alert every admin (queue triage) plus the PM if pre-assigned.
+            AssignmentEventType::Created => [
+                ...User::role(Role::Admin->value)->get()->all(),
+                $assignment->projectManager,
+            ],
             AssignmentEventType::Updated,
             AssignmentEventType::AttachmentAdded => [],
         };
@@ -389,7 +394,14 @@ final class AssignmentService
 
         foreach ($recipients as $recipient) {
             if ($recipient !== null && !$recipient->is($actor)) {
-                $recipient->notify(new AssignmentActivityNotification($assignment, $event, $message));
+                // Notifications send synchronously (database + mail). Never let a
+                // delivery failure (e.g. SMTP down) roll back the domain action
+                // that triggered it — this runs inside a transaction.
+                try {
+                    $recipient->notify(new AssignmentActivityNotification($assignment, $event, $message));
+                } catch (\Throwable $e) {
+                    report($e);
+                }
             }
         }
     }

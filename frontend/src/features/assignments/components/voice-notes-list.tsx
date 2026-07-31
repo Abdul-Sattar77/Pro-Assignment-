@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Loader2, Mic, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,57 @@ import {
   useDeleteAttachment,
   useUploadAttachment,
 } from "../hooks/use-assignments";
+import { assignmentsService } from "../services/assignments-service";
 import type { AssignmentAttachment } from "../types";
+
+/**
+ * Audio player that fetches the voice note through the authenticated client
+ * (the download route needs a Bearer token, so a plain <audio src> would 401).
+ */
+function AuthAudio({
+  assignmentId,
+  attachmentId,
+}: {
+  assignmentId: string;
+  attachmentId: string;
+}) {
+  const [src, setSrc] = useState<string | null>(null);
+  const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    let url: string | null = null;
+    let alive = true;
+    assignmentsService
+      .attachmentBlobUrl(assignmentId, attachmentId)
+      .then((objectUrl) => {
+        if (alive) {
+          url = objectUrl;
+          setSrc(objectUrl);
+        } else {
+          URL.revokeObjectURL(objectUrl);
+        }
+      })
+      .catch(() => alive && setFailed(true));
+    return () => {
+      alive = false;
+      if (url) URL.revokeObjectURL(url);
+    };
+  }, [assignmentId, attachmentId]);
+
+  if (failed) {
+    return (
+      <p className="text-muted-foreground text-xs">Couldn&apos;t load audio.</p>
+    );
+  }
+  if (!src) {
+    return (
+      <div className="text-muted-foreground flex h-9 items-center gap-2 text-xs">
+        <Loader2 className="size-3.5 animate-spin" /> Loading audio…
+      </div>
+    );
+  }
+  return <audio controls src={src} className="h-9 w-full" preload="metadata" />;
+}
 
 interface VoiceNotesListProps {
   assignmentId: string;
@@ -94,13 +144,8 @@ export function VoiceNotesList({
                   )}
                 </div>
               </div>
-              {/* Native audio player — works with any served audio MIME */}
-              <audio
-                controls
-                src={note.url}
-                className="h-9 w-full"
-                preload="metadata"
-              />
+              {/* Authenticated audio player (Bearer-token download route). */}
+              <AuthAudio assignmentId={assignmentId} attachmentId={note.id} />
             </li>
           ))}
         </ul>

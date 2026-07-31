@@ -16,7 +16,12 @@ use Spatie\Activitylog\Models\Activity;
 
 final class DashboardService
 {
-    public function getAdminDashboardData(): array
+    /**
+     * @param int|null $projectManagerId When set, the assignment counts and
+     *        recent-work feed are scoped to assignments this PM manages, so a
+     *        project manager sees their own workload rather than org-wide totals.
+     */
+    public function getAdminDashboardData(?int $projectManagerId = null): array
     {
         $inflowTypes = [PaymentType::Advance->value, PaymentType::Partial->value, PaymentType::Balance->value];
         $outflowTypes = [PaymentType::WriterPayout->value, PaymentType::Expense->value];
@@ -55,6 +60,7 @@ final class DashboardService
 
         $counts = DB::table('assignments')
             ->whereNull('deleted_at')
+            ->when($projectManagerId !== null, fn ($q) => $q->where('project_manager_id', $projectManagerId))
             ->selectRaw("
                 COUNT(*) AS total,
                 SUM(CASE WHEN status IN ('{$activeStatuses}')  THEN 1 ELSE 0 END) AS active,
@@ -77,6 +83,7 @@ final class DashboardService
         // ----------------------------------------------------------------
         $recentAssignments = Assignment::query()
             ->with(['client:id,name', 'writer:id,name'])
+            ->when($projectManagerId !== null, fn ($q) => $q->where('project_manager_id', $projectManagerId))
             ->latest()
             ->limit(5)
             ->get()

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Requests\Files;
 
 use App\Models\Assignment;
+use App\Rules\SafeUpload;
 use Illuminate\Foundation\Http\FormRequest;
 
 final class StoreFileRequest extends FormRequest
@@ -30,12 +31,13 @@ final class StoreFileRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // Any file type is accepted (PDF, Office, images, video, audio,
-            // archives, etc.). Only a size cap is enforced.
+            // Broad file support (PDF, Office, images, video, audio, archives)
+            // with a size cap and a denylist for executable/script types.
             'file' => [
                 'required',
                 'file',
                 'max:102400', // 100 MB (accommodates video)
+                new SafeUpload(),
             ],
             // Optional per-file note ("Add Notes Per File").
             'note' => ['sometimes', 'nullable', 'string', 'max:2000'],

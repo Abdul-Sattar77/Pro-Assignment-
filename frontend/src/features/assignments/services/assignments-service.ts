@@ -183,4 +183,18 @@ export const assignmentsService = {
   attachmentDownloadUrl(id: string, attachmentId: string): string {
     return `/api/v1/assignments/${id}/attachments/${attachmentId}/download`;
   },
+
+  /**
+   * Fetch an attachment as an authenticated blob and return an object URL,
+   * for in-browser playback/preview. The raw download route is Bearer-token
+   * protected, so a plain <audio src> would 401 — this routes through the
+   * authenticated axios client. Caller must revoke the URL when done.
+   */
+  async attachmentBlobUrl(id: string, attachmentId: string): Promise<string> {
+    const { data } = await apiClient.get<Blob>(
+      `/assignments/${id}/attachments/${attachmentId}/download`,
+      { responseType: "blob" },
+    );
+    return URL.createObjectURL(data);
+  },
 };

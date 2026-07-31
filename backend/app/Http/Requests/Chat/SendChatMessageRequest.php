@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Chat;
 
+use App\Rules\SafeUpload;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -20,9 +21,10 @@ final class SendChatMessageRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // Any file type; 50 MB cap (voice/photo/video clips + documents).
+            // 50 MB cap (voice/photo/video clips + documents); executable and
+            // script types are rejected by SafeUpload.
             'body' => ['nullable', 'string', 'max:5000'],
-            'file' => ['nullable', 'file', 'max:51200'],
+            'file' => ['nullable', 'file', 'max:51200', new SafeUpload()],
         ];
     }
 

@@ -164,6 +164,7 @@ export const NAV_SECTIONS: NavSection[] = [
         label: "Settings",
         href: ROUTES.settings,
         icon: Settings,
+        permission: "settings.manage",
       },
     ],
   },
