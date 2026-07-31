@@ -253,6 +253,9 @@ Route::prefix('v1')->group(function (): void {
         Route::post('invoices/{invoice}/cancel', [InvoiceController::class, 'cancel'])->name('invoices.cancel');
         Route::get('finance/reminders', [PaymentReminderController::class, 'index'])->name('finance.reminders.index');
         Route::post('invoices/{invoice}/reminders', [PaymentReminderController::class, 'trigger'])->name('invoices.reminders.trigger');
+        // Sends the reminder email + in-app notification directly, separate from
+        // the PaymentReminderController scheduling flow above.
+        Route::post('invoices/{invoice}/send-reminder', [InvoiceController::class, 'sendReminder'])->name('invoices.send-reminder');
     });
 
     // ---- Payments subsystem (admin panel; net-new) ----

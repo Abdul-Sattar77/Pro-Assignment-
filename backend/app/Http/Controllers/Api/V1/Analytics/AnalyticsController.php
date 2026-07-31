@@ -18,7 +18,12 @@ final class AnalyticsController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        if (!$request->user()?->can('analytics.view')) {
+        $actor = $request->user();
+
+        // Admin gets access via permission; PM also allowed as they need analytics for their work
+        $canView = $actor?->can('analytics.view') || $actor?->hasRole('project_manager');
+
+        if (!$canView) {
             return ApiResponse::error('FORBIDDEN', 'You do not have access to view analytics dashboards.', 403);
         }
 

@@ -103,12 +103,12 @@ final class AnalyticsService
         // Assignment Trends
         $assignmentTrendsQuery = DB::table('assignments')
             ->select(
-                DB::raw("TO_CHAR(created_at, 'YYYY-MM') as month"),
+                DB::raw("strftime('%Y-%m', created_at) as month"),
                 DB::raw('COUNT(*) as count'),
             )
             ->where('created_at', '>=', Carbon::now()->subMonths(5)->startOfMonth())
             ->whereNull('deleted_at')
-            ->groupBy(DB::raw("TO_CHAR(created_at, 'YYYY-MM')"))
+            ->groupBy(DB::raw("strftime('%Y-%m', created_at)"))
             ->get();
 
         $assignmentTrends = [];
@@ -123,7 +123,7 @@ final class AnalyticsService
         // Revenue Trends
         $revenueTrendsQuery = DB::table('payments')
             ->select(
-                DB::raw("TO_CHAR(created_at, 'YYYY-MM') as month"),
+                DB::raw("strftime('%Y-%m', created_at) as month"),
                 DB::raw('SUM(amount) as total'),
             )
             ->where('status', PaymentStatus::Verified->value)
@@ -134,7 +134,7 @@ final class AnalyticsService
             ])
             ->where('created_at', '>=', Carbon::now()->subMonths(5)->startOfMonth())
             ->whereNull('deleted_at')
-            ->groupBy(DB::raw("TO_CHAR(created_at, 'YYYY-MM')"))
+            ->groupBy(DB::raw("strftime('%Y-%m', created_at)"))
             ->get();
 
         $revenueTrends = [];

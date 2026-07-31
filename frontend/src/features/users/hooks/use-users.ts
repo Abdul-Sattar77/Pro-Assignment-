@@ -36,6 +36,12 @@ export function useCreateUser() {
       void queryClient.invalidateQueries({ queryKey: USERS_QUERY_KEYS.all });
       toast.success(`${user.name} has been added.`);
     },
+    // Fix: was missing — validation errors (duplicate email, etc.) were silently swallowed
+    onError: (error) => {
+      if (!error.isValidationError) {
+        toast.error(error.message || "Failed to add user.");
+      }
+    },
   });
 }
 

@@ -27,9 +27,11 @@ final class UserController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        // Directory listing is limited to users.view (held by admin + PM). Writers
-        // and clients don't hold it, so they can't enumerate the full user list.
-        $this->authorize('viewAny', User::class);
+        // Admin (users.view) and PM (assignments.assign) can list users.
+        // Writers only hold tasks.manage for personal tasks — NOT user directory access.
+        if (!$request->user()->can('users.view') && !$request->user()->can('assignments.assign')) {
+            $this->authorize('viewAny', User::class);
+        }
 
         /** @var array<string, mixed> $filter */
         $filter = (array) $request->query('filter', []);

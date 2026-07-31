@@ -11,6 +11,7 @@ use App\Http\Resources\InvoiceResource;
 use App\Models\Assignment;
 use App\Models\Invoice;
 use App\Models\User;
+use App\Notifications\PaymentReminderNotification;
 use App\Services\Finance\InvoiceService;
 use App\Support\ApiResponse;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -119,6 +120,35 @@ final class InvoiceController extends Controller
         $updated = $this->service->cancel($invoice);
 
         return ApiResponse::resource(InvoiceResource::make($updated->load('client', 'assignment')));
+    }
+
+    /**
+     * Send a payment reminder email + in-app notification to the invoice's client.
+     * Only PM and Admin can trigger this (guarded by the 'manage' Invoice policy).
+     */
+    public function sendReminder(Request $request, Invoice $invoice): JsonResponse
+    {
+        $this->authorize('manage', Invoice::class);
+
+        /** @var User $actor */
+        $actor = $request->user();
+
+        // Load the client relation if not already loaded
+        $invoice->loadMissing('client');
+
+        $client = $invoice->client;
+
+        if ($client === null) {
+            return ApiResponse::error('CLIENT_NOT_FOUND', 'No client associated with this invoice.', 422);
+        }
+
+        // Fire the notification — queued, so this returns immediately
+        $client->notify(new PaymentReminderNotification($invoice, $actor->name));
+
+        return ApiResponse::item([
+            'sent'    => true,
+            'message' => "Payment reminder sent to {$client->name}.",
+        ]);
     }
 
     private function actor(Request $request): User

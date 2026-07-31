@@ -159,6 +159,26 @@ export const assignmentsService = {
     await apiClient.delete(`/assignments/${id}/attachments/${attachmentId}`);
   },
 
+  /** Safe authenticated download of an attachment by requesting blob and saving it. */
+  async downloadAttachment(
+    id: string,
+    attachmentId: string,
+    originalName: string,
+  ): Promise<void> {
+    const { data } = await apiClient.get<Blob>(
+      `/assignments/${id}/attachments/${attachmentId}/download`,
+      { responseType: "blob" },
+    );
+    const url = window.URL.createObjectURL(data);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", originalName);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+  },
+
   /** Download URL for an attachment (served by the backend). */
   attachmentDownloadUrl(id: string, attachmentId: string): string {
     return `/api/v1/assignments/${id}/attachments/${attachmentId}/download`;

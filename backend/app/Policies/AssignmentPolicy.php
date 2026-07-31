@@ -36,6 +36,11 @@ final class AssignmentPolicy
 
     public function assign(User $actor, Assignment $assignment): bool
     {
+        // Issue #6 fix: Admin can also assign writers (business rule)
+        if ($actor->hasRole(Role::Admin->value)) {
+            return true;
+        }
+
         return $actor->hasRole(Role::ProjectManager->value) && $actor->can('assignments.assign');
     }
 
