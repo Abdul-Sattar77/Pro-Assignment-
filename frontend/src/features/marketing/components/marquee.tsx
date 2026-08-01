@@ -25,7 +25,7 @@ export function Marquee() {
     >
       {ITEMS.map((item) => (
         <span key={item} className="flex items-center gap-10 whitespace-nowrap">
-          <span className="font-display text-4xl font-bold tracking-tight text-transparent [-webkit-text-stroke:1px_rgba(242,240,234,0.18)] sm:text-5xl">
+          <span className="font-display text-4xl font-bold tracking-tight text-transparent [-webkit-text-stroke:1px_rgba(234,240,255,0.5)] sm:text-5xl">
             {item}
           </span>
           <span className="aurora-text text-2xl" aria-hidden>
