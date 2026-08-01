@@ -14,7 +14,9 @@ import {
   BadgeCheck,
   Clock,
   FileText,
+  GraduationCap,
   Headphones,
+  type LucideIcon,
   MessageSquare,
   Play,
   ShieldCheck,
@@ -398,11 +400,32 @@ function HeroCharacters({
       aria-hidden
       className="pointer-events-none absolute inset-0 z-5 hidden xl:block"
     >
+      {/* Upper gutters — symmetric floating feature chips (bob + parallax). */}
+      <Parallax mx={mx} my={my} depth={34} className="top-[19%] left-[4%]">
+        <FloatChip
+          icon={GraduationCap}
+          label="PhD-level experts"
+          sub="150+ vetted specialists"
+          tint="bg-sky-500/15 text-sky-300"
+          delay={0.4}
+        />
+      </Parallax>
+      <Parallax mx={mx} my={my} depth={34} className="top-[19%] right-[4%]">
+        <FloatChip
+          icon={ShieldCheck}
+          label="100% original"
+          sub="Turnitin-ready"
+          tint="bg-emerald-500/15 text-emerald-300"
+          delay={1.1}
+        />
+      </Parallax>
+
+      {/* Lower gutters — symmetric student illustrations. */}
       <Parallax
         mx={mx}
         my={my}
         depth={22}
-        className="top-1/2 left-[2%] w-72 -translate-y-1/2 2xl:w-80"
+        className="top-[62%] left-[2%] w-72 -translate-y-1/2 2xl:w-80"
       >
         <FloatImg
           src="/animations/student-1.svg"
@@ -413,7 +436,7 @@ function HeroCharacters({
         mx={mx}
         my={my}
         depth={22}
-        className="top-1/2 right-[2%] w-72 -translate-y-1/2 2xl:w-80"
+        className="top-[62%] right-[2%] w-72 -translate-y-1/2 2xl:w-80"
       >
         <FloatImg
           src="/animations/student-2.svg"
@@ -422,6 +445,39 @@ function HeroCharacters({
         />
       </Parallax>
     </div>
+  );
+}
+
+/** Glass feature chip that gently bobs — fills the upper hero gutters. */
+function FloatChip({
+  icon: Icon,
+  label,
+  sub,
+  tint,
+  delay = 0,
+}: {
+  icon: LucideIcon;
+  label: string;
+  sub: string;
+  tint: string;
+  delay?: number;
+}) {
+  return (
+    <motion.div
+      className="flex w-56 items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 shadow-[0_16px_44px_rgba(0,0,0,0.4)] backdrop-blur-md"
+      animate={{ y: [0, -10, 0] }}
+      transition={{ duration: 5, ease: "easeInOut", repeat: Infinity, delay }}
+    >
+      <span
+        className={`flex size-10 shrink-0 items-center justify-center rounded-xl ${tint}`}
+      >
+        <Icon className="size-5" />
+      </span>
+      <div className="min-w-0">
+        <p className="truncate text-sm font-semibold text-white/90">{label}</p>
+        <p className="truncate text-[11px] text-white/50">{sub}</p>
+      </div>
+    </motion.div>
   );
 }
 
