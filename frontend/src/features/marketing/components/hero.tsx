@@ -404,7 +404,7 @@ function HeroCharacters({
         mx={mx}
         my={my}
         depth={26}
-        className="top-[42%] left-[2%] w-72 -translate-y-1/2 2xl:w-80"
+        className="top-[32%] left-[2%] w-72 -translate-y-1/2 2xl:w-80"
       >
         <FloatImg
           src="/animations/student-1.svg"
@@ -415,7 +415,7 @@ function HeroCharacters({
         mx={mx}
         my={my}
         depth={26}
-        className="top-[42%] right-[2%] w-72 -translate-y-1/2 2xl:w-80"
+        className="top-[32%] right-[2%] w-72 -translate-y-1/2 2xl:w-80"
       >
         <FloatImg
           src="/animations/student-2.svg"
