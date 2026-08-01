@@ -36,7 +36,9 @@ export function Topbar() {
     <header className="bg-background/80 sticky top-0 z-20 flex h-16 items-center justify-between gap-4 border-b px-4 backdrop-blur-md sm:px-6">
       <MobileNav />
 
-      <div className="flex items-center gap-1.5">
+      {/* ml-auto keeps this cluster hard-right even on desktop, where MobileNav
+          is hidden and would otherwise leave justify-between pinning it left. */}
+      <div className="ml-auto flex items-center gap-1.5">
         <NotificationBell />
         <ThemeToggle />
         <DropdownMenu>
