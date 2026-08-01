@@ -33,10 +33,9 @@ final class PaymentReminderNotification extends Notification implements ShouldQu
 
     public function toMail(object $notifiable): MailMessage
     {
-        $invoiceNumber = $this->invoice->invoice_number;
+        $invoiceNumber = $this->invoice->number;
         $amount        = number_format((float) ($this->invoice->amount_cents / 100), 2);
-        $currency      = $this->invoice->currency ?? 'USD';
-        $dueDate       = $this->invoice->due_date?->format('d M Y') ?? 'N/A';
+        $currency      = $this->invoice->currency ?? 'PKR';
         $frontendUrl   = config('app.url');
 
         return (new MailMessage)
@@ -44,7 +43,6 @@ final class PaymentReminderNotification extends Notification implements ShouldQu
             ->greeting('Dear ' . ($notifiable->name ?? 'Client') . ',')
             ->line("This is a friendly reminder that invoice **#{$invoiceNumber}** is still awaiting payment.")
             ->line("**Amount Due:** {$currency} {$amount}")
-            ->line("**Due Date:** {$dueDate}")
             ->action('View Invoice', "{$frontendUrl}/invoices/{$this->invoice->uuid}")
             ->line('Please complete your payment at your earliest convenience.')
             ->line("If you have already made the payment, kindly ignore this reminder.")
@@ -59,11 +57,11 @@ final class PaymentReminderNotification extends Notification implements ShouldQu
         return [
             'type'          => 'payment_reminder',
             'title'         => 'Payment Reminder',
-            'message'       => "Payment reminder sent for invoice #{$this->invoice->invoice_number}",
+            'message'       => "Payment reminder sent for invoice #{$this->invoice->number}",
             'invoiceId'     => $this->invoice->uuid,
-            'invoiceNumber' => $this->invoice->invoice_number,
+            'invoiceNumber' => $this->invoice->number,
             'amountCents'   => $this->invoice->amount_cents,
-            'currency'      => $this->invoice->currency ?? 'USD',
+            'currency'      => $this->invoice->currency ?? 'PKR',
         ];
     }
 }

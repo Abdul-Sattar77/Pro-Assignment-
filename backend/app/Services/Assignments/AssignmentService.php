@@ -242,13 +242,13 @@ final class AssignmentService
             $amount = ((float) $assignment->client_price) - ((float) ($assignment->discount ?? 0.0));
             if ($amount > 0.0) {
                 \App\Models\Invoice::create([
-                    'invoice_number' => 'INV-'.now()->format('Ymd').'-'.\Illuminate\Support\Str::upper(\Illuminate\Support\Str::random(6)),
+                    'number' => 'INV-'.now()->format('Ymd').'-'.\Illuminate\Support\Str::upper(\Illuminate\Support\Str::random(6)),
                     'assignment_id' => $assignment->id,
                     'client_id' => $assignment->client_id,
-                    'amount' => $amount,
+                    'issued_by' => $actor->getKey(),
+                    'amount_cents' => (int) round($amount * 100),
                     'status' => \App\Enums\InvoiceStatus::Pending->value,
-                    'due_date' => now()->addDays(7),
-                    'notes' => 'Auto-generated invoice for assignment #' . $assignment->id,
+                    'description' => 'Auto-generated invoice for assignment #'.$assignment->id,
                 ]);
             }
         }

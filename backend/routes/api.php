@@ -272,7 +272,9 @@ Route::prefix('v1')->group(function (): void {
     Route::middleware('auth:sanctum')->group(function (): void {
         Route::get('finance/stats', [FinanceController::class, 'stats'])->name('finance.stats');
         Route::post('payments/{payment}/verify', [PaymentController::class, 'verify'])->name('payments.verify');
+        // No update() on the controller — payments are edited only via /verify.
         Route::apiResource('payments', PaymentController::class)
+            ->except(['update'])
             ->parameters(['payments' => 'payment'])
             ->names('payments');
     });

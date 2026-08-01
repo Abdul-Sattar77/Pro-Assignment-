@@ -11,6 +11,7 @@ use App\Enums\Role;
 use App\Models\Assignment;
 use App\Models\Payment;
 use App\Models\User;
+use App\Support\Sql;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -103,12 +104,12 @@ final class AnalyticsService
         // Assignment Trends
         $assignmentTrendsQuery = DB::table('assignments')
             ->select(
-                DB::raw("strftime('%Y-%m', created_at) as month"),
+                DB::raw(Sql::yearMonth().' as month'),
                 DB::raw('COUNT(*) as count'),
             )
             ->where('created_at', '>=', Carbon::now()->subMonths(5)->startOfMonth())
             ->whereNull('deleted_at')
-            ->groupBy(DB::raw("strftime('%Y-%m', created_at)"))
+            ->groupBy(DB::raw(Sql::yearMonth()))
             ->get();
 
         $assignmentTrends = [];
@@ -123,7 +124,7 @@ final class AnalyticsService
         // Revenue Trends
         $revenueTrendsQuery = DB::table('payments')
             ->select(
-                DB::raw("strftime('%Y-%m', created_at) as month"),
+                DB::raw(Sql::yearMonth().' as month'),
                 DB::raw('SUM(amount) as total'),
             )
             ->where('status', PaymentStatus::Verified->value)
@@ -134,7 +135,7 @@ final class AnalyticsService
             ])
             ->where('created_at', '>=', Carbon::now()->subMonths(5)->startOfMonth())
             ->whereNull('deleted_at')
-            ->groupBy(DB::raw("strftime('%Y-%m', created_at)"))
+            ->groupBy(DB::raw(Sql::yearMonth()))
             ->get();
 
         $revenueTrends = [];

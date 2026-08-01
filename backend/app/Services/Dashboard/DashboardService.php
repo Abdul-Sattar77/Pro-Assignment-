@@ -11,6 +11,7 @@ use App\Enums\Role;
 use App\Models\Assignment;
 use App\Models\Payment;
 use App\Models\User;
+use App\Support\Sql;
 use Illuminate\Support\Facades\DB;
 use Spatie\Activitylog\Models\Activity;
 
@@ -139,8 +140,8 @@ final class DashboardService
         $volumeByMonth = DB::table('assignments')
             ->whereNull('deleted_at')
             ->where('created_at', '>=', $sixMonthsAgo)
-            ->selectRaw("to_char(created_at, 'YYYY-MM') AS ym, COUNT(*) AS total")
-            ->groupByRaw("to_char(created_at, 'YYYY-MM')")
+            ->selectRaw(Sql::yearMonth().' AS ym, COUNT(*) AS total')
+            ->groupByRaw(Sql::yearMonth())
             ->pluck('total', 'ym');
 
         $inflowByMonth = DB::table('payments')
@@ -148,8 +149,8 @@ final class DashboardService
             ->where('created_at', '>=', $sixMonthsAgo)
             ->where('status', PaymentStatus::Verified->value)
             ->whereIn('payment_type', $inflowTypes)
-            ->selectRaw("to_char(created_at, 'YYYY-MM') AS ym, SUM(amount) AS total")
-            ->groupByRaw("to_char(created_at, 'YYYY-MM')")
+            ->selectRaw(Sql::yearMonth().' AS ym, SUM(amount) AS total')
+            ->groupByRaw(Sql::yearMonth())
             ->pluck('total', 'ym');
 
         $months = [];

@@ -20,10 +20,11 @@ final class AnalyticsController extends Controller
     {
         $actor = $request->user();
 
-        // Admin gets access via permission; PM also allowed as they need analytics for their work
-        $canView = $actor?->can('analytics.view') || $actor?->hasRole('project_manager');
-
-        if (!$canView) {
+        // Access is governed solely by the analytics.view permission (granted to
+        // admin + PM in the seeder). No hardcoded role bypass, so revoking the
+        // permission from a role actually takes effect — and prevents org-wide
+        // financials leaking to a role that had the permission removed.
+        if (!$actor?->can('analytics.view')) {
             return ApiResponse::error('FORBIDDEN', 'You do not have access to view analytics dashboards.', 403);
         }
 
