@@ -402,32 +402,68 @@ function HeroCharacters({
         mx={mx}
         my={my}
         depth={22}
-        className="top-[46vh] left-[1%] w-64 -translate-y-1/2 2xl:w-72"
+        className="top-1/2 left-[2%] w-72 -translate-y-1/2 2xl:w-80"
       >
-        <FloatImg src="/animations/student-1.svg" />
+        <FloatImg
+          src="/animations/student-1.svg"
+          tint="rgba(56,120,255,0.22)"
+        />
       </Parallax>
       <Parallax
         mx={mx}
         my={my}
         depth={22}
-        className="top-[46vh] right-[1%] w-64 -translate-y-1/2 2xl:w-72"
+        className="top-1/2 right-[2%] w-72 -translate-y-1/2 2xl:w-80"
       >
-        <FloatImg src="/animations/student-2.svg" />
+        <FloatImg
+          src="/animations/student-2.svg"
+          tint="rgba(139,92,246,0.22)"
+          delay={3}
+        />
       </Parallax>
     </div>
   );
 }
 
-/** Self-animating SVG illustration with a gentle idle float. */
-function FloatImg({ src }: { src: string }) {
+/**
+ * Self-animating illustration with a gentle idle float, grounded by a soft
+ * spotlight aura + contact shadow so it reads as an intentional composition
+ * rather than a graphic stranded in empty gutter space.
+ */
+function FloatImg({
+  src,
+  tint,
+  delay = 0,
+}: {
+  src: string;
+  tint: string;
+  delay?: number;
+}) {
   return (
-    <motion.img
-      src={src}
-      alt=""
-      className="h-auto w-full"
+    <motion.div
+      className="relative"
       animate={{ y: [0, -12, 0] }}
-      transition={{ duration: 6, ease: "easeInOut", repeat: Infinity }}
-    />
+      transition={{ duration: 6, ease: "easeInOut", repeat: Infinity, delay }}
+    >
+      {/* Tall spotlight aura — fills the gutter vertically with a soft glow. */}
+      <span
+        aria-hidden
+        className="absolute -inset-x-6 -inset-y-20 -z-10 blur-2xl"
+        style={{
+          background: `radial-gradient(60% 45% at 50% 50%, ${tint}, transparent 75%)`,
+        }}
+      />
+      <img
+        src={src}
+        alt=""
+        className="h-auto w-full drop-shadow-[0_26px_50px_rgba(0,0,0,0.5)]"
+      />
+      {/* Contact shadow to seat it on the surface. */}
+      <span
+        aria-hidden
+        className="absolute -bottom-2 left-1/2 h-3 w-2/3 -translate-x-1/2 rounded-full bg-black/45 blur-md"
+      />
+    </motion.div>
   );
 }
 

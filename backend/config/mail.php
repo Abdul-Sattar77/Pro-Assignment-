@@ -115,4 +115,16 @@ return [
         'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Enquiry Inbox
+    |--------------------------------------------------------------------------
+    |
+    | Where landing-page enquiry emails are delivered. Defaults to the global
+    | "from" address when INQUIRY_INBOX is not set.
+    |
+    */
+
+    'inquiries_to' => env('INQUIRY_INBOX'),
+
 ];

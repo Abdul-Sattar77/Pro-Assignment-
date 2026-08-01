@@ -5,6 +5,7 @@ import {
   Features,
   Hero,
   HowItWorks,
+  Inquiry,
   Marquee,
   Services,
   Stats,
@@ -82,6 +83,7 @@ export default function HomePage() {
       <Stats />
       <Features />
       <Testimonials />
+      <Inquiry />
       <Cta />
     </>
   );

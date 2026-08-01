@@ -14,6 +14,7 @@ export { Services } from "./components/services";
 export { HowItWorks } from "./components/how-it-works";
 export { Features } from "./components/features";
 export { Testimonials } from "./components/testimonials";
+export { Inquiry } from "./components/inquiry";
 export { Cta } from "./components/cta";
 export { Footer } from "./components/footer";
 

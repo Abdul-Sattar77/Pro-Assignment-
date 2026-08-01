@@ -30,7 +30,7 @@ export function Cta() {
           transition={{ duration: 0.5 }}
           className="text-muted-foreground font-mono text-xs tracking-[0.3em] uppercase"
         >
-          05 / Begin
+          06 / Begin
         </motion.p>
 
         <motion.h2

@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\V1\Chat\ChatController;
 use App\Http\Controllers\Api\V1\Complaints\ComplaintController;
 use App\Http\Controllers\Api\V1\Dashboard\DashboardController;
 use App\Http\Controllers\Api\V1\Documents\DocumentTemplateController;
+use App\Http\Controllers\Api\V1\Inquiries\InquiryController;
 use App\Http\Controllers\Api\V1\Email\EmailInboxController;
 use App\Http\Controllers\Api\V1\Files\FileController;
 use App\Http\Controllers\Api\V1\Finance\FinanceController;
@@ -67,6 +68,10 @@ Route::prefix('v1')->group(function (): void {
             Route::get('me', [AuthController::class, 'me'])->name('auth.me');
         });
     });
+
+    // ---- Public website enquiries (landing-page inquiry form) ----
+    Route::post('inquiries', [InquiryController::class, 'store'])
+        ->middleware('throttle:5,1')->name('inquiries.store');
 
     // ---- Profile (own account) ----
     Route::middleware('auth:sanctum')->prefix('profile')->name('profile.')->group(function (): void {
