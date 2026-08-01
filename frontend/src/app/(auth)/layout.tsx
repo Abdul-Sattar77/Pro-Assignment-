@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { ROUTES } from "@/constants/routes";
 import { BrandMark } from "@/features/marketing";
@@ -93,13 +94,14 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
 
       {/* Form column */}
       <main className="relative flex flex-col">
-        <div className="flex items-center justify-between p-6 lg:justify-end">
+        <div className="flex items-center justify-between p-6">
+          {/* Back to the public site — present on every auth page + breakpoint. */}
           <Link
             href={ROUTES.home}
-            className="font-display flex items-center gap-2 text-lg font-bold tracking-tight lg:hidden"
+            className="group text-muted-foreground hover:text-foreground inline-flex items-center gap-2 rounded-full border border-transparent px-3 py-1.5 text-sm font-medium transition-colors hover:border-current/20"
           >
-            <BrandMark className="text-foreground size-6" />
-            prossignment
+            <ArrowLeft className="size-4 transition-transform group-hover:-translate-x-0.5" />
+            Back to home
           </Link>
           <ThemeToggle />
         </div>
