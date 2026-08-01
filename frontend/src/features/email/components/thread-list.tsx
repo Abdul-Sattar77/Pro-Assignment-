@@ -3,6 +3,7 @@
 import { format, isThisYear, isToday } from "date-fns";
 import { Archive, Inbox, Paperclip } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { downloadAuthed } from "@/lib/download";
 import { GM, avatarTint } from "../theme";
 import type { EmailThread } from "../types";
 
@@ -165,10 +166,9 @@ export function AttachmentChip({
   }
 
   return (
-    <a
-      href={url}
-      target="_blank"
-      rel="noopener noreferrer"
+    <button
+      type="button"
+      onClick={() => downloadAuthed(url, name ?? "attachment")}
       className={cn(
         "flex items-center gap-2 rounded border px-2.5 py-1.5 text-xs transition-colors hover:bg-black/5 dark:hover:bg-white/5",
         GM.border,
@@ -178,6 +178,6 @@ export function AttachmentChip({
       <Paperclip className="size-3.5 shrink-0" />
       <span className="max-w-52 truncate">{name}</span>
       <span className={GM.muted}>{label}</span>
-    </a>
+    </button>
   );
 }

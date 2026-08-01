@@ -46,6 +46,26 @@ import {
 import { format } from "date-fns";
 import { useAuth } from "@/features/auth";
 import { formatCurrency } from "@/config/currency";
+import { apiClient } from "@/lib/api-client";
+
+/**
+ * Download a payment's proof file through the authenticated client. The
+ * download route is Bearer-protected, so a plain <a href> would 401 — fetch
+ * the blob and trigger a save instead.
+ */
+async function downloadProof(proof: { id: string; originalName: string }) {
+  const res = await apiClient.get<Blob>(`/files/${proof.id}/download`, {
+    responseType: "blob",
+  });
+  const url = URL.createObjectURL(res.data);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = proof.originalName;
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  URL.revokeObjectURL(url);
+}
 
 export function PaymentsList() {
   const { hasRole } = useAuth();
@@ -226,15 +246,14 @@ export function PaymentsList() {
                   </TableCell>
                   <TableCell>
                     {payment.proofFile ? (
-                      <a
-                        href={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}${payment.proofFile.downloadUrl}`}
-                        target="_blank"
-                        rel="noreferrer"
+                      <button
+                        type="button"
+                        onClick={() => downloadProof(payment.proofFile!)}
                         className="text-primary flex items-center gap-1 text-xs hover:underline"
                       >
                         <Download className="h-3.5 w-3.5" />
                         <span>Proof</span>
-                      </a>
+                      </button>
                     ) : (
                       <span className="text-muted-foreground text-xs">
                         No proof

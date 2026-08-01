@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import {
   FileText,
@@ -335,14 +335,18 @@ function SecureImagePreview({ file }: { file: AppFile }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
-  useState(() => {
+  useEffect(() => {
     let active = true;
+    let created: string | null = null;
+    setLoading(true);
+    setError(false);
     apiClient
       .get<Blob>(`/files/${file.id}/download`, { responseType: "blob" })
       .then((res) => {
         if (!active) return;
         const blob = new Blob([res.data], { type: file.mimeType });
-        setImgUrl(window.URL.createObjectURL(blob));
+        created = window.URL.createObjectURL(blob);
+        setImgUrl(created);
         setLoading(false);
       })
       .catch(() => {
@@ -353,11 +357,11 @@ function SecureImagePreview({ file }: { file: AppFile }) {
 
     return () => {
       active = false;
-      if (imgUrl) {
-        window.URL.revokeObjectURL(imgUrl);
+      if (created) {
+        window.URL.revokeObjectURL(created);
       }
     };
-  });
+  }, [file.id, file.mimeType]);
 
   if (loading) {
     return (

@@ -12,6 +12,7 @@ import {
   Smartphone,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { downloadAuthed } from "@/lib/download";
 import { WA } from "../theme";
 import type { WhatsAppMessage } from "../types";
 
@@ -140,11 +141,15 @@ export function WhatsAppMessageBubble({
         )}
 
         {message.attachment && (
-          <a
-            href={message.attachment.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mb-1 flex items-center gap-2.5 rounded-md bg-black/5 px-2.5 py-2 transition-colors hover:bg-black/10 dark:bg-white/5 dark:hover:bg-white/10"
+          <button
+            type="button"
+            onClick={() =>
+              downloadAuthed(
+                message.attachment!.url,
+                message.attachment!.name ?? "attachment",
+              )
+            }
+            className="mb-1 flex w-full items-center gap-2.5 rounded-md bg-black/5 px-2.5 py-2 text-left transition-colors hover:bg-black/10 dark:bg-white/5 dark:hover:bg-white/10"
           >
             <FileText className="size-5 shrink-0 opacity-70" />
             <span className="min-w-0 flex-1">
@@ -156,7 +161,7 @@ export function WhatsAppMessageBubble({
               </span>
             </span>
             <Download className="size-4 shrink-0 opacity-70" />
-          </a>
+          </button>
         )}
 
         {/* Body and the meta row share a line where they fit, exactly like

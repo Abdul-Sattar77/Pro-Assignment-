@@ -7,6 +7,7 @@ import { TEMPLATE_CATEGORIES, TEMPLATE_SORT_OPTIONS } from "../constants";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { downloadAuthed } from "@/lib/download";
 import {
   Select,
   SelectContent,
@@ -208,10 +209,14 @@ export function TemplatesList() {
                   By {tpl.uploader?.name}
                 </span>
                 {tpl.file ? (
-                  <a
-                    href={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}${tpl.file.downloadUrl}`}
-                    target="_blank"
-                    rel="noreferrer"
+                  <button
+                    type="button"
+                    onClick={() =>
+                      downloadAuthed(
+                        `/files/${tpl.file!.id}/download`,
+                        tpl.file!.originalName,
+                      )
+                    }
                     className="text-primary flex items-center gap-1 font-semibold hover:underline"
                   >
                     <FileDown className="size-4" />
@@ -219,7 +224,7 @@ export function TemplatesList() {
                       Download ({Math.max(1, Math.round(tpl.file.size / 1024))}{" "}
                       KB)
                     </span>
-                  </a>
+                  </button>
                 ) : (
                   <span className="text-muted-foreground text-[10px]">
                     No file attached
