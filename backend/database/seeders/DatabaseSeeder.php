@@ -34,6 +34,7 @@ class DatabaseSeeder extends Seeder
         $admin->syncRoles([Role::Admin->value]);
 
         $projectManagers = [
+            ['name' => 'Petra Manager', 'email' => 'pm@prossignment.test'],
             ['name' => 'John PM', 'email' => 'john.pm@prossignment.test'],
             ['name' => 'Sarah PM', 'email' => 'sarah.pm@prossignment.test'],
             ['name' => 'Ahmed PM', 'email' => 'ahmed.pm@prossignment.test'],

@@ -42,7 +42,18 @@ class PmTestingSeeder extends Seeder
         // 2. Fetch / ensure PM
         // ----------------------------------------------------------------
         /** @var User $pm */
-        $pm = User::query()->where('email', 'pm@prossignment.test')->firstOrFail();
+        $pm = User::query()->where('email', 'pm@prossignment.test')->first();
+        if ($pm) {
+            $pm->update(['name' => 'Petra Manager']);
+        } else {
+            $pm = User::query()->create([
+                'name' => 'Petra Manager',
+                'email' => 'pm@prossignment.test',
+                'password' => 'password',
+                'is_active' => true,
+            ]);
+        }
+        $pm->syncRoles([Role::ProjectManager->value]);
 
         // ----------------------------------------------------------------
         // 3. Writers
@@ -284,7 +295,7 @@ class PmTestingSeeder extends Seeder
             ['Role', 'Name', 'Email', 'Password'],
             [
                 ['Admin',          'System Admin',  'admin@prossignment.test',   'password'],
-                ['Project Manager','Project Manager','pm@prossignment.test',      'password'],
+                ['Project Manager','Petra Manager','pm@prossignment.test',      'password'],
                 ['Writer',         'Ali Writer',    'writer1@test.com',           'password'],
                 ['Writer',         'Sara Writer',   'writer2@test.com',           'password'],
                 ['Writer',         'Bilal Writer',  'writer3@test.com',           'password'],
