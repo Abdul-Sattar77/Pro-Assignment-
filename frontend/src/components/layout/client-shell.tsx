@@ -2,7 +2,14 @@
 
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { FileText, Loader2, LogOut, Settings, Wallet } from "lucide-react";
+import {
+  FileText,
+  Loader2,
+  LogOut,
+  MessageSquareWarning,
+  Settings,
+  Wallet,
+} from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -93,6 +100,12 @@ export function ClientShell({ children }: { children: ReactNode }) {
                   <Link href={ROUTES.finance}>
                     <Wallet className="size-4" />
                     Billing
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href={ROUTES.complaints}>
+                    <MessageSquareWarning className="size-4" />
+                    Support &amp; complaints
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>

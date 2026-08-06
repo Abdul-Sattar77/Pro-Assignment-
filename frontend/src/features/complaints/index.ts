@@ -1,4 +1,5 @@
 export { ComplaintsList } from "./components/complaints-list";
+export { ClientComplaints } from "./components/client-complaints";
 export {
   useComplaints,
   useSubmitComplaint,

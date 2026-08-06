@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getEcho } from "@/lib/echo";
+import { useAuth } from "@/features/auth";
 import { chatService } from "../services/chat-service";
 import type { ChatMessage, SendMessagePayload } from "../types";
 
@@ -63,6 +64,8 @@ export function useMessages(conversationId: string | null) {
  */
 export function useConversationRealtime(conversationId: string | null) {
   const qc = useQueryClient();
+  const { user } = useAuth();
+  const meId = user?.id;
 
   useEffect(() => {
     if (!conversationId) return;
@@ -71,6 +74,9 @@ export function useConversationRealtime(conversationId: string | null) {
 
     const channelName = `chat.conversation.${conversationId}`;
     echo.private(channelName).listen(".message.sent", (e: BroadcastMessage) => {
+      // Ignore the echo of our own message — the sender appends it optimistically
+      // on send, so re-adding the broadcast would duplicate it (as a left bubble).
+      if (e.senderId && meId && e.senderId === meId) return;
       const message: ChatMessage = {
         id: e.id,
         type: e.type,
@@ -91,7 +97,7 @@ export function useConversationRealtime(conversationId: string | null) {
     return () => {
       echo.leave(channelName);
     };
-  }, [conversationId, qc]);
+  }, [conversationId, qc, meId]);
 }
 
 export function useStartConversation() {

@@ -3,9 +3,18 @@
 import { motion } from "framer-motion";
 import { PageHeader } from "@/components/layout/page-header";
 import { fadeIn, staggerContainer } from "@/animations/variants";
-import { ComplaintsList } from "@/features/complaints";
+import { ClientComplaints, ComplaintsList } from "@/features/complaints";
+import { usePortalRole } from "@/features/dashboard";
 
 export default function ComplaintsPage() {
+  const portal = usePortalRole();
+
+  // Clients get the landing-style "file & track" view; staff (PM/admin) get the
+  // management console. The backend scopes the list per role.
+  if (portal === "client") {
+    return <ClientComplaints />;
+  }
+
   return (
     <motion.div
       variants={staggerContainer}
