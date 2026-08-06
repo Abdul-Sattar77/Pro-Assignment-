@@ -95,6 +95,7 @@ Route::prefix('v1')->group(function (): void {
         Route::post('conversations/{conversation}/read', [ChatController::class, 'read'])->name('conversations.read');
         Route::post('conversations/{conversation}/signal', [ChatController::class, 'signal'])->name('conversations.signal');
         Route::get('messages/{message}/download', [ChatController::class, 'download'])->name('messages.download');
+        Route::delete('messages/{message}', [ChatController::class, 'destroyMessage'])->name('messages.destroy');
 
         // Admin: oversight + permission matrix
         Route::get('admin/conversations', [ChatController::class, 'adminConversations'])->name('admin.conversations');
@@ -285,16 +286,6 @@ Route::prefix('v1')->group(function (): void {
         Route::get('unread-count', [NotificationController::class, 'unreadCount'])->name('unread-count');
         Route::post('read-all', [NotificationController::class, 'markAllRead'])->name('read-all');
         Route::post('{id}/read', [NotificationController::class, 'markRead'])->name('read');
-    });
-
-    // ---- Chat & Direct Messages ----
-    Route::middleware('auth:sanctum')->prefix('chat')->name('chat.')->group(function (): void {
-        Route::get('contacts', [ChatController::class, 'contacts'])->name('contacts');
-        Route::get('conversations', [ChatController::class, 'index'])->name('conversations.index');
-        Route::post('conversations', [ChatController::class, 'start'])->name('conversations.start');
-        Route::get('conversations/{conversation}', [ChatController::class, 'show'])->name('conversations.show');
-        Route::post('conversations/{conversation}/messages', [ChatController::class, 'send'])->name('messages.send');
-        Route::delete('messages/{message}', [ChatController::class, 'destroyMessage'])->name('messages.destroy');
     });
 
     // ---- Admin Deleted Messages Audit & Restore ----
