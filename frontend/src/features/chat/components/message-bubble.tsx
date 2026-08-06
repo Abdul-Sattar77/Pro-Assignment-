@@ -4,6 +4,7 @@ import { format } from "date-fns";
 import { Download, FileIcon, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useBlobUrl } from "../hooks/use-blob-url";
+import { VoicePlayer } from "./voice-player";
 import type { ChatMessage } from "../types";
 
 function formatBytes(bytes: number | null): string {
@@ -50,7 +51,7 @@ function Attachment({ message }: { message: ChatMessage }) {
 
   if (message.type === "voice") {
     return blobUrl ? (
-      <audio src={blobUrl} controls className="w-56 max-w-full" />
+      <VoicePlayer src={blobUrl} mine={message.mine} />
     ) : (
       <div className="text-muted-foreground flex items-center gap-2 text-xs">
         <Loader2 className="size-4 animate-spin" /> loading voice note…
