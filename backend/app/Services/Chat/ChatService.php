@@ -168,7 +168,15 @@ final class ChatService
             ];
 
             if ($file !== null) {
-                $type = ChatMessageType::fromMime($file->getMimeType());
+                // Voice recordings arrive as .webm, which content-based detection
+                // reports as video/webm. Trust the browser-declared audio mime and
+                // the "voice-" filename so they classify as voice, not video.
+                $clientMime = (string) $file->getClientMimeType();
+                $isVoice = str_starts_with($clientMime, 'audio/')
+                    || str_starts_with($file->getClientOriginalName(), 'voice-');
+                $type = $isVoice
+                    ? ChatMessageType::Voice
+                    : ChatMessageType::fromMime($file->getMimeType());
                 $path = $file->store("chat/{$conversation->getKey()}", 'local');
 
                 $attributes = [
