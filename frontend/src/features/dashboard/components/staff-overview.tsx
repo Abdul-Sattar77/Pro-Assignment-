@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { formatDistanceToNow } from "date-fns";
 import {
   ArrowUpRight,
   FileText,
@@ -361,9 +360,7 @@ export function StaffOverview() {
                   <div className="min-w-0 flex-1">
                     <p className="text-xs leading-relaxed">{a.message}</p>
                     <p className="text-muted-foreground mt-0.5 text-[11px]">
-                      {formatDistanceToNow(new Date(a.timestamp), {
-                        addSuffix: true,
-                      })}
+                      {a.timestamp}
                     </p>
                   </div>
                 </div>
