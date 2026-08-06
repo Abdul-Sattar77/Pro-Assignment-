@@ -47,8 +47,10 @@ export function ChatWidget() {
   const [view, setView] = useState<View>("list");
   const [active, setActive] = useState<Active | null>(null);
 
+  // Enabled whenever logged in (not just when open) so the 8s poll keeps the
+  // unread badge fresh on the closed launcher.
   const { data: conversations = [], isPending } = useConversations(
-    open && Boolean(user),
+    Boolean(user),
   );
   const { data: contacts = [] } = useChatContacts();
   const startConversation = useStartConversation();

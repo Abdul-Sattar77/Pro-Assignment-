@@ -220,7 +220,7 @@ export function StaffOverview() {
               </p>
             )}
             {recentAssignments.map((a) => (
-              <Link key={a.id} href={`${ROUTES.assignments}/${a.id}`}>
+              <Link key={a.id} href={`${ROUTES.assignments}/${a.uuid}`}>
                 <div className="hover:bg-muted/40 flex items-center gap-3 rounded-lg p-2.5 transition-colors">
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">

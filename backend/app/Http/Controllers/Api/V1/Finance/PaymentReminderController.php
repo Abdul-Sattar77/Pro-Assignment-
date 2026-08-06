@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\V1\Finance;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\PaymentReminderResource;
 use App\Models\Invoice;
 use App\Models\PaymentReminder;
 use App\Support\ApiResponse;
@@ -24,7 +25,10 @@ final class PaymentReminderController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate((int) $request->query('per_page', 20));
 
-        return ApiResponse::collection($reminders);
+        return ApiResponse::collection(
+            PaymentReminderResource::collection($reminders->getCollection()),
+            $reminders,
+        );
     }
 
     public function trigger(Request $request, Invoice $invoice): JsonResponse
@@ -46,6 +50,9 @@ final class PaymentReminderController extends Controller
             'sent_at' => now(),
         ]);
 
-        return ApiResponse::resource($reminder->load(['invoice', 'client']), 201);
+        return ApiResponse::resource(
+            PaymentReminderResource::make($reminder->load(['invoice', 'client'])),
+            201,
+        );
     }
 }

@@ -70,6 +70,7 @@ export const emailService = {
     const { data } = await apiClient.post<ItemEnvelope<EmailMessage>>(
       `/email/threads/${threadId}/messages`,
       form,
+      { headers: { "Content-Type": "multipart/form-data" } },
     );
     return data.data;
   },

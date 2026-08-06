@@ -52,7 +52,7 @@ export function SubmitComplaintDialog({
   const form = useForm<SubmitComplaintFormValues>({
     resolver: zodResolver(submitComplaintSchema),
     defaultValues: {
-      assignmentId: "",
+      assignmentId: "none",
       subject: "",
       description: "",
     },
@@ -61,7 +61,10 @@ export function SubmitComplaintDialog({
   const onSubmit = form.handleSubmit((values) => {
     submitComplaint.mutate(
       {
-        assignmentId: values.assignmentId || null,
+        assignmentId:
+          values.assignmentId && values.assignmentId !== "none"
+            ? values.assignmentId
+            : null,
         subject: values.subject,
         description: values.description,
       },
@@ -108,13 +111,13 @@ export function SubmitComplaintDialog({
               render={({ field }) => (
                 <Select
                   onValueChange={field.onChange}
-                  value={field.value || ""}
+                  value={field.value || "none"}
                 >
                   <SelectTrigger id="complaint-assignment" className="w-full">
                     <SelectValue placeholder="Select assignment" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">
+                    <SelectItem value="none">
                       None / General Portal Issue
                     </SelectItem>
                     {assignments.map((a) => (

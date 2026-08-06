@@ -29,6 +29,7 @@ export const filesService = {
     const { data } = await apiClient.post<ItemEnvelope>(
       `/assignments/${assignmentId}/files`,
       form,
+      { headers: { "Content-Type": "multipart/form-data" } },
     );
     return data.data;
   },

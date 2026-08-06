@@ -20,6 +20,7 @@ export interface DashboardStats {
   };
   recent_assignments: {
     id: string;
+    uuid: string;
     name: string;
     client: string;
     subject: string;

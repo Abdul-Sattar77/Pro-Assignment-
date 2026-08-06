@@ -262,7 +262,7 @@ export function AssignmentDetail({ id }: { id: string }) {
                 attachments={attachments}
                 loading={attachmentsLoading}
                 canUpload
-                canDelete={isClient || isAdmin}
+                canDelete={isAdmin}
               />
             </CardContent>
           </Card>

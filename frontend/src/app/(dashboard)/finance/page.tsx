@@ -59,7 +59,9 @@ export default function FinancePage() {
           <TabsList className="mb-4">
             <TabsTrigger value="invoices">Invoices</TabsTrigger>
             <TabsTrigger value="payments">Payments & Transactions</TabsTrigger>
-            <TabsTrigger value="reminders">Payment Reminders</TabsTrigger>
+            <Can permission="invoices.manage">
+              <TabsTrigger value="reminders">Payment Reminders</TabsTrigger>
+            </Can>
           </TabsList>
           <TabsContent value="invoices" className="space-y-4">
             <InvoicesTable />
@@ -67,9 +69,11 @@ export default function FinancePage() {
           <TabsContent value="payments" className="space-y-4">
             <PaymentsList />
           </TabsContent>
-          <TabsContent value="reminders" className="space-y-4">
-            <PaymentRemindersList />
-          </TabsContent>
+          <Can permission="invoices.manage">
+            <TabsContent value="reminders" className="space-y-4">
+              <PaymentRemindersList />
+            </TabsContent>
+          </Can>
         </Tabs>
       </motion.div>
 

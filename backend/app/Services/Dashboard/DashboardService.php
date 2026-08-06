@@ -90,6 +90,7 @@ final class DashboardService
             ->get()
             ->map(fn ($a) => [
                 'id' => 'ASG-'.$a->id,
+                'uuid' => $a->uuid,
                 'name' => $a->title,
                 'client' => $a->client?->name ?? 'None',
                 'subject' => $a->subject,

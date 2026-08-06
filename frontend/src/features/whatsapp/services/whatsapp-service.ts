@@ -62,6 +62,7 @@ export const whatsappService = {
     const { data } = await apiClient.post<ItemEnvelope<WhatsAppMessage>>(
       `/whatsapp/conversations/${conversationId}/messages`,
       form,
+      { headers: { "Content-Type": "multipart/form-data" } },
     );
     return data.data;
   },

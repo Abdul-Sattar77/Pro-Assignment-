@@ -12,10 +12,12 @@ interface Envelope<T> {
 interface PaginatedEnvelope<T> {
   data: T;
   meta: {
-    current_page: number;
-    last_page: number;
-    per_page: number;
-    total: number;
+    pagination: {
+      page: number;
+      perPage: number;
+      total: number;
+      totalPages: number;
+    };
   };
 }
 
@@ -38,10 +40,10 @@ export const templatesService = {
     return {
       templates: data.data,
       pagination: {
-        page: data.meta.current_page,
-        perPage: data.meta.per_page,
-        total: data.meta.total,
-        totalPages: data.meta.last_page,
+        page: data.meta.pagination.page,
+        perPage: data.meta.pagination.perPage,
+        total: data.meta.pagination.total,
+        totalPages: data.meta.pagination.totalPages,
       },
     };
   },

@@ -24,6 +24,14 @@ final class UpdateLeadRequest extends FormRequest
     /**
      * @return array<string, array<int, mixed>>
      */
+    /** The frontend sends camelCase lostReason; persist it as lost_reason. */
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('lostReason') && !$this->has('lost_reason')) {
+            $this->merge(['lost_reason' => $this->input('lostReason')]);
+        }
+    }
+
     public function rules(): array
     {
         return [

@@ -44,7 +44,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { format } from "date-fns";
-import { useAuth } from "@/features/auth";
+import { Can, useAuth } from "@/features/auth";
 import { formatCurrency } from "@/config/currency";
 import { apiClient } from "@/lib/api-client";
 
@@ -175,10 +175,12 @@ export function PaymentsList() {
           </Select>
         </div>
 
-        <Button onClick={() => setOpenRecord(true)} className="gap-2">
-          <Plus className="h-4 w-4" />
-          Record Transaction
-        </Button>
+        <Can permission="invoices.manage">
+          <Button onClick={() => setOpenRecord(true)} className="gap-2">
+            <Plus className="h-4 w-4" />
+            Record Transaction
+          </Button>
+        </Can>
       </div>
 
       <div className="bg-card rounded-md border">

@@ -35,6 +35,10 @@ final class CalendarEventService
         return DB::transaction(function () use ($creator, $data): CalendarEvent {
             $resolvedData = $this->resolveRelations($data);
             $resolvedData['created_by_id'] = $creator->getKey();
+            // The DB has a default, but Eloquent doesn't re-read after create(),
+            // so set it explicitly — otherwise the resource reads ->status->value
+            // on a null status and 500s.
+            $resolvedData['status'] ??= \App\Enums\CalendarEventStatus::Upcoming->value;
 
             return $this->events->create($resolvedData);
         });

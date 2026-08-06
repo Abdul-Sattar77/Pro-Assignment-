@@ -76,8 +76,8 @@ export function RecordPaymentDialog({
       recordPaymentSchema,
     ) as unknown as Resolver<RecordPaymentFormValues>,
     defaultValues: {
-      assignmentId: "",
-      invoiceId: "",
+      assignmentId: "none",
+      invoiceId: "none",
       userId: "",
       amount: undefined,
       paymentMethod: "bank_transfer",
@@ -103,8 +103,14 @@ export function RecordPaymentDialog({
 
   const onSubmit = form.handleSubmit((values) => {
     const payload = {
-      assignmentId: values.assignmentId || null,
-      invoiceId: values.invoiceId || null,
+      assignmentId:
+        values.assignmentId && values.assignmentId !== "none"
+          ? values.assignmentId
+          : null,
+      invoiceId:
+        values.invoiceId && values.invoiceId !== "none"
+          ? values.invoiceId
+          : null,
       userId: values.userId || (isAdmin ? null : user?.id),
       amount: values.amount,
       paymentMethod: values.paymentMethod,
@@ -282,13 +288,13 @@ export function RecordPaymentDialog({
                 render={({ field }) => (
                   <Select
                     onValueChange={field.onChange}
-                    value={field.value || ""}
+                    value={field.value || "none"}
                   >
                     <SelectTrigger id="payment-assignment" className="w-full">
                       <SelectValue placeholder="Select assignment" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">None / General</SelectItem>
+                      <SelectItem value="none">None / General</SelectItem>
                       {assignments.map((a) => (
                         <SelectItem key={a.id} value={a.id}>
                           #{a.id.substring(0, 8)} - {a.title}
@@ -308,13 +314,13 @@ export function RecordPaymentDialog({
                 render={({ field }) => (
                   <Select
                     onValueChange={field.onChange}
-                    value={field.value || ""}
+                    value={field.value || "none"}
                   >
                     <SelectTrigger id="payment-invoice" className="w-full">
                       <SelectValue placeholder="Select invoice" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">None</SelectItem>
+                      <SelectItem value="none">None</SelectItem>
                       {invoices.map((i) => (
                         <SelectItem key={i.id} value={i.id}>
                           {i.number} ({formatMoney(i.amountCents, i.currency)})
