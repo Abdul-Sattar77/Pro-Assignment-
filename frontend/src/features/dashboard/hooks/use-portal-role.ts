@@ -2,7 +2,7 @@
 
 import { useAuth } from "@/features/auth";
 
-const STAFF_ROLES = ["admin", "project_manager", "writer"] as const;
+const STAFF_ROLES = ["admin", "project_manager", "writer", "sales"] as const;
 
 /**
  * Which portal experience the signed-in user gets (project rule:
