@@ -7,9 +7,14 @@ import {
   ArrowRight,
   ArrowUpRight,
   CalendarClock,
+  CheckCircle2,
+  Clock3,
   FilePlus2,
+  ListChecks,
   MessagesSquare,
+  PackageCheck,
   Sparkles,
+  type LucideIcon,
 } from "lucide-react";
 import { easeOut } from "@/animations/variants";
 import { ROUTES } from "@/constants/routes";
@@ -58,7 +63,7 @@ const STEPS = [
 export function ClientHome() {
   const { user } = useAuth();
   const { data: ordersPage, isPending: ordersLoading } = useAssignments({
-    perPage: 5,
+    perPage: 50,
   });
 
   if (!user) return null;
@@ -66,11 +71,60 @@ export function ClientHome() {
   const firstName = user.name.split(/\s+/)[0] ?? user.name;
   const orders = ordersPage?.assignments ?? [];
   const hasOrders = orders.length > 0;
+  const recentOrders = orders.slice(0, 5);
+
+  // Live counts from the client's own orders.
+  const activeStatuses = [
+    "pending_assignment",
+    "assigned",
+    "in_progress",
+    "submitted",
+    "revision_requested",
+  ];
+  const total = ordersPage?.pagination.total ?? orders.length;
+  const inProgress = orders.filter((o) =>
+    activeStatuses.includes(o.status),
+  ).length;
+  const awaiting = orders.filter((o) => o.status === "delivered").length;
+  const completed = orders.filter((o) => o.status === "completed").length;
+
+  const stats: { label: string; value: number; icon: LucideIcon; tint: string }[] =
+    [
+      {
+        label: "Total orders",
+        value: total,
+        icon: ListChecks,
+        tint: "bg-sky-500/15 text-sky-300",
+      },
+      {
+        label: "In progress",
+        value: inProgress,
+        icon: Clock3,
+        tint: "bg-violet-500/15 text-violet-300",
+      },
+      {
+        label: "Awaiting your review",
+        value: awaiting,
+        icon: PackageCheck,
+        tint: "bg-amber-500/15 text-amber-300",
+      },
+      {
+        label: "Completed",
+        value: completed,
+        icon: CheckCircle2,
+        tint: "bg-emerald-500/15 text-emerald-300",
+      },
+    ];
 
   return (
     <div className="space-y-16">
       {/* Greeting */}
-      <div>
+      <div className="relative">
+        {/* Ambient glow */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -top-24 -left-10 -z-10 size-96 rounded-full bg-[#3b82f6]/12 blur-[120px]"
+        />
         <motion.p
           custom={0.05}
           variants={reveal}
@@ -117,6 +171,32 @@ export function ClientHome() {
         </motion.div>
       </div>
 
+      {/* Live stats */}
+      <motion.div
+        custom={0.36}
+        variants={reveal}
+        initial="hidden"
+        animate="visible"
+        className="grid grid-cols-2 gap-4 sm:grid-cols-4"
+      >
+        {stats.map((stat) => (
+          <div
+            key={stat.label}
+            className="aurora-border group relative overflow-hidden rounded-2xl p-5 transition-colors hover:border-[#3b82f6]/40"
+          >
+            <span
+              className={`flex size-10 items-center justify-center rounded-xl ${stat.tint}`}
+            >
+              <stat.icon className="size-5" strokeWidth={1.75} />
+            </span>
+            <p className="font-display mt-4 text-3xl font-bold tabular-nums">
+              {stat.value}
+            </p>
+            <p className="text-muted-foreground mt-1 text-xs">{stat.label}</p>
+          </div>
+        ))}
+      </motion.div>
+
       {/* My orders */}
       <motion.div
         custom={0.42}
@@ -159,7 +239,7 @@ export function ClientHome() {
             </div>
           )}
 
-          {orders.map((order) => (
+          {recentOrders.map((order) => (
             <Link
               key={order.id}
               href={`/assignments/${order.id}`}
