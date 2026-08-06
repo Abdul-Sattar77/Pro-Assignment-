@@ -36,6 +36,7 @@ export function Composer({ conversationId }: { conversationId: string }) {
   const [recording, setRecording] = useState(false);
   const [seconds, setSeconds] = useState(0);
   const [cameraOpen, setCameraOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
@@ -67,6 +68,7 @@ export function Composer({ conversationId }: { conversationId: string }) {
 
   const submit = () => {
     if (!canSend) return;
+    setError(null);
     send.mutate(
       { body: text.trim() || undefined, file: pending ?? undefined },
       {
@@ -74,6 +76,12 @@ export function Composer({ conversationId }: { conversationId: string }) {
           setText("");
           setPending(null);
         },
+        onError: (e) =>
+          setError(
+            e instanceof Error && e.message
+              ? e.message
+              : "Couldn't send — check your connection and try again.",
+          ),
       },
     );
   };
@@ -156,6 +164,12 @@ export function Composer({ conversationId }: { conversationId: string }) {
             </button>
           </div>
         ))}
+
+      {error && (
+        <p className="text-destructive mb-2 text-xs" role="alert">
+          {error}
+        </p>
+      )}
 
       {recording ? (
         /* ── Recording bar (WhatsApp-style) ── */

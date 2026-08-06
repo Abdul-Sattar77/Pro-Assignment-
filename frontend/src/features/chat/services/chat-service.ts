@@ -54,6 +54,7 @@ export const chatService = {
     const { data } = await apiClient.post<ItemEnvelope<ChatMessage>>(
       `/chat/conversations/${conversationId}/messages`,
       form,
+      { headers: { "Content-Type": "multipart/form-data" } },
     );
     return data.data;
   },
