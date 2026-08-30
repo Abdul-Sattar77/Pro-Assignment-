@@ -41,7 +41,7 @@ final class MessageSampleDataSeeder extends Seeder
 
         $pm = User::whereEmail('pm@prossignment.test')->first()
             ?: User::create([
-                'name' => 'Jane PM',
+                'name' => 'Petra Manager',
                 'email' => 'pm@prossignment.test',
                 'password' => Hash::make('password'),
                 'is_active' => true,
